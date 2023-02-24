@@ -1,31 +1,19 @@
 package com.goodroadbook.earlybird
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.graphics.drawable.toBitmap
 import com.goodroadbook.earlybird.databinding.ActivityMainBinding
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
-import org.pytorch.IValue
-import org.pytorch.LiteModuleLoader
-import org.pytorch.Module
-import org.pytorch.torchvision.TensorImageUtils
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 
 class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     private val binding: ActivityMainBinding by lazy {
@@ -35,45 +23,35 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        with(binding) {
+            imgBtn.setOnClickListener {
+                getFromAlbum()
+            }
+            modelBtn.setOnClickListener {
+                val bitmapDrawable = ImageView.drawable as BitmapDrawable
+                val bitmap = bitmapDrawable.bitmap
+                val model = ClassificationModel(this@MainActivity, bitmap)
+                textView.setText(model.species)
+            }
 
-        binding.imgBtn.setOnClickListener {
-            getFromAlbum()
-        }
-        binding.modelBtn.setOnClickListener {
-            val bitmapDrawable = binding.ImageView.drawable as BitmapDrawable
-            val bitmap = bitmapDrawable.bitmap
-            modelExecution(bitmap)
+
+            map.setOnClickListener{
+                val intent = Intent(this@MainActivity, MapActivity::class.java)
+                startActivity(intent)
+            }
+            community.setOnClickListener{
+                val intent = Intent(this@MainActivity, CommunityActivity::class.java)
+                startActivity(intent)
+            }
+            encyclopedia.setOnClickListener{
+                val intent = Intent(this@MainActivity, MapActivity::class.java)
+                startActivity(intent)
+            }
+
+
         }
 
         AutoPermissions.Companion.loadAllPermissions(this, 101)
-    }
-
-    fun assetFilePath(context: Context, asset: String): String {
-        val file = File(context.filesDir, asset)
-
-        try {
-            val inpStream: InputStream = context.assets.open(asset)
-            try {
-                val outStream = FileOutputStream(file, false)
-                val buffer = ByteArray(4 * 1024)
-                var read: Int
-
-                while (true) {
-                    read = inpStream.read(buffer)
-                    if (read == -1) {
-                        break
-                    }
-                    outStream.write(buffer, 0, read)
-                }
-                outStream.flush()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return file.absolutePath
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return ""
     }
 
     fun getFromAlbum() {
@@ -88,15 +66,12 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         when(requestCode) {
             102 -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    if(Build.VERSION.SDK_INT >= 19) {
-                        handleImage(data)
-                    }
+                    handleImage(data)
                 }
             }
         }
     }
 
-    @TargetApi(19)
     fun handleImage(data: Intent?) {
         var imagePath: String? = null
         val uri = data?.data
@@ -132,21 +107,6 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
             cursor.close()
         }
         return path
-    }
-
-    private fun modelExecution(bitmap:Bitmap) {
-        val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
-
-        val module = LiteModuleLoader.load(assetFilePath(this, "ResNet-model.ptl"))
-        val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(resized, TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
-        // val inputs = inputTensor.dataAsFloatArray
-
-        val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
-        val resultArray = outputTensor.dataAsFloatArray
-
-        val maxValue = resultArray.maxOrNull()
-        val resultSpecies = resultArray.indices.firstOrNull { i:Int -> maxValue == resultArray[i] }
-        binding.textView.setText(resultSpecies.toString())
     }
 
     override fun onRequestPermissionsResult(

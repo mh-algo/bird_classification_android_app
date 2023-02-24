@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.goodroadbook.earlybird">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -13,6 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
         <activity
+            android:name=".EncyclopediaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CommunityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MapActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -21,11 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/external" />
