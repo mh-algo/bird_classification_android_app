@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
             modelBtn.setOnClickListener {
                 val bitmapDrawable = ImageView.drawable as BitmapDrawable
                 val bitmap = bitmapDrawable.bitmap
-                val model = ClassificationModel(this@MainActivity, bitmap)
-                textView.setText(model.species)
+                val model = ClassificationModel(this@MainActivity)
+                textView.setText(model.execution(bitmap))
             }
 
 

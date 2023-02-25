@@ -9,10 +9,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class ClassificationModel(context: Context, bitmap:Bitmap) {
-    val species = execution(context, bitmap)
-
-    private fun execution(context: Context, bitmap:Bitmap):String {
+class ClassificationModel(val context: Context) {
+    fun execution(bitmap:Bitmap):String {
         val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
         val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(resized, TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
         // val inputs = inputTensor.dataAsFloatArray
