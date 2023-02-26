@@ -12,6 +12,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import com.goodroadbook.earlybird.databinding.ActivityMainBinding
+import com.goodroadbook.earlybird.encyclopedia.EncyclopediaActivity
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
 
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 startActivity(intent)
             }
             encyclopedia.setOnClickListener{
-                val intent = Intent(this@MainActivity, MapActivity::class.java)
+                val intent = Intent(this@MainActivity, EncyclopediaActivity::class.java)
                 startActivity(intent)
             }
 
