@@ -32,15 +32,15 @@
         app:layout_constraintTop_toBottomOf="@id/encyclopedia_title">
 
         <Button
-            android:id="@+id/encyclopedia_my_picture"
+            android:id="@+id/encyclopedia_btn_my_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="15dp"
-            android:text="도감등록된사진" />
+            android:text="도감등록된사진만" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/encyclopedia_btn_sort_by_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -51,12 +51,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:listitem="@layout/item_encyclopedia_bird_list" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
