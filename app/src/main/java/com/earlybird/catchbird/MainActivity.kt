@@ -1,4 +1,4 @@
-package com.goodroadbook.earlybird
+package com.earlybird.catchbird
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -11,8 +11,8 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import com.goodroadbook.earlybird.databinding.ActivityMainBinding
-import com.goodroadbook.earlybird.encyclopedia.EncyclopediaActivity
+import com.earlybird.catchbird.databinding.ActivityMainBinding
+import com.earlybird.catchbird.encyclopedia.EncyclopediaActivity
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
 

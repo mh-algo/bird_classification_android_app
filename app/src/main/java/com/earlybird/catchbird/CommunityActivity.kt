@@ -1,8 +1,8 @@
-package com.goodroadbook.earlybird
+package com.earlybird.catchbird
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.goodroadbook.earlybird.databinding.ActivityCommunityBinding
+import com.earlybird.catchbird.databinding.ActivityCommunityBinding
 
 class CommunityActivity : AppCompatActivity() {
     private val binding: ActivityCommunityBinding by lazy {

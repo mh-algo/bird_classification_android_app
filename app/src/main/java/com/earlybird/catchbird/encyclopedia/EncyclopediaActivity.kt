@@ -1,4 +1,4 @@
-package com.goodroadbook.earlybird.encyclopedia
+package com.earlybird.catchbird.encyclopedia
 
 import android.content.Intent
 import android.graphics.Color
@@ -9,11 +9,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.goodroadbook.earlybird.Bird
-import com.goodroadbook.earlybird.MainActivity
-import com.goodroadbook.earlybird.MapActivity
-import com.goodroadbook.earlybird.R
-import com.goodroadbook.earlybird.databinding.ActivityEncyclopediaBinding
+import com.earlybird.catchbird.Bird
+import com.earlybird.catchbird.MainActivity
+import com.earlybird.catchbird.R
+import com.earlybird.catchbird.databinding.ActivityEncyclopediaBinding
 
 
 class EncyclopediaActivity : AppCompatActivity() {

@@ -1,6 +1,4 @@
-package com.goodroadbook.earlybird
-
-import android.media.Image
+package com.earlybird.catchbird
 
 data class Bird(
     val image: Int,

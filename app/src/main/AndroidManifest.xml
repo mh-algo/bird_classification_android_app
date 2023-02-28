@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.goodroadbook.earlybird">
+    package="com.earlybird.catchbird">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -13,22 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
         <activity
-            android:name=".encyclopedia.EncyclopediaBirdSearchActivity"
+            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaBirdSearchActivity"
             android:exported="true" />
         <activity
-            android:name=".encyclopedia.EncyclopediaRankingActivity"
+            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity"
             android:exported="true" />
         <activity
-            android:name=".encyclopedia.EncyclopediaActivity"
+            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaActivity"
             android:exported="true" />
         <activity
-            android:name=".CommunityActivity"
+            android:name="com.earlybird.catchbird.CommunityActivity"
             android:exported="false" />
         <activity
-            android:name=".MapActivity"
+            android:name="com.earlybird.catchbird.MapActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.earlybird.catchbird.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

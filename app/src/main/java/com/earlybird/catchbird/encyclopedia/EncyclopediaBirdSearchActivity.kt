@@ -1,9 +1,8 @@
-package com.goodroadbook.earlybird.encyclopedia
+package com.earlybird.catchbird.encyclopedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.goodroadbook.earlybird.databinding.ActivityEncyclopediaBirdSearchBinding
-import com.goodroadbook.earlybird.databinding.ActivityEncyclopediaRankingBinding
+import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdSearchBinding
 
 class EncyclopediaBirdSearchActivity : AppCompatActivity() {
     private val binding: ActivityEncyclopediaBirdSearchBinding by lazy {

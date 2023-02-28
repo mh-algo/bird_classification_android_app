@@ -1,8 +1,8 @@
-package com.goodroadbook.earlybird
+package com.earlybird.catchbird
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.goodroadbook.earlybird.databinding.ActivityMapBinding
+import com.earlybird.catchbird.databinding.ActivityMapBinding
 
 class MapActivity : AppCompatActivity() {
     private val binding: ActivityMapBinding by lazy {

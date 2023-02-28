@@ -1,4 +1,4 @@
-package com.goodroadbook.earlybird
+package com.earlybird.catchbird
 
 import android.content.Context
 import android.graphics.Bitmap

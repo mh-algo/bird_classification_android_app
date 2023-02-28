@@ -1,4 +1,4 @@
-package com.goodroadbook.earlybird
+package com.earlybird.catchbird
 
 import org.junit.Test
 
