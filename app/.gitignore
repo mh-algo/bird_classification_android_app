@@ -16,3 +16,6 @@ local.properties
 
 # modle file
 /app/src/main/assets/ResNet-model.ptl
+
+# api key
+/app/src/main/res/values/api_keys.xml

@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 val bitmapDrawable = ImageView.drawable as BitmapDrawable
                 val bitmap = bitmapDrawable.bitmap
                 val model = ClassificationModel(this@MainActivity)
-                textView.setText(model.execution(bitmap))
+                textView.text = model.execution(bitmap)
             }
 
 
