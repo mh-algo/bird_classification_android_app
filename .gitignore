@@ -14,6 +14,8 @@
 .cxx
 local.properties
 
+# modle file
+/app/src/main/assets/ResNet-model.ptl
 
-# model file
-/app/src/main/assets/*
+# api key
+/app/src/main/res/values/api_keys.xml
