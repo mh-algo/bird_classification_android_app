@@ -11,3 +11,7 @@ data class Rank(
     val userId: String,
     val score: Int
 )
+data class SearchBird(
+    val name: String,
+    val image: Int
+)

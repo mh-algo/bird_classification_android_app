@@ -48,4 +48,6 @@ dependencies {
     implementation 'org.pytorch:pytorch_android_torchvision:1.9.0'
     implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
     implementation 'com.naver.maps:map-sdk:3.16.0'
+    implementation 'androidx.navigation:navigation-fragment:2.3.2'
+    implementation 'androidx.navigation:navigation-ui:2.3.2'
 }

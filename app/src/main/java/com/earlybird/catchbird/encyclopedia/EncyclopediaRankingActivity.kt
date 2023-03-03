@@ -22,8 +22,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.encyclopediaBtnRankingpageOk.setOnClickListener {
-            val intent = Intent(this@EncyclopediaRankingActivity, EncyclopediaActivity::class.java)
-            startActivity(intent)
+           finish()
         }
         dummy.apply {
             add(
