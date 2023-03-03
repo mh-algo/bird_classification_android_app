@@ -4,26 +4,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.earlybird.catchbird.CommunityActivity
-import com.earlybird.catchbird.MapActivity
-import com.earlybird.catchbird.R
-import com.earlybird.catchbird.databinding.ActivityMainBinding
+import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.FragmentHomeBinding
-import com.earlybird.catchbird.encyclopedia.EncyclopediaActivity
-import com.pedro.library.AutoPermissions
-import com.pedro.library.AutoPermissionsListener
 
 
-class HomeFragment : Fragment() , AutoPermissionsListener {
+class HomeFragment : Fragment() {
     private val binding: FragmentHomeBinding by lazy {
         FragmentHomeBinding.inflate(layoutInflater)
     }
@@ -39,14 +33,13 @@ class HomeFragment : Fragment() , AutoPermissionsListener {
                 getFromAlbum()
             }
             modelBtn.setOnClickListener {
-               // val bitmapDrawable = ImageView.drawable as BitmapDrawable
-                //val bitmap = bitmapDrawable.bitmap
-               // val model = ClassificationModel(this@MainActivity)
-                //textView.text = model.execution(bitmap)
+                val bitmapDrawable = ImageView.drawable as BitmapDrawable
+                val bitmap = bitmapDrawable.bitmap
+                val model = ClassificationModel(requireContext())
+                output.text = model.execution(bitmap)
             }
 
         }
-        AutoPermissions.Companion.loadAllPermissions(requireActivity(), 101)
 
         return binding.root
     }
@@ -94,33 +87,14 @@ class HomeFragment : Fragment() , AutoPermissionsListener {
     @SuppressLint("Range")
     private fun getImagePath(uri: Uri, selection: String?): String? {
         var path: String? = null
-       // val cursor = contentResolver.query(uri, null, selection, null, null)
-       /* if (cursor != null) {
+        val cursor = requireActivity().contentResolver.query(uri, null, selection, null, null)
+        if (cursor != null) {
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
             }
             cursor.close()
         }
 
-        */
         return path
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        AutoPermissions.parsePermissions(requireActivity(), requestCode, permissions as Array<String>, this)
-    }
-
-    override fun onDenied(requestCode: Int, permissions: Array<String>) {
-        Log.d("Main", "거부된 권한 개수 : ${permissions.size}")
-    }
-
-    override fun onGranted(requestCode: Int, permissions: Array<String>) {
-        Log.d("Main", "허용된 권한 개수 : ${permissions.size}")
-    }
-
 }

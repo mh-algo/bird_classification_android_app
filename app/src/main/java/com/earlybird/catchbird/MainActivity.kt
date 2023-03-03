@@ -1,28 +1,17 @@
 package com.earlybird.catchbird
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.util.Log
-import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.databinding.ActivityMainBinding
-import com.earlybird.catchbird.encyclopedia.EncyclopediaActivity
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
 import com.earlybird.catchbird.home.HomeFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -50,6 +39,25 @@ class MainActivity : AppCompatActivity() {
         selectedItemId=R.id.navigation_home
         }
 
+
+        AutoPermissions.Companion.loadAllPermissions(this, 101)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        AutoPermissions.parsePermissions(this, requestCode, permissions as Array<String>, this)
+    }
+
+    override fun onDenied(requestCode: Int, permissions: Array<String>) {
+        Log.d("Main", "거부된 권한 개수 : ${permissions.size}")
+    }
+
+    override fun onGranted(requestCode: Int, permissions: Array<String>) {
+        Log.d("Main", "허용된 권한 개수 : ${permissions.size}")
     }
 }
 

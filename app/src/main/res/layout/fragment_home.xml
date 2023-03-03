@@ -27,10 +27,16 @@
             android:text="모델 돌리기" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/output"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="35sp" />
+
     <ImageView
         android:id="@+id/ImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        tools:srcCompat="@drawable/ic_launcher_background" />
 
 </LinearLayout>
