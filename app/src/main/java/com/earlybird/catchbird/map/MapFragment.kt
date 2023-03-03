@@ -1,8 +1,11 @@
-package com.earlybird.catchbird
+package com.earlybird.catchbird.map
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.earlybird.catchbird.databinding.ActivityMapBinding
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.earlybird.catchbird.R
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -11,33 +14,33 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    private val binding: ActivityMapBinding by lazy {
-        ActivityMapBinding.inflate(layoutInflater)
-    }
-
+class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        val fm = supportFragmentManager
+        val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map_fragment, it).commit()
             }
-
         mapFragment.getMapAsync(this)
 
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        val uiSettings = naverMap.uiSettings
+        uiSettings.isLocationButtonEnabled = true
 
         // test (다중 마커는 다른 방법)
         val marker = Marker()

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.databinding.ActivityMainBinding
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
 import com.earlybird.catchbird.home.HomeFragment
+import com.earlybird.catchbird.map.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 R.id.navigation_encyclopedia -> supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView, EncyclopediaFragment()).commit()
                 R.id.navigation_map -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView, HomeFragment()).commit()
+                    .replace(R.id.fragmentContainerView, MapFragment()).commit()
                 R.id.navigation_community -> supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView, HomeFragment()).commit()
             }
