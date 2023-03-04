@@ -28,10 +28,7 @@ class EncyclopediaActivity : AppCompatActivity() {
             val intent = Intent(this@EncyclopediaActivity, EncyclopediaRankingActivity::class.java)
             startActivity(intent)
         }
-        binding.encyclopediaBtnBirdSearch.setOnClickListener {
-            val intent = Intent(this@EncyclopediaActivity, EncyclopediaBirdSearchActivity::class.java)
-            startActivity(intent)
-        }
+
         binding.encyclopediaBtnOk.setOnClickListener {
             val intent = Intent(this@EncyclopediaActivity, MainActivity::class.java)
             startActivity(intent)
