@@ -1,7 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
+apply plugin: 'com.android.application'
 
 android {
     compileSdk 32
@@ -50,4 +52,6 @@ dependencies {
     implementation 'com.naver.maps:map-sdk:3.16.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.2'
     implementation 'androidx.navigation:navigation-ui:2.3.2'
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
 }
+apply plugin: 'com.google.gms.google-services'
