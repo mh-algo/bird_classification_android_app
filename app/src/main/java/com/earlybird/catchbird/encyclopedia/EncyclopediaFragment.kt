@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,17 +28,27 @@ class EncyclopediaFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
 
+    ): View? {
+        var sData = resources.getStringArray(R.array.sort)
+        var adapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,sData)
+        binding.spinner.adapter = adapter
+        binding.spinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
         binding.encyclopediaBtnRanking.setOnClickListener {
-            Log.d("dd","gkhgkjhkj")
             val intent = Intent(context, EncyclopediaRankingActivity::class.java)
             startActivity(intent)
         }
-        binding.encyclopediaBtnBirdSearch.setOnClickListener {
-            val intent = Intent(context, EncyclopediaBirdSearchActivity::class.java)
-            startActivity(intent)
-        }
+
 
         dummy.apply {
             add(

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort">
+        <item>전체사진</item>
+        <item>도감등록된사진</item>
+    </string-array>
+</resources>

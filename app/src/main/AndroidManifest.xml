@@ -16,9 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
-        <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaBirdSearchActivity"
-            android:exported="true" />
+
         <activity
             android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity"
             android:exported="true" />
