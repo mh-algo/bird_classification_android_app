@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-
-
         //바텀 네비게이션뷰 안의 아이템 설정
        findViewById<BottomNavigationView>(R.id.nav_view).run { setOnNavigationItemSelectedListener {
             when (it.itemId) {
