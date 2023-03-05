@@ -1,4 +1,4 @@
-package com.earlybird.catchbird.community
+package com.earlybird.catchbird
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
