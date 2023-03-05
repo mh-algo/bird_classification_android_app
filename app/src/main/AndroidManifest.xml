@@ -24,7 +24,7 @@
             android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaActivity"
             android:exported="true" />
         <activity
-            android:name="com.earlybird.catchbird.CommunityActivity"
+            android:name="com.earlybird.catchbird.community.CommunityActivity"
             android:exported="false" />
         <activity
             android:name="com.earlybird.catchbird.MapActivity"
