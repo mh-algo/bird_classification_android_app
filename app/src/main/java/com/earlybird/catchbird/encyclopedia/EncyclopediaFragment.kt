@@ -36,11 +36,11 @@ class EncyclopediaFragment : Fragment() {
         binding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
+                // 전체사진, 도감등록사진 중 선택했을 때 어떤 코드 실행될지
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-
+                //
             }
 
         }
