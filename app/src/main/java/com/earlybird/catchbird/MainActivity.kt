@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.databinding.ActivityMainBinding
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
+import com.earlybird.catchbird.home.CameraFragment
 import com.earlybird.catchbird.home.HomeFragment
 import com.earlybird.catchbird.map.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
        findViewById<BottomNavigationView>(R.id.nav_view).run { setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView, HomeFragment()).commit()
+                    .replace(R.id.fragmentContainerView, CameraFragment()).commit()
                 R.id.navigation_encyclopedia -> supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView, EncyclopediaFragment()).commit()
                 R.id.navigation_map -> supportFragmentManager.beginTransaction()
