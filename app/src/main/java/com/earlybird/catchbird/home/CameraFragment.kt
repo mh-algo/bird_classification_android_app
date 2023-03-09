@@ -68,14 +68,16 @@ open class CameraFragment : Fragment() {
         super.onResume()
         startBackgroundThread()
 
-        if (binding.textureView.isAvailable) {
-            try {
-                openCamera()
-            } catch (e: CameraAccessException) {
-                e.printStackTrace()
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (binding.textureView.isAvailable) {
+                try {
+                    openCamera()
+                } catch (e: CameraAccessException) {
+                    e.printStackTrace()
+                }
+            } else {
+                binding.textureView.surfaceTextureListener = textureListener
             }
-        } else {
-            binding.textureView.surfaceTextureListener = textureListener
         }
     }
 
