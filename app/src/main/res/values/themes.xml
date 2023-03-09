@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">#FF0B6877</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/bird_btn_color</item>
+        <item name="colorSecondary">@color/bird_secondary_color</item>
         <item name="colorSecondaryVariant">#FF37221C</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
