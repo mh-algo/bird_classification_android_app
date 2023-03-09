@@ -56,19 +56,38 @@ open class CameraFragment : Fragment() {
     private var mBackgroundHandler: Handler? = null
     private var mBackgroundThread: HandlerThread? = null
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        startBackgroundThread()
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (binding.textureView.isAvailable) {
+                try {
+                    openCamera()
+                } catch (e: CameraAccessException) {
+                    e.printStackTrace()
+                }
+            } else {
+                binding.textureView.surfaceTextureListener = textureListener
+            }
+        }
+        else {
+            Toast.makeText(requireContext(), "권한 설정을 확인해 주세요", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        startCamera()    // 촬영시 에러 발생(폴더 미생성으로 오류 발생 추정), 수정 필요!!!!!
+        startCamera()
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        startBackgroundThread()
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        if (cameraDevice == null) {
             if (binding.textureView.isAvailable) {
                 try {
                     openCamera()
@@ -143,7 +162,6 @@ open class CameraFragment : Fragment() {
             // 카메라를 열기전에 카메라 권한, 쓰기 권한이 있는지 확인한다
             if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED // 카메라 권한없음
                 && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { // 쓰기권한 없음
-                Toast.makeText(requireContext(), "권한 설정을 확인해 주세요", Toast.LENGTH_SHORT).show()
                 return
             }
 
@@ -269,7 +287,7 @@ open class CameraFragment : Fragment() {
             val tsLong = System.currentTimeMillis()/1000;
             val ts = tsLong.toString();
 
-            val file = File(Environment.getExternalStorageDirectory().toString() + "/pic${ts}.jpg")
+            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/pic${ts}.jpg")
             val readerListener = ImageReader.OnImageAvailableListener {
                 var image : Image? = null
 
