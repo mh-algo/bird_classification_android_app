@@ -96,6 +96,7 @@ class HomeFragment : Fragment() {
                 BitmapFactory.decodeStream(imagePath2)
             }
             binding.ImageView.setImageBitmap(bitmap)
+            imagePath2?.close()
         }
     }
 
