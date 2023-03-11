@@ -48,6 +48,7 @@ class LoginActivity : AppCompatActivity(){
     }
 
     //이메일 회원가입
+    /*
     fun createAndLoginEmail() {
         auth?.createUserWithEmailAndPassword(emailEditText.text.toString(), pwEditText.text.toString())
             ?.addOnCompleteListener { task ->
@@ -75,7 +76,7 @@ class LoginActivity : AppCompatActivity(){
             createAndLoginEmail()
         }
     }
-
+*/
 
     override fun onStart(){
         super.onStart()
