@@ -2,36 +2,36 @@ package com.earlybird.catchbird.encyclopedia
 
 import android.content.Intent
 import android.graphics.Color
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.earlybird.catchbird.Bird
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
-import com.earlybird.catchbird.databinding.ActivityEncyclopediaBinding
-import com.earlybird.catchbird.databinding.FragmentEncyclopediaBinding
+import com.earlybird.catchbird.databinding.ActivityEncyclopediaOtherRankingPageBinding
+import com.earlybird.catchbird.databinding.ActivityEncyclopediaRankingBinding
 
-
-class EncyclopediaFragment : Fragment() {
-    private val binding: FragmentEncyclopediaBinding by lazy {
-        FragmentEncyclopediaBinding.inflate(layoutInflater)
+class EncyclopediaOtherRankingPage : AppCompatActivity() {
+    private val binding: ActivityEncyclopediaOtherRankingPageBinding by lazy {
+        ActivityEncyclopediaOtherRankingPageBinding.inflate(layoutInflater)
     }
     private var dummy = ArrayList<Bird>()
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
 
-    ): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        binding.encyclopediaBtnOk.setOnClickListener {
+            finish()
+        }
         var sData = resources.getStringArray(R.array.sort)
-        var adapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,sData)
+        var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,sData)
         binding.spinner.adapter = adapter
         binding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener{
@@ -44,10 +44,7 @@ class EncyclopediaFragment : Fragment() {
             }
 
         }
-        binding.encyclopediaBtnRanking.setOnClickListener {
-            val intent = Intent(context, EncyclopediaRankingActivity::class.java)
-            startActivity(intent)
-        }
+
 
 
         dummy.apply {
@@ -88,11 +85,8 @@ class EncyclopediaFragment : Fragment() {
 
 
         }
-        binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
+        binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
         binding.recyclerView.adapter = MyAdapter(dummy)
-
-        // Inflate the layout for this fragment
-        return binding.root
     }
     inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
         private lateinit var bird: Bird
@@ -106,8 +100,7 @@ class EncyclopediaFragment : Fragment() {
             }
 
             itemView.setOnClickListener{
-                val intent = Intent(context, EncyclopediaBirdInfor::class.java)
-                startActivity(intent)
+                // todo list클릭시 새 정보데이터 출력화면
             }
         }
 

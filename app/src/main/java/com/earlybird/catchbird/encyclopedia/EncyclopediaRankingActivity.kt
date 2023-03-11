@@ -66,7 +66,8 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
 
 
                 itemView.setOnClickListener{
-                    // todo list클릭시 해당유저 새 정보데이터 출력화면
+                    val intent = Intent(this@EncyclopediaRankingActivity, EncyclopediaOtherRankingPage::class.java)
+                    startActivity(intent)
                 }
             }
 
