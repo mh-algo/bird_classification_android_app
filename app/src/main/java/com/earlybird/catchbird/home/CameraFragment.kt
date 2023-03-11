@@ -20,6 +20,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import java.io.*
 
@@ -51,10 +52,17 @@ open class CameraFragment : Fragment() {
     private var cameraDevice: CameraDevice? = null
     private lateinit var captureRequestBuilder: CaptureRequest.Builder
     private lateinit var imageReader: ImageReader
-    private val ORIENTATIONS:SparseIntArray = SparseIntArray()
+    private val ORIENTATIONS:SparseIntArray = SparseIntArray().also {
+        it.append(Surface.ROTATION_0, 90);
+        it.append(Surface.ROTATION_90, 0);
+        it.append(Surface.ROTATION_180, 270);
+        it.append(Surface.ROTATION_270, 180);
+    }
 
     private var mBackgroundHandler: Handler? = null
     private var mBackgroundThread: HandlerThread? = null
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -308,19 +316,7 @@ open class CameraFragment : Fragment() {
                         val uri = Uri.fromFile(file)
                         Log.d(TAG, "uri 제대로 잘 바뀌었는지 확인 ${uri}")
 
-                        // 프리뷰 이미지에 set 해줄 비트맵을 만들어준다
-                        val bitmap: Bitmap = BitmapFactory.decodeFile(file.path)
-
-                        // 비트맵 사진이 90도 돌아가있는 문제를 해결하기 위해 rotate 해준다
-                        val rotateMatrix = Matrix()
-                        rotateMatrix.postRotate(90F)
-                        val rotatedBitmap: Bitmap = Bitmap.createBitmap(bitmap, 0,0, bitmap.width, bitmap.height, rotateMatrix, false)
-
-                        // 90도 돌아간 비트맵을 이미지뷰에 set 해준다
-                        //img_previewImage.setImageBitmap(rotatedBitmap)
-
-                        // 리사이클러뷰 갤러리로 보내줄 uriList 에 찍은 사진의 uri 를 넣어준다
-                        //uriList.add(0, uri.toString())
+                        showImageFragment(uri)
                     }
 
                 } catch (e: FileNotFoundException) {
@@ -372,5 +368,10 @@ open class CameraFragment : Fragment() {
             cameraDevice!!.close()
             cameraDevice = null
         }
+    }
+
+    private fun showImageFragment(uri: Uri) {
+        val fragment = ShowImageFragment.newInstance(uri.toString())
+        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }
 }

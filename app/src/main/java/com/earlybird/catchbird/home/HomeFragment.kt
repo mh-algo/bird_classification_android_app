@@ -3,19 +3,17 @@ package com.earlybird.catchbird.home
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.FragmentHomeBinding
-import java.io.InputStream
 
 
 class HomeFragment : Fragment() {
@@ -34,7 +32,7 @@ class HomeFragment : Fragment() {
                 getFromAlbum()
             }
             modelBtn.setOnClickListener {
-                val bitmapDrawable = ImageView.drawable as BitmapDrawable
+                val bitmapDrawable = imageView.drawable as BitmapDrawable
                 val bitmap = bitmapDrawable.bitmap
                 val model = ClassificationModel(requireContext())
                 output.text = model.execution(bitmap)
@@ -63,41 +61,42 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("Recycle")
     fun handleImage(data: Intent?) {
-        var imagePath: String? = null
         val uri = data?.data
-        var imagePath2:InputStream? = null
-
-        if (uri != null) {
-            if (DocumentsContract.isDocumentUri(context, uri)) {
-                val docId = DocumentsContract.getDocumentId(uri)
-                val id = docId.split(":")[1]
-                val selection = MediaStore.Images.Media._ID + "=" + id
-                try {
-                    imagePath = getImagePath(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        selection
-                    )
-                } catch (e: RuntimeException) {
-                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
-                }
-            } else if ("content".equals(uri.scheme, ignoreCase = true)) {
-                try {
-                    imagePath = getImagePath(uri, null)
-                } catch (e: RuntimeException) {
-                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
-                }
-            } else if ("file".equals(uri.scheme, ignoreCase = true)) {
-                imagePath = uri.path
-            }
-
-            val bitmap = if (imagePath != null) {
-                BitmapFactory.decodeFile(imagePath)
-            } else{
-                BitmapFactory.decodeStream(imagePath2)
-            }
-            binding.ImageView.setImageBitmap(bitmap)
-            imagePath2?.close()
-        }
+//        var imagePath: String? = null
+//        var imagePath2:InputStream? = null
+//
+//
+//        if (uri != null) {
+//            if (DocumentsContract.isDocumentUri(context, uri)) {
+//                val docId = DocumentsContract.getDocumentId(uri)
+//                val id = docId.split(":")[1]
+//                val selection = MediaStore.Images.Media._ID + "=" + id
+//                try {
+//                    imagePath = getImagePath(
+//                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                        selection
+//                    )
+//                } catch (e: RuntimeException) {
+//                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
+//                }
+//            } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+//                try {
+//                    imagePath = getImagePath(uri, null)
+//                } catch (e: RuntimeException) {
+//                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
+//                }
+//            } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+//                imagePath = uri.path
+//            }
+//            val bitmap = if (imagePath != null) {
+//                BitmapFactory.decodeFile(imagePath)
+//            } else{
+//                BitmapFactory.decodeStream(imagePath2)
+//            }
+//            binding.imageView.setImageBitmap(bitmap)
+//            imagePath2?.close()
+//        }
+        Glide.with(requireActivity()).load(uri).into(binding.imageView)
     }
 
     @SuppressLint("Range")

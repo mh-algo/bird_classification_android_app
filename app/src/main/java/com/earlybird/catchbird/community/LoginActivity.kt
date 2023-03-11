@@ -1,23 +1,11 @@
 package com.earlybird.catchbird.community
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
-import com.earlybird.catchbird.databinding.ActivityMainBinding
-import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
-import com.earlybird.catchbird.home.HomeFragment
-import com.earlybird.catchbird.map.MapFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.pedro.library.AutoPermissions
-import com.pedro.library.AutoPermissionsListener
 import androidx.appcompat.app.AppCompatActivity
-import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.ActivityLoginBinding
 
 

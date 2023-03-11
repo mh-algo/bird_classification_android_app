@@ -34,7 +34,7 @@
         android:textSize="35sp" />
 
     <ImageView
-        android:id="@+id/ImageView"
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:srcCompat="@drawable/ic_launcher_background" />
