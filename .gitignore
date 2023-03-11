@@ -19,3 +19,6 @@ local.properties
 
 # api key
 /app/src/main/res/values/api_keys.xml
+
+#firebase core
+/app/google-services.json

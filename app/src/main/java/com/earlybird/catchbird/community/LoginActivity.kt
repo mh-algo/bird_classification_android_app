@@ -3,6 +3,7 @@ package com.earlybird.catchbird.community
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.earlybird.catchbird.databinding.ActivityMainBinding
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
@@ -16,6 +17,8 @@ import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.earlybird.catchbird.*
+
 
 class LoginActivity : AppCompatActivity(){
     //Firebase Auth 관리 클래스
@@ -33,6 +36,7 @@ class LoginActivity : AppCompatActivity(){
 
 
 
+
     }
     //로그인 성공 시 토스트 출력 후 메인 엑티비티 화면 로드
     fun moveMainPage(user: FirebaseUser?){
@@ -44,15 +48,40 @@ class LoginActivity : AppCompatActivity(){
     }
 
     //이메일 회원가입
-    /*
     fun createAndLoginEmail() {
         auth?.createUserWithEmailAndPassword(emailEditText.text.toString(), pwEditText.text.toString())
             ?.addOnCompleteListener { task ->
                 //progress_bar.visibility = View.GONE
                 if (task.isSuccessful) {
                     Toast.makeText(this, getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
+                    moveMainPage(auth?.currentUser)
+                }
+                else if (task.exception?.message.isNullOrEmpty()) {
+                    Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    signinEmail()
                 }
             }
-    } */
+    }
+
+    fun emailLogin() {
+        if (emailEditText.text.toString().isNUllOrEmpty() ||
+            pwEditText.text.toString().isNullOrEmpty()) {
+            Toast.makeText(this, getString(R.string.signout_fail_null), Toast.LENGTH_SHORT).show()
+        }
+        else {
+            progressBar.visibility = View.VISIBLE
+            createAndLoginEmail()
+        }
+    }
+
+
+    override fun onStart(){
+        super.onStart()
+
+        //자동 로그인 설정
+        moveMainPage(auth?.currentUser)
+    }
 
 }
