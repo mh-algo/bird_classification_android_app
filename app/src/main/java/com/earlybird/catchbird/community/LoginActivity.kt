@@ -18,9 +18,13 @@ import com.earlybird.catchbird.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.earlybird.catchbird.*
+import com.earlybird.catchbird.databinding.ActivityLoginBinding
 
 
 class LoginActivity : AppCompatActivity(){
+    private val binding: ActivityLoginBinding by lazy {
+        ActivityLoginBinding.inflate(layoutInflater)
+    }
     //Firebase Auth 관리 클래스
     var auth: FirebaseAuth? = null
 
@@ -29,7 +33,7 @@ class LoginActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(binding.root)
 
         //Firebase 로그인 통합 관리하는 객체
         auth = FirebaseAuth.getInstance()
@@ -50,7 +54,7 @@ class LoginActivity : AppCompatActivity(){
     //이메일 회원가입
     /*
     fun createAndLoginEmail() {
-        auth?.createUserWithEmailAndPassword(emailEditText.text.toString(), pwEditText.text.toString())
+        auth?.createUserWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())
             ?.addOnCompleteListener { task ->
                 //progress_bar.visibility = View.GONE
                 if (task.isSuccessful) {
@@ -76,7 +80,7 @@ class LoginActivity : AppCompatActivity(){
             createAndLoginEmail()
         }
     }
-*/
+    */
 
     override fun onStart(){
         super.onStart()
