@@ -8,8 +8,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+
 
     <application
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -25,9 +28,6 @@
             android:exported="true" />
         <activity
             android:name="com.earlybird.catchbird.community.CommunityActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.earlybird.catchbird.MapActivity"
             android:exported="false" />
         <activity
             android:name="com.earlybird.catchbird.MainActivity"

@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/round_backgroud_border_primary_color"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp">
 
     <ImageView
+        android:background = "#00FF0000"
         android:id="@+id/encyclopedia_bird_image"
         android:layout_width="110dp"
         android:layout_height="110dp"
@@ -17,6 +19,8 @@
         android:id="@+id/encyclopedia_bird_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/background_round_rectangular"
+        android:backgroundTint="#F0F0F0"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#000000"

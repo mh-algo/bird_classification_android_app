@@ -7,4 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bird_primary_color">#523329</color>
+    <color name="bird_secondary_color">#5F9EA0</color>
 </resources>

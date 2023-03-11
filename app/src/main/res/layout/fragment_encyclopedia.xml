@@ -31,7 +31,7 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="150dp"
+        android:layout_width="185dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,35 +40,34 @@
 
     </Spinner>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/encyclopedia_btn_ranking"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/background_round_rectangular"
+        android:elevation="20dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="랭킹"
+        android:textAlignment="center"
+        android:textColor="#F3F2F2"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner"
-        tools:listitem="@layout/item_encyclopedia_bird_list" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerView">
+        app:layout_constraintTop_toBottomOf="@id/spinner"
+        tools:listitem="@layout/item_encyclopedia_bird_list">
 
-        <Button
-            android:id="@+id/encyclopedia_btn_ranking"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="15dp"
-            android:text="랭킹" />
-
-    </LinearLayout>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
