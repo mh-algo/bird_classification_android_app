@@ -87,7 +87,8 @@ class EncyclopediaActivity : AppCompatActivity() {
             }
 
             itemView.setOnClickListener{
-                // todo list클릭시 새 정보데이터 출력화면
+                val intent = Intent(this@EncyclopediaActivity, EncyclopediaBirdInforActivity::class.java)
+                startActivity(intent)
             }
         }
 

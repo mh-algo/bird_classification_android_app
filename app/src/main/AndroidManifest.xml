@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
         <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInfor"
+            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity"
             android:exported="true" />
         <activity
             android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaOtherRankingPage"

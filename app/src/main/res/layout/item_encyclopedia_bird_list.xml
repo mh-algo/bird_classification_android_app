@@ -9,10 +9,10 @@
     android:padding="10dp">
 
     <ImageView
-        android:background = "#00FF0000"
         android:id="@+id/encyclopedia_bird_image"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
+        android:layout_width="107dp"
+        android:layout_height="113dp"
+        android:background="#00FF0000"
         app:srcCompat="@drawable/dummy_bird" />
 
     <TextView

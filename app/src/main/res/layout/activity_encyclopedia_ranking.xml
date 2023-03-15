@@ -10,7 +10,10 @@
     <TextView
         android:id="@+id/encyclopedia_ranking_title"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_round_rectangular2"
+        android:gravity="center"
         android:text="랭킹페이지"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -23,11 +26,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:background="@drawable/background_view_edge"
         android:id="@+id/encyclopedia_subheading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/background_view_edge"
         android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
