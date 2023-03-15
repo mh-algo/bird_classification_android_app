@@ -106,7 +106,7 @@ class EncyclopediaFragment : Fragment() {
             }
 
             itemView.setOnClickListener{
-                val intent = Intent(context, EncyclopediaBirdInfor::class.java)
+                val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 startActivity(intent)
             }
         }
