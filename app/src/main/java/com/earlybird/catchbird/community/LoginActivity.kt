@@ -7,6 +7,8 @@ import com.earlybird.catchbird.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.earlybird.catchbird.databinding.ActivityLoginBinding
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
 class LoginActivity : AppCompatActivity(){
@@ -17,7 +19,11 @@ class LoginActivity : AppCompatActivity(){
     var auth: FirebaseAuth? = null
 
     //구글 로그인 관리 클래스
-    //var googleSignInClient: GoogleSignInClient? = null
+    var googleSignInClient: GoogleSignInClient? = null
+    //var callbackManager: CallbackManager? = null
+
+    //구글 로그인
+    var GOOGLE_LOGIN_CODE = 9001 //Intent request ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +32,21 @@ class LoginActivity : AppCompatActivity(){
         //Firebase 로그인 통합 관리하는 객체
         auth = FirebaseAuth.getInstance()
 
+        //구글 로그인 옵션
+        var gso =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+        /*
+        //구글 로그인 클래스 만들기
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        callbackManager = CallbackManager.Factory.create()
+
+        //구글 로그인 버튼 세팅
+        google_sign_in_button
+        */
 
 
 
