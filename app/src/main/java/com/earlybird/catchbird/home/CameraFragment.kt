@@ -95,16 +95,14 @@ open class CameraFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if (cameraDevice == null) {
-            if (binding.textureView.isAvailable) {
-                try {
-                    openCamera()
-                } catch (e: CameraAccessException) {
-                    e.printStackTrace()
-                }
-            } else {
-                binding.textureView.surfaceTextureListener = textureListener
+        if (binding.textureView.isAvailable) {
+            try {
+                openCamera()
+            } catch (e: CameraAccessException) {
+                e.printStackTrace()
             }
+        } else {
+            binding.textureView.surfaceTextureListener = textureListener
         }
     }
 

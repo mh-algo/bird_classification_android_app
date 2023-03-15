@@ -1,13 +1,11 @@
 package com.earlybird.catchbird.map
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.isVisible
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentMapBinding
 import com.naver.maps.geometry.LatLng
@@ -25,11 +23,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
+    private var location: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val bundle = arguments
+        location = bundle?.getString("location")
+        Log.d("MapFragment", "Location Info SUCCESS!!")
+
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         val fm = childFragmentManager
@@ -74,5 +77,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+
+        fun newInstance(location: String): com.earlybird.catchbird.map.MapFragment {
+            val fragment = com.earlybird.catchbird.map.MapFragment()
+
+            val bundle = Bundle()
+            bundle.putString("location", location)
+            fragment.arguments = bundle
+
+            return fragment
+        }
     }
 }

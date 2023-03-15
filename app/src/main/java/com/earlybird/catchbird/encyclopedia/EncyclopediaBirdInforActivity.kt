@@ -1,19 +1,12 @@
 package com.earlybird.catchbird.encyclopedia
 
-import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.earlybird.catchbird.Infor
-import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
-import com.naver.maps.map.MapFragment
+import com.earlybird.catchbird.map.MapFragment
 
 
 class EncyclopediaBirdInforActivity : AppCompatActivity() {
@@ -28,8 +21,10 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
             finish()
         }
         binding.encyclopediaBirdLocation.setOnClickListener {
-            val intent = Intent(this@EncyclopediaBirdInforActivity, MapFragment::class.java)
-            startActivity(intent) // 위치확인 버튼 누르면 해당 새 위치정보화면 출력
+            binding.infoLayout.visibility = View.INVISIBLE
+            binding.showMapFragment.visibility = View.VISIBLE
+            val location = "위치 좌표"  // db에서 위치좌표 받아와야 함
+            showMapFragment(location) // 위치확인 버튼 누르면 해당 새 위치정보화면 출력
         }
         binding.encyclopediaBirdInforText2.text="◈ 부리는 짧고 단단해서 곡식을 쪼아 먹기에 알맞다.\n" +
                 "◈ 꽁지깃은 날 때 방향을 잡는 역할을 한다.\n" +
@@ -48,4 +43,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         binding.encyclopediaBirdInforImage2.setImageResource(R.drawable.dummy_bird) // 새 사진 눌렀을 때 해당 새 사진, 정보 출력
     }
 
+    private fun showMapFragment(location: String) {
+        val fragment = MapFragment.newInstance(location)
+        supportFragmentManager.beginTransaction().replace(R.id.show_map_fragment, fragment).commit()
+    }
 }
