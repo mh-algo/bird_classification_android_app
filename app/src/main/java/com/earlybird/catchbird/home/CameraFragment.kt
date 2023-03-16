@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
-import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
@@ -26,7 +25,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import java.io.*
@@ -70,6 +68,7 @@ open class CameraFragment : Fragment() {
     private var mBackgroundThread: HandlerThread? = null
 
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
+    private var cameraChk: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +97,27 @@ open class CameraFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (binding.textureView.isAvailable) {
+                try {
+                    if (!cameraChk) {
+                        openCamera()
+                    }
+                } catch (e: CameraAccessException) {
+                    e.printStackTrace()
+                } catch (e: java.lang.NullPointerException) {
+                    Toast.makeText(
+                        requireContext(),
+                        "카메라를 사용할 수 없습니다.\n권한 설정을 확인해 주세요",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         try {
@@ -121,6 +141,7 @@ open class CameraFragment : Fragment() {
     private fun startCamera() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             binding.textureView.surfaceTextureListener = textureListener
+            cameraChk = true
         }
         binding.button.setOnClickListener {
             try {

@@ -1,12 +1,9 @@
 package com.earlybird.catchbird.encyclopedia
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
-import com.earlybird.catchbird.map.MapFragment
 
 
 class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface {
