@@ -24,10 +24,6 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
             val dialog = CustomDialog(this)
             dialog.isCancelable = true
             dialog.show(this.supportFragmentManager,"ConfirmDialog")
-            /*binding.infoLayout.visibility = View.INVISIBLE
-            binding.showMapFragment.visibility = View.VISIBLE
-            val location = "위치 좌표"  // db에서 위치좌표 받아와야 함
-            showMapFragment(location) // 위치확인 버튼 누르면 해당 새 위치정보화면 출력*/
         }
         binding.encyclopediaBirdInforText2.text="◈ 부리는 짧고 단단해서 곡식을 쪼아 먹기에 알맞다.\n" +
                 "◈ 꽁지깃은 날 때 방향을 잡는 역할을 한다.\n" +
@@ -44,11 +40,6 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
                 "◈ 참새는 산림성 조류를 관찰할 때, 발견한 새의 크기를 비교하는 ‘자’와 같은 역할을 한다고 하여 ‘자새’라고도 불린다.\n" +
                 "[네이버 지식백과] 참새 [Eurasian Tree Sparrow] - 우리나라 사람들과 가장 가깝게 살고 있는 대표적인 텃새 (국립중앙과학관 - 우리나라 텃새)"
         binding.encyclopediaBirdInforImage2.setImageResource(R.drawable.dummy_bird) // 새 사진 눌렀을 때 해당 새 사진, 정보 출력
-    }
-
-    private fun showMapFragment(location: String) {
-        val fragment = MapFragment.newInstance(location)
-        supportFragmentManager.beginTransaction().replace(R.id.show_map_fragment, fragment).commit()
     }
 
     override fun onYesButtonClick(num: Int, theme: Int) {
