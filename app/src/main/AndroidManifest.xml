@@ -16,20 +16,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
+
         <activity
-            android:name=".ShowMapActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity"
+            android:name=".encyclopedia.EncyclopediaBirdInforActivity"
             android:exported="true" />
         <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaOtherRankingPage"
+            android:name=".encyclopedia.EncyclopediaOtherRankingPage"
             android:exported="true" />
         <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity"
+            android:name=".encyclopedia.EncyclopediaRankingActivity"
             android:exported="true" />
         <activity
-            android:name="com.earlybird.catchbird.encyclopedia.EncyclopediaActivity"
+            android:name=".encyclopedia.EncyclopediaActivity"
             android:exported="true" />
         <activity
             android:name="com.earlybird.catchbird.community.CommunityActivity"

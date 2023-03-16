@@ -1,15 +1,15 @@
 package com.earlybird.catchbird.encyclopedia
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.earlybird.catchbird.Infor
-import com.earlybird.catchbird.R
+import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
 import com.earlybird.catchbird.map.MapFragment
 
 
-class EncyclopediaBirdInforActivity : AppCompatActivity() {
+class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface {
     private val binding: ActivityEncyclopediaBirdInforBinding by lazy {
         ActivityEncyclopediaBirdInforBinding.inflate(layoutInflater)
     }
@@ -21,10 +21,13 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
             finish()
         }
         binding.encyclopediaBirdLocation.setOnClickListener {
-            binding.infoLayout.visibility = View.INVISIBLE
+            val dialog = CustomDialog(this)
+            dialog.isCancelable = true
+            dialog.show(this.supportFragmentManager,"ConfirmDialog")
+            /*binding.infoLayout.visibility = View.INVISIBLE
             binding.showMapFragment.visibility = View.VISIBLE
             val location = "위치 좌표"  // db에서 위치좌표 받아와야 함
-            showMapFragment(location) // 위치확인 버튼 누르면 해당 새 위치정보화면 출력
+            showMapFragment(location) // 위치확인 버튼 누르면 해당 새 위치정보화면 출력*/
         }
         binding.encyclopediaBirdInforText2.text="◈ 부리는 짧고 단단해서 곡식을 쪼아 먹기에 알맞다.\n" +
                 "◈ 꽁지깃은 날 때 방향을 잡는 역할을 한다.\n" +
@@ -46,5 +49,9 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
     private fun showMapFragment(location: String) {
         val fragment = MapFragment.newInstance(location)
         supportFragmentManager.beginTransaction().replace(R.id.show_map_fragment, fragment).commit()
+    }
+
+    override fun onYesButtonClick(num: Int, theme: Int) {
+        TODO("Not yet implemented")
     }
 }
