@@ -11,9 +11,8 @@
         android:id="@+id/encyclopedia_title"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:text="도감페이지"
-        android:background="@drawable/background_round_rectangular2"
         android:gravity="center"
+        android:text="도감"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="24sp"
@@ -42,22 +41,7 @@
 
     </Spinner>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/encyclopedia_btn_ranking"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/background_round_rectangular"
-        android:elevation="20dp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:text="랭킹"
-        android:textAlignment="center"
-        android:textColor="#F3F2F2"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -73,5 +57,18 @@
         tools:listitem="@layout/item_encyclopedia_bird_list">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageButton
+        android:id="@+id/encyclopedia_btn_ranking"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:elevation="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_trophy" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
