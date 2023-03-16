@@ -1,8 +1,11 @@
 package com.earlybird.catchbird.home
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.camera2.*
@@ -13,13 +16,17 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
+import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import java.io.*
@@ -62,26 +69,22 @@ open class CameraFragment : Fragment() {
     private var mBackgroundHandler: Handler? = null
     private var mBackgroundThread: HandlerThread? = null
 
+    lateinit var activityLauncher: ActivityResultLauncher<Intent>
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    handleImage(it.data)
+                    closeCamera()
+                }
+            }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startBackgroundThread()
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            if (binding.textureView.isAvailable) {
-                try {
-                    openCamera()
-                } catch (e: CameraAccessException) {
-                    e.printStackTrace()
-                }
-            } else {
-                binding.textureView.surfaceTextureListener = textureListener
-            }
-        }
-        else {
-            Toast.makeText(requireContext(), "권한 설정을 확인해 주세요", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onCreateView(
@@ -89,21 +92,10 @@ open class CameraFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         startCamera()
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (binding.textureView.isAvailable) {
-            try {
-                openCamera()
-            } catch (e: CameraAccessException) {
-                e.printStackTrace()
-            }
-        } else {
-            binding.textureView.surfaceTextureListener = textureListener
+        binding.imageBtn.setOnClickListener {
+            getFromAlbum()
         }
+        return binding.root
     }
 
     override fun onPause() {
@@ -127,12 +119,16 @@ open class CameraFragment : Fragment() {
     }
 
     private fun startCamera() {
-        binding.textureView.surfaceTextureListener = textureListener
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            binding.textureView.surfaceTextureListener = textureListener
+        }
         binding.button.setOnClickListener {
             try {
                 takePicture()
             } catch (e: CameraAccessException) {
                 e.printStackTrace()
+            } catch (e: java.lang.NullPointerException) {
+                Toast.makeText(requireContext(), "카메라를 사용할 수 없습니다.\n권한 설정을 확인해 주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -314,8 +310,7 @@ open class CameraFragment : Fragment() {
                         val uri = Uri.fromFile(file)
                         Log.d(TAG, "uri 제대로 잘 바뀌었는지 확인 ${uri}")
 
-                        showImageFragment(uri)
-                        closeCamera()
+                        showImageFragment(uri, true)
                     }
 
                 } catch (e: FileNotFoundException) {
@@ -369,8 +364,21 @@ open class CameraFragment : Fragment() {
         }
     }
 
-    private fun showImageFragment(uri: Uri) {
-        val fragment = ShowImageFragment.newInstance(uri.toString())
+    fun getFromAlbum() {
+        val intent = Intent("android.intent.action.GET_CONTENT")
+        intent.type = "image/*"
+        activityLauncher.launch(intent)
+    }
+
+    @SuppressLint("Recycle")
+    fun handleImage(data: Intent?) {
+        val uri = data?.data
+        Log.d("CameraFragment", "${uri}")
+        showImageFragment(uri, false)
+    }
+
+    private fun showImageFragment(uri: Uri?, camera: Boolean) {
+        val fragment = ShowImageFragment.newInstance(uri.toString(), camera)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }
 }

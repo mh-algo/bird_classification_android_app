@@ -2,15 +2,20 @@ package com.earlybird.catchbird.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.*
 import com.earlybird.catchbird.databinding.FragmentHomeBinding
@@ -19,6 +24,17 @@ import com.earlybird.catchbird.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
     private val binding: FragmentHomeBinding by lazy {
         FragmentHomeBinding.inflate(layoutInflater)
+    }
+    lateinit var activityLauncher: ActivityResultLauncher<Intent>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == RESULT_OK) {
+                    handleImage(it.data)
+                }
+            }
     }
 
     override fun onCreateView(
@@ -45,57 +61,12 @@ class HomeFragment : Fragment() {
     fun getFromAlbum() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
-        startActivityForResult(intent, 102)
-    }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when(requestCode) {
-            102 -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    handleImage(data)
-                }
-            }
-        }
+        activityLauncher.launch(intent)
     }
 
     @SuppressLint("Recycle")
     fun handleImage(data: Intent?) {
         val uri = data?.data
-//        var imagePath: String? = null
-//        var imagePath2:InputStream? = null
-//
-//
-//        if (uri != null) {
-//            if (DocumentsContract.isDocumentUri(context, uri)) {
-//                val docId = DocumentsContract.getDocumentId(uri)
-//                val id = docId.split(":")[1]
-//                val selection = MediaStore.Images.Media._ID + "=" + id
-//                try {
-//                    imagePath = getImagePath(
-//                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//                        selection
-//                    )
-//                } catch (e: RuntimeException) {
-//                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
-//                }
-//            } else if ("content".equals(uri.scheme, ignoreCase = true)) {
-//                try {
-//                    imagePath = getImagePath(uri, null)
-//                } catch (e: RuntimeException) {
-//                    imagePath2 = requireActivity().contentResolver.openInputStream(uri)
-//                }
-//            } else if ("file".equals(uri.scheme, ignoreCase = true)) {
-//                imagePath = uri.path
-//            }
-//            val bitmap = if (imagePath != null) {
-//                BitmapFactory.decodeFile(imagePath)
-//            } else{
-//                BitmapFactory.decodeStream(imagePath2)
-//            }
-//            binding.imageView.setImageBitmap(bitmap)
-//            imagePath2?.close()
-//        }
         Glide.with(requireActivity()).load(uri).into(binding.imageView)
     }
 
