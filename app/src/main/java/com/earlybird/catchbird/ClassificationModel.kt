@@ -10,12 +10,24 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 class ClassificationModel(val context: Context) {
-    fun execution(bitmap:Bitmap):String {
+    fun execution(bitmap:Bitmap, modelType: String):String {
         val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
         val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(resized, TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
         // val inputs = inputTensor.dataAsFloatArray
 
-        val module = LiteModuleLoader.load(assetFilePath(context, "ResNet-model.ptl"))
+        val model:String = when (modelType) {
+            "bird" -> {
+                "bird_model.ptl"
+            }
+            "specie" -> {
+                "bird_specie_model.ptl"
+            }
+            else -> {
+                ""
+            }
+        }
+
+        val module = LiteModuleLoader.load(assetFilePath(context, model))
         val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
         val resultArray = outputTensor.dataAsFloatArray
 

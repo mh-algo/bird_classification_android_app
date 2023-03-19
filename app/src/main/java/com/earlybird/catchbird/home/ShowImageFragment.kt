@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
@@ -24,12 +25,12 @@ class ShowImageFragment : Fragment() {
 
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
     private var uri: Uri? = null
-    private var isCamera: Boolean? = null
+    lateinit var type: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bundle = arguments
-        isCamera = bundle?.getBoolean("camera")
+        type = bundle?.getString("type")?:""
         val path = bundle?.getString("path")
         uri = Uri.parse(path)
 
@@ -48,15 +49,15 @@ class ShowImageFragment : Fragment() {
         Glide.with(requireActivity()).asBitmap().load(uri).into(binding.imageView)
 
         with(binding) {
-            if (isCamera != true) {
-                againBtn.text = "사진 다시 선택하기"
+            when(type) {
+                "image" -> againBtn.text = "사진 다시 선택하기"
             }
 
             againBtn.setOnClickListener {
-                if (isCamera == true) {
-                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
-                } else {
-                    getFromAlbum()
+                when(type){
+                    "camera" ->
+                        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
+                    "image" -> getFromAlbum()
                 }
 
             }
@@ -64,8 +65,14 @@ class ShowImageFragment : Fragment() {
                 val bitmapDrawable = imageView.drawable as BitmapDrawable
                 val bitmap = bitmapDrawable.bitmap
                 val model = ClassificationModel(requireContext())
-                birdName.text = "새 이름: " + model.execution(bitmap)
-                birdName.append("\nActivity 추가 구현 필요")
+                val chkBird: String = model.execution(bitmap, "bird")
+                if (chkBird.toInt() == 1) {
+                    birdName.text = "새 이름: " + model.execution(bitmap, "specie")
+                    birdName.append("\nActivity 추가 구현 필요")
+                } else {
+                    birdName.text = ""
+                    Toast.makeText(requireContext(), "새를 식별할 수 없습니다.\n사진을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                }
             }
             backBtn.setOnClickListener {
                 requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
@@ -76,11 +83,11 @@ class ShowImageFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(path: String?, camera: Boolean): ShowImageFragment {
+        fun newInstance(path: String?, type: String): ShowImageFragment {
             val fragment = ShowImageFragment()
 
             val bundle = Bundle()
-            bundle.putBoolean("camera", camera)
+            bundle.putString("type", type)
             bundle.putString("path", path)
             fragment.arguments = bundle
 

@@ -108,11 +108,7 @@ open class CameraFragment : Fragment() {
                 } catch (e: CameraAccessException) {
                     e.printStackTrace()
                 } catch (e: java.lang.NullPointerException) {
-                    Toast.makeText(
-                        requireContext(),
-                        "카메라를 사용할 수 없습니다.\n권한 설정을 확인해 주세요",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "카메라를 사용할 수 없습니다.\n권한 설정을 확인해 주세요", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -331,7 +327,7 @@ open class CameraFragment : Fragment() {
                         val uri = Uri.fromFile(file)
                         Log.d(TAG, "uri 제대로 잘 바뀌었는지 확인 ${uri}")
 
-                        showImageFragment(uri, true)
+                        showImageFragment(uri, "camera")
                     }
 
                 } catch (e: FileNotFoundException) {
@@ -394,12 +390,12 @@ open class CameraFragment : Fragment() {
     @SuppressLint("Recycle")
     fun handleImage(data: Intent?) {
         val uri = data?.data
-        Log.d("CameraFragment", "${uri}")
-        showImageFragment(uri, false)
+        Log.d("CameraFragment", "$uri")
+        showImageFragment(uri, "image")
     }
 
-    private fun showImageFragment(uri: Uri?, camera: Boolean) {
-        val fragment = ShowImageFragment.newInstance(uri.toString(), camera)
+    private fun showImageFragment(uri: Uri?, type: String) {
+        val fragment = ShowImageFragment.newInstance(uri.toString(), type)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }
 }
