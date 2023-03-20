@@ -5,4 +5,9 @@
 
     <string name="signin_complete">Successfully signed in!</string>
     <string name="signup_complete">Successfully signed up!</string>
+
+    <style name="CustomFullDialog">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
 </resources>

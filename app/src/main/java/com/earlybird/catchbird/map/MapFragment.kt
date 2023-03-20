@@ -1,7 +1,6 @@
 package com.earlybird.catchbird.map
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -29,10 +28,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val bundle = arguments
-        location = bundle?.getString("location")
-        Log.d("MapFragment", "Location Info SUCCESS!!")
-
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         val fm = childFragmentManager
@@ -77,15 +72,5 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-
-        fun newInstance(location: String): com.earlybird.catchbird.map.MapFragment {
-            val fragment = com.earlybird.catchbird.map.MapFragment()
-
-            val bundle = Bundle()
-            bundle.putString("location", location)
-            fragment.arguments = bundle
-
-            return fragment
-        }
     }
 }

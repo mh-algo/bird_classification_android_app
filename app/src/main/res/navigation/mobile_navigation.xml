@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.earlybird.catchbird.home.HomeFragment"
+        android:name="com.earlybird.catchbird.home.CameraFragment"
         android:label="HomeFragment" >
         <action
             android:id="@+id/action_homeFragment_to_encyclopediaFragment"
@@ -19,7 +19,7 @@
         android:label="fragment_encyclopedia"
         tools:layout="@layout/fragment_encyclopedia" >
         <action
-            android:id="@+id/action_encyclopediaFragment_to_homeFragment"
+            android:id="@+id/action_encyclopediaFragment_to_CameraFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

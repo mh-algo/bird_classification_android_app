@@ -6,7 +6,7 @@
             <size android:width="350dp" android:height="350dp"/>
             <stroke
                 android:width="3dp"
-                android:color="#f1f8e9" />
+                android:color="@color/ic_color" />
         </shape>
     </item>
 </layer-list>
