@@ -23,17 +23,13 @@ class CustomDialog(
         this.confirmDialogInterface = confirmDialogInterface
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.CustomFullDialog)
-    }
+
 
     override fun onStart() {
         super.onStart()
 
         val width = ViewGroup.LayoutParams.MATCH_PARENT
         val height = ViewGroup.LayoutParams.WRAP_CONTENT
-
         dialog?.window?.setLayout(width, height)
         dialog?.window?.setGravity(Gravity.CENTER_VERTICAL)
     }
