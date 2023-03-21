@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun googleLogin() {
-        //progress_bar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         var signInIntent = googleSignInClient?.signInIntent
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE)
     }
@@ -72,14 +72,13 @@ class LoginActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // 구글에서 승인된 정보 갖고 오기
-
         if (requestCode == GOOGLE_LOGIN_CODE ) { //&& resultCode == Activity.Result_OK)
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result!!.isSuccess) {
                 var account = result.signInAccount
                 firebaseAuthWithGoogle(account!!)
             } else {
-                //progress_bar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
@@ -88,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
         var credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth?.signInWithCredential(credential)
             ?.addOnCompleteListener { task ->
-                //progress_bar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 if (task.isSuccessful) {
                     // 다음 페이지 호출 코드 추가
                     // moveMainPage(auth?.currentUser)
