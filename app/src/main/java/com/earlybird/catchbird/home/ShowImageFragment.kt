@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
+import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentShowImageBinding
 
@@ -67,8 +68,13 @@ class ShowImageFragment : Fragment() {
                 val model = ClassificationModel(requireContext())
                 val chkBird: String = model.execution(bitmap, "bird")
                 if (chkBird.toInt() == 1) {
-                    birdName.text = "새 이름: " + model.execution(bitmap, "specie")
-                    birdName.append("\nActivity 추가 구현 필요")
+                    val mainActivity = activity as MainActivity
+                    val idx = model.execution(bitmap, "specie")
+                    val data = mainActivity.searchBird(idx)     // model output에 해당하는 새 데이터 검색
+                    if (data.isNotEmpty()) {
+                        birdName.text = "새 이름: " + data[0]
+                        birdName.append("\nimage uri: \n${data[1]}")
+                    }
                 } else {
                     birdName.text = ""
                     Toast.makeText(requireContext(), "새를 식별할 수 없습니다.\n사진을 확인해주세요.", Toast.LENGTH_SHORT).show()
