@@ -4,6 +4,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import com.earlybird.catchbird.data.BirdImageData
+import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.ActivityMainBinding
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
 import com.earlybird.catchbird.home.CameraFragment
@@ -86,8 +89,8 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         }
         // 새 이름(한글), 새 이름(영어), 새 이미지(수컷), 새 이미지(암컷), 모델 index를 갖는 테이블 생성
         val sql = "create table if not exists ${birdImage}" +
-                "(species_k text PRIMARY KEY, " +
-                " species_e text, " +
+                "(specie_k text PRIMARY KEY, " +
+                " specie_e text, " +
                 " image_m text, " +
                 " image_f text, " +
                 " model_idx text)"
@@ -113,8 +116,8 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
             )
 
             val sql = "insert into ${birdImage} " +
-                    "(species_k," +
-                    " species_e, " +
+                    "(specie_k," +
+                    " specie_e, " +
                     " image_m, " +
                     " image_f, " +
                     " model_idx)" +
@@ -126,29 +129,40 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         Log.e(TAG, "$birdImage 테이블 데이터 추가 완료!!")
     }
 
-    fun searchBird(idx: String): Array<String> {
-        // data[0] : 새 이름(한글)
-        // data[1] : 새 사진(수컷)
-        var data: Array<String> = arrayOf()
-
-        val sql = "select * from $birdImage where model_idx = $idx"
+    fun searchBirdImage(idx: String) {
+        // model output에 해당하는 새 검색
+        val sql = "select specie_k, image_m from $birdImage where model_idx = $idx"
         val cursor = database?.rawQuery(sql, null)
         if (cursor != null) {
             cursor.moveToNext()
+            BirdImageList.data.clear()
 
-            val specieK = cursor.getString(0)
-            val specieE = cursor.getString(1)
-            val imageM = cursor.getString(2)
-            val imageF = cursor.getString(3)
-            val index = cursor.getString(4)
+            val specie_k = cursor.getString(0)  // 새 이름(한글)
+            val image_m = cursor.getString(1)   // 새 사진(수컷)
 
-            data = arrayOf(
-                specieK,
-                imageM
-            )
+            BirdImageList.data.add(BirdImageData(specie_k, null, image_m.toUri(), null))
             cursor.close()
         }
-        return data
+    }
+
+    fun loadAllImageData() {
+        // DB에 있는 모든 새 이미지 검색
+        val sql = "select * from $birdImage"
+        val cursor = database?.rawQuery(sql, null)
+        if (cursor != null) {
+            BirdImageList.data.clear()
+
+            for (i in 0 until cursor.count) {
+                cursor.moveToNext()
+                val specie_k = cursor.getString(0)
+                val specie_e = cursor.getString(1)
+                val image_m = cursor.getString(2)
+                val image_f = cursor.getString(3)
+
+                BirdImageList.data.add(BirdImageData(specie_k, specie_e, image_m.toUri(), image_f.toUri()))
+            }
+            cursor.close()
+        }
     }
 
     override fun onRequestPermissionsResult(

@@ -328,6 +328,7 @@ open class CameraFragment : Fragment() {
                         Log.d(TAG, "uri 제대로 잘 바뀌었는지 확인 ${uri}")
 
                         showImageFragment(uri, "camera")
+                        closeCamera()
                     }
 
                 } catch (e: FileNotFoundException) {

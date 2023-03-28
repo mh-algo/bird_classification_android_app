@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.FragmentShowImageBinding
 
 class ShowImageFragment : Fragment() {
@@ -70,11 +71,10 @@ class ShowImageFragment : Fragment() {
                 if (chkBird.toInt() == 1) {
                     val mainActivity = activity as MainActivity
                     val idx = model.execution(bitmap, "specie")
-                    val data = mainActivity.searchBird(idx)     // model output에 해당하는 새 데이터 검색
-                    if (data.isNotEmpty()) {
-                        birdName.text = "새 이름: " + data[0]
-                        birdName.append("\nimage uri: \n${data[1]}")
-                    }
+                    mainActivity.searchBirdImage(idx)     // model output에 해당하는 새 데이터 검색
+                    val birdData = BirdImageList.data[0]
+                    birdName.text = "새 이름: " + birdData.birdKor
+                    birdName.append("\nimage uri: \n${birdData.imageMale}")
                 } else {
                     birdName.text = ""
                     Toast.makeText(requireContext(), "새를 식별할 수 없습니다.\n사진을 확인해주세요.", Toast.LENGTH_SHORT).show()
