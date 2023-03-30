@@ -37,11 +37,6 @@
             android:layout_height="match_parent"
             tools:src="@drawable/dummy_bird" />
 
-        <TextView
-            android:id="@+id/bird_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="35dp" />
     </RelativeLayout>
 
     <LinearLayout

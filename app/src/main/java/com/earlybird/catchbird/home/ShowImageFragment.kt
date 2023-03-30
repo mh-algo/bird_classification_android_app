@@ -3,7 +3,8 @@ package com.earlybird.catchbird.home
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,10 +16,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
-import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
-import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.FragmentShowImageBinding
+import java.io.FileNotFoundException
+import java.io.InputStream
 
 class ShowImageFragment : Fragment() {
     private val binding: FragmentShowImageBinding by lazy {
@@ -27,7 +28,7 @@ class ShowImageFragment : Fragment() {
 
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
     private var uri: Uri? = null
-    lateinit var type: String
+    private var type: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,19 +65,19 @@ class ShowImageFragment : Fragment() {
 
             }
             modelBtn.setOnClickListener {
-                val bitmapDrawable = imageView.drawable as BitmapDrawable
-                val bitmap = bitmapDrawable.bitmap
+                var imageStream: InputStream? = null
+                try {
+                    imageStream = requireContext().contentResolver.openInputStream(uri!!)
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                }
+                val bitmap: Bitmap = BitmapFactory.decodeStream(imageStream)
+
                 val model = ClassificationModel(requireContext())
-                val chkBird: String = model.execution(bitmap, "bird")
-                if (chkBird.toInt() == 1) {
-                    val mainActivity = activity as MainActivity
-                    val idx = model.execution(bitmap, "specie")
-                    mainActivity.searchBirdImage(idx)     // model output에 해당하는 새 데이터 검색
-                    val birdData = BirdImageList.data[0]
-                    birdName.text = "새 이름: " + birdData.birdKor
-                    birdName.append("\nimage uri: \n${birdData.imageMale}")
+                val chkBird: String = model.execution(bitmap, "bird")   // 새인지 아닌지 구별
+                if (chkBird.toInt() == 1) {     // 새인 경우
+                    showModelResultFragment(uri, type)
                 } else {
-                    birdName.text = ""
                     Toast.makeText(requireContext(), "새를 식별할 수 없습니다.\n사진을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -89,7 +90,7 @@ class ShowImageFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(path: String?, type: String): ShowImageFragment {
+        fun newInstance(path: String?, type: String?): ShowImageFragment {
             val fragment = ShowImageFragment()
 
             val bundle = Bundle()
@@ -109,8 +110,12 @@ class ShowImageFragment : Fragment() {
 
     @SuppressLint("Recycle")
     fun handleImage(data: Intent?) {
-        val uri = data?.data
+        uri = data?.data
         Glide.with(requireActivity()).asBitmap().load(uri).into(binding.imageView)
     }
 
+    fun showModelResultFragment(imageUri: Uri?, type: String?) {
+        val fragment = ModelResultFragment.newInstance(imageUri.toString(), type)
+        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
+    }
 }

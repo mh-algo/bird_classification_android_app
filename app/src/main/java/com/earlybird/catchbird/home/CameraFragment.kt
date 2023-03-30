@@ -395,7 +395,7 @@ open class CameraFragment : Fragment() {
         showImageFragment(uri, "image")
     }
 
-    private fun showImageFragment(uri: Uri?, type: String) {
+    private fun showImageFragment(uri: Uri?, type: String?) {
         val fragment = ShowImageFragment.newInstance(uri.toString(), type)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }

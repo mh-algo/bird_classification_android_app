@@ -129,19 +129,22 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         Log.e(TAG, "$birdImage 테이블 데이터 추가 완료!!")
     }
 
-    fun searchBirdImage(idx: String) {
-        // model output에 해당하는 새 검색
-        val sql = "select specie_k, image_m from $birdImage where model_idx = $idx"
-        val cursor = database?.rawQuery(sql, null)
-        if (cursor != null) {
-            cursor.moveToNext()
-            BirdImageList.data.clear()
+    fun searchBirdImage() {
+        val resultArray = BirdImageList.modelData
+        BirdImageList.data.clear()
+        for (data in resultArray) {
+            // model output에 해당하는 새 검색
+            val sql = "select specie_k, image_m from $birdImage where model_idx = ${data.idx}"
+            val cursor = database?.rawQuery(sql, null)
+            if (cursor != null) {
+                cursor.moveToNext()
 
-            val specie_k = cursor.getString(0)  // 새 이름(한글)
-            val image_m = cursor.getString(1)   // 새 사진(수컷)
+                val specie_k = cursor.getString(0)  // 새 이름(한글)
+                val image_m = cursor.getString(1)   // 새 사진(수컷)
 
-            BirdImageList.data.add(BirdImageData(specie_k, null, image_m.toUri(), null))
-            cursor.close()
+                BirdImageList.data.add(BirdImageData(specie_k, null, image_m.toUri(), null))
+                cursor.close()
+            }
         }
     }
 
