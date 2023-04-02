@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
         //구글 로그인 버튼 세팅
         binding.googleSignInButton.setOnClickListener{googleLogin()}
 
-        setContentView(R.layout.activity_login)
+        setContentView(binding.root)
     }
 
     fun googleLogin() {
@@ -140,7 +140,7 @@ else {
         if (user != null) {
             Toast.makeText(
                 this, getString(R.string.signin_complete),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
             //startActivity(Intent(this, MainActivity::class.java))
             finish()
