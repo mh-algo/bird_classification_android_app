@@ -14,7 +14,7 @@
         android:text="Catch The Bird!"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="34sp"
+        android:textSize="25sp"
         android:textStyle="bold" />
 
     <Button

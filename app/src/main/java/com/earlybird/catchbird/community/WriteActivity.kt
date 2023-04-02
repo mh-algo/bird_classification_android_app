@@ -40,12 +40,15 @@ class WriteActivity : AppCompatActivity(){
         // Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        val photoPickerIntent = Intent(Intent.ACTION_PICK)
-        photoPickerIntent.type = "image/*"
 
-        startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
 
         binding.addphotoImage.setOnClickListener {
+            val photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
+        }
+
+        binding.addImageButton.setOnClickListener {
             val photoPickerIntent = Intent(Intent.ACTION_PICK)
             photoPickerIntent.type = "image/*"
             startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
