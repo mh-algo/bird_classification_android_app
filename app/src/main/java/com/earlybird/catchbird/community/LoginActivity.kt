@@ -59,7 +59,10 @@ class LoginActivity : AppCompatActivity() {
         //구글 로그인 버튼 세팅
         binding.googleSignInButton.setOnClickListener{googleLogin()}
 
-        setContentView(R.layout.activity_login)
+        //이메일 로그인 세팅
+        binding.loginButton.setOnClickListener { emailLogin() }
+
+        setContentView(binding.root)
     }
 
     fun googleLogin() {
@@ -96,37 +99,62 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-/*
-//이메일 회원가입
 
-fun createAndLoginEmail() {
-auth?.createUserWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())
-    ?.addOnCompleteListener { task ->
-        //progress_bar.visibility = View.GONE
-        if (task.isSuccessful) {
-            Toast.makeText(this, getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
-            moveMainPage(auth?.currentUser)
-        }
-        else if (task.exception?.message.isNullOrEmpty()) {
-            Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
-        }
-        else {
-            signinEmail()
+    //이메일 회원가입 및 로그인 메소드
+    fun createAndLoginEmail() {
+
+        auth?.createUserWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())
+            ?.addOnCompleteListener { task ->
+                progress_bar.visibility = View.GONE
+                if (task.isSuccessful) {
+                    //아이디 생성이 성공했을 경우
+                    Toast.makeText(this,
+                        getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
+
+                    //다음페이지 호출
+                    moveMainPage(auth?.currentUser)
+                } else if (task.exception?.message.isNullOrEmpty()) {
+                    //회원가입 에러가 발생했을 경우
+                    Toast.makeText(this,
+                        task.exception!!.message, Toast.LENGTH_SHORT).show()
+                } else {
+                    //아이디 생성도 안되고 에러도 발생되지 않았을 경우 로그인
+                    signinEmail()
+                }
+            }
+
+    }
+
+    fun emailLogin() {
+
+        if (binding.emailEditText.text.toString().isNullOrEmpty() || binding.pwEditText.text.toString().isNullOrEmpty()) {
+            Toast.makeText(this, getString(R.string.signout_fail_null), Toast.LENGTH_SHORT).show()
+
+        } else {
+
+            progress_bar.visibility = View.VISIBLE
+            createAndLoginEmail()
+
         }
     }
-}
 
-fun emailLogin() {
-if (emailEditText.text.toString().isNUllOrEmpty() ||
-    pwEditText.text.toString().isNullOrEmpty()) {
-    Toast.makeText(this, getString(R.string.signout_fail_null), Toast.LENGTH_SHORT).show()
-}
-else {
-    progressBar.visibility = View.VISIBLE
-    createAndLoginEmail()
-}
-}
-*/
+    //로그인 메소드
+    fun signinEmail() {
+
+        auth?.signInWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())
+            ?.addOnCompleteListener { task ->
+                progress_bar.visibility = View.GONE
+
+                if (task.isSuccessful) {
+                    //로그인 성공 및 다음페이지 호출
+                    moveMainPage(auth?.currentUser)
+                } else {
+                    //로그인 실패
+                    Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+    }
 
     override fun onStart() {
         super.onStart()
@@ -140,7 +168,7 @@ else {
         if (user != null) {
             Toast.makeText(
                 this, getString(R.string.signin_complete),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
             //startActivity(Intent(this, MainActivity::class.java))
             finish()

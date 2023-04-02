@@ -1,5 +1,6 @@
 package com.earlybird.catchbird.community
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,16 +9,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.ContentDTO
-import com.earlybird.catchbird.databinding.ActivityWritePostBinding
+import com.earlybird.catchbird.databinding.ActivityWriteBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_write_post.*
+import kotlinx.android.synthetic.main.activity_write.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class WriteActivity : AppCompatActivity(){
-    var binding = ActivityWritePostBinding.inflate(layoutInflater)
+    private val binding: ActivityWriteBinding by lazy {
+        ActivityWriteBinding.inflate(layoutInflater)
+    }
 
     val PICK_IMAGE_FROM_ALBUM = 0
 
@@ -29,7 +32,7 @@ class WriteActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_write_post)
+        setContentView(binding.root)
 
         //Firebase 스토리지
         storage = FirebaseStorage.getInstance()
@@ -38,10 +41,7 @@ class WriteActivity : AppCompatActivity(){
         // Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        val photoPickerIntent = Intent(Intent.ACTION_PICK)
-        photoPickerIntent.type = "image/*"
 
-        startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
 
         binding.addphotoImage.setOnClickListener {
             val photoPickerIntent = Intent(Intent.ACTION_PICK)
@@ -49,15 +49,27 @@ class WriteActivity : AppCompatActivity(){
             startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
         }
 
+        binding.addImageButton.setOnClickListener {
+            val photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
+        }
+
+        binding.cancelButton.setOnClickListener {
+            finish()
+        }
+
         binding.addphotoBtnUpload.setOnClickListener {
             contentUpload()
         }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_FROM_ALBUM) {
-            if(resultCode == PICK_IMAGE_FROM_ALBUM) {
+            if(resultCode == Activity.RESULT_OK) {
                 println(data?.data)
                 photoUri = data?.data
                 binding.addphotoImage.setImageURI(data?.data)
@@ -76,7 +88,7 @@ class WriteActivity : AppCompatActivity(){
             taskSnapshot -> binding.progressBar.visibility = View.GONE
             Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
 
-            val uri = taskSnapshot.uploadSessionUri //.downloadUrl 대체
+            val uri = taskSnapshot.storage.downloadUrl //.downloadUrl 대체
             //데이터베이스에 바인딩할 위치 생성 및 테이블에 데이터 집합 생성
 
             val contentDTO = ContentDTO()
@@ -95,7 +107,7 @@ class WriteActivity : AppCompatActivity(){
             // 게시물 데이터생성 및 엑티비티 종류
             firestore?.collection("images")?.document()?.set(contentDTO)
 
-            setResult(RESULT_OK)
+            setResult(Activity.RESULT_OK)
             finish()
 
         }

@@ -1,5 +1,7 @@
 package com.earlybird.catchbird
 
+import android.app.Activity
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +17,11 @@ import com.earlybird.catchbird.map.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+//import com.google.firebase.installations.FirebaseInstallations
+//import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
 
 
 class MainActivity : AppCompatActivity(), AutoPermissionsListener {
@@ -25,6 +32,8 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     private val databaseName:String = "birdName"
     private var database: SQLiteDatabase? = null
     private val birdImage = "bird_image"
+
+    val PICK_PROFILE_FROM_ALBUM = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +67,9 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         }
 
         AutoPermissions.Companion.loadAllPermissions(this, 101)
+
+        //푸시토큰 서버 등록
+        //registerPushToken()
     }
 
     private fun createDatabase() {
@@ -186,3 +198,41 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         Log.d(TAG, "허용된 권한 개수 : ${permissions.size}")
     }
 }
+//
+//
+//    //커뮤니티
+//   fun registerPushToken(){
+//       var pushToken = FirebaseMessaging.getInstance().token
+//       var uid = FirebaseAuth.getInstance().currentUser?.uid
+//       var map = mutableMapOf<String,Any>()
+//       map["pushtoken"] = pushToken!!
+//       FirebaseFirestore.getInstance().collection("pushtokens").document(uid!!).set(map)
+//   }
+//   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//       super.onActivityResult(requestCode, resultCode, data)
+//
+//       // 앨범에서 Profile Image 사진 선택시 호출 되는 부분분
+//       if (requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK) {
+//
+//           var imageUri = data?.data
+//
+//           val uid = FirebaseAuth.getInstance().currentUser!!.uid //파일 업로드
+//           //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
+//           FirebaseStorage
+//               .getInstance()
+//               .reference
+//               .child("userProfileImages")
+//               .child(uid)
+//               .putFile(imageUri!!)
+//               .addOnCompleteListener { task ->
+//                   val url = task.result.storage.downloadUrl.toString()
+//                   val map = HashMap<String, Any>()
+//                   map["image"] = url
+//                   FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
+//               }
+//       }
+//
+//   }
+//
+//
+//}

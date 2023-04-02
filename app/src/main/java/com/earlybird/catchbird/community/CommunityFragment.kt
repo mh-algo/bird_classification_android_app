@@ -18,9 +18,7 @@ import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
-import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import com.earlybird.catchbird.databinding.FragmentCommunityBinding
-import com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity
 //import com.earlybird.catchbird.community.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -65,6 +63,11 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
+        mainView?.write_button?.setOnClickListener{
+            val intent = Intent(context, WriteActivity::class.java)
+            startActivity(intent)
+        }
+
         return mainView
     }
 
@@ -77,22 +80,17 @@ class CommunityFragment : Fragment() {
         var mainActivity = activity as MainActivity
         //mainActivity.progress_bar.visibility = View.INVISIBLE
 
-
-
     }
 
     override fun onResume() {
         super.onResume()
-
-
     }
-
-
 
     override fun onStop() {
         super.onStop()
         imagesSnapshot?.remove()
     }
+
 
     inner class CommunityRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
