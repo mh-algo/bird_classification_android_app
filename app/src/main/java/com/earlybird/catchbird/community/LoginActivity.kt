@@ -140,7 +140,7 @@ else {
         if (user != null) {
             Toast.makeText(
                 this, getString(R.string.signin_complete),
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
             //startActivity(Intent(this, MainActivity::class.java))
             finish()
