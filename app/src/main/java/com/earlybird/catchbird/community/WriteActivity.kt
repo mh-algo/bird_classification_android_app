@@ -8,16 +8,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.ContentDTO
-import com.earlybird.catchbird.databinding.ActivityWritePostBinding
+import com.earlybird.catchbird.databinding.ActivityWriteBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_write_post.*
+import kotlinx.android.synthetic.main.activity_write.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class WriteActivity : AppCompatActivity(){
-    var binding = ActivityWritePostBinding.inflate(layoutInflater)
+    private val binding: ActivityWriteBinding by lazy {
+        ActivityWriteBinding.inflate(layoutInflater)
+    }
 
     val PICK_IMAGE_FROM_ALBUM = 0
 
@@ -29,7 +31,7 @@ class WriteActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_write_post)
+
 
         //Firebase 스토리지
         storage = FirebaseStorage.getInstance()
@@ -49,9 +51,15 @@ class WriteActivity : AppCompatActivity(){
             startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
         }
 
+        binding.cancelButton.setOnClickListener {
+            finish()
+        }
+
         binding.addphotoBtnUpload.setOnClickListener {
             contentUpload()
         }
+
+        setContentView(binding.root)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

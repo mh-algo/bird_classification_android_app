@@ -65,6 +65,11 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
+        mainView?.write_button?.setOnClickListener{
+            val intent = Intent(context, WriteActivity::class.java)
+            startActivity(intent)
+        }
+
         return mainView
     }
 

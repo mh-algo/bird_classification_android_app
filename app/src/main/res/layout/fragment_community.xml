@@ -21,13 +21,29 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#66BB6A"
         android:text="Log in" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/communityfragment_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="520dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/write_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="80dp"
+        android:baselineAlignBottom="false"
+        android:src="@drawable/ic_baseline_add_a_photo_white"
+        app:backgroundTint="#66BB6A"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
 
 </LinearLayout>
