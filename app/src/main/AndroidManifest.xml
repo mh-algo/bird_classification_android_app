@@ -30,7 +30,10 @@
             android:name=".encyclopedia.EncyclopediaActivity"
             android:exported="true" />
         <activity
-            android:name="com.earlybird.catchbird.community.CommunityActivity"
+            android:name="com.earlybird.catchbird.community.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.earlybird.catchbird.community.WriteActivity"
             android:exported="false" />
         <activity
             android:name="com.earlybird.catchbird.MainActivity"

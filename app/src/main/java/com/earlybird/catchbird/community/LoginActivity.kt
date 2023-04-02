@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.R
-import com.earlybird.catchbird.databinding.ActivityEncyclopediaBinding
 import com.earlybird.catchbird.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -17,11 +16,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.*
+import kotlinx.android.synthetic.main.activity_login.*
 
 
 class LoginActivity : AppCompatActivity() {
-    var binding = ActivityLoginBinding.inflate(layoutInflater)
+    private val binding: ActivityLoginBinding by lazy {
+        ActivityLoginBinding.inflate(layoutInflater)
+    }
 
     //Firebase Auth 관리 클래스
     var auth: FirebaseAuth? = null
@@ -37,7 +39,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         //Firebase 로그인 통합 관리하는 객체
         auth = FirebaseAuth.getInstance()
@@ -57,9 +58,8 @@ class LoginActivity : AppCompatActivity() {
 
         //구글 로그인 버튼 세팅
         binding.googleSignInButton.setOnClickListener{googleLogin()}
-  
 
-        setContentView(binding.root)
+        setContentView(R.layout.activity_login)
     }
 
     fun googleLogin() {
@@ -90,21 +90,13 @@ class LoginActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 if (task.isSuccessful) {
                     // 다음 페이지 호출 코드 추가
-                    // moveMainPage(auth?.currentUser)
+                    moveMainPage(auth?.currentUser)
                 }
             }
     }
 
-/*
-    //로그인 성공 시 토스트 출력 후 메인 엑티비티 화면 로드
-    fun moveMainPage(user: FirebaseUser?) {
-        if (user != null) {
-            Toast.makeText(this, getString(R.string.signin_complete), Toast.LENGTH_SHORT).show()
-            //startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-    }
 
+/*
 //이메일 회원가입
 
 fun createAndLoginEmail() {

@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">EarlyBird</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Community -->
     <string name="signin_complete">Successfully signed in!</string>
     <string name="signup_complete">Successfully signed up!</string>
+    <string name="upload_success">Upload complete!</string>
+    <string name="upload_fail">Upload failed!</string>
 
 
 </resources>

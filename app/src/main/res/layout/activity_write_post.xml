@@ -12,6 +12,15 @@
         android:layout_height="100dp"
         android:orientation="horizontal">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:layout_weight="1" />
+
         <ImageButton
             android:id="@+id/cancel_button"
             android:layout_width="10dp"
@@ -45,7 +54,7 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/done_button"
+            android:id="@+id/addphoto_btn_upload"
             android:layout_width="10dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
@@ -56,16 +65,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:ems="10"
-        android:hint="제목"
-        android:inputType="textPersonName"
-        android:minHeight="48dp" />
-
-    <EditText
-        android:id="@+id/editTextTextMultiLine"
+        android:id="@+id/addphoto_edit_explain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -73,6 +73,12 @@
         android:hint="내용"
         android:inputType="textMultiLine"
         android:lines="10" />
+
+    <ImageView
+        android:id="@+id/addphoto_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/dummy_bird" />
 
     <LinearLayout
         android:layout_width="match_parent"

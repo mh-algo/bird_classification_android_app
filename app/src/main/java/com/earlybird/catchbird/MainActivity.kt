@@ -1,10 +1,12 @@
 package com.earlybird.catchbird
 
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import com.earlybird.catchbird.community.CommunityFragment
 import com.earlybird.catchbird.data.BirdImageData
 import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.ActivityMainBinding
@@ -14,6 +16,9 @@ import com.earlybird.catchbird.map.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 
 class MainActivity : AppCompatActivity(), AutoPermissionsListener {
@@ -39,7 +44,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 R.id.navigation_map -> supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView, MapFragment()).commit()
                 R.id.navigation_community -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainerView, CameraFragment()).commit()
+                    .replace(R.id.fragmentContainerView, CommunityFragment()).commit()
             }
             true
         }
@@ -184,5 +189,8 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     override fun onGranted(requestCode: Int, permissions: Array<String>) {
         Log.d(TAG, "허용된 권한 개수 : ${permissions.size}")
     }
+
+
+
 }
 
