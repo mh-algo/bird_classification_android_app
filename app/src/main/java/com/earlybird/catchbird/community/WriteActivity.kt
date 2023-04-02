@@ -1,5 +1,6 @@
 package com.earlybird.catchbird.community
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -31,7 +32,7 @@ class WriteActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setContentView(binding.root)
 
         //Firebase 스토리지
         storage = FirebaseStorage.getInstance()
@@ -62,13 +63,13 @@ class WriteActivity : AppCompatActivity(){
             contentUpload()
         }
 
-        setContentView(binding.root)
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_FROM_ALBUM) {
-            if(resultCode == PICK_IMAGE_FROM_ALBUM) {
+            if(resultCode == Activity.RESULT_OK) {
                 println(data?.data)
                 photoUri = data?.data
                 binding.addphotoImage.setImageURI(data?.data)
@@ -87,7 +88,7 @@ class WriteActivity : AppCompatActivity(){
             taskSnapshot -> binding.progressBar.visibility = View.GONE
             Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
 
-            val uri = taskSnapshot.uploadSessionUri //.downloadUrl 대체
+            val uri = taskSnapshot.storage.downloadUrl //.downloadUrl 대체
             //데이터베이스에 바인딩할 위치 생성 및 테이블에 데이터 집합 생성
 
             val contentDTO = ContentDTO()
@@ -106,7 +107,7 @@ class WriteActivity : AppCompatActivity(){
             // 게시물 데이터생성 및 엑티비티 종류
             firestore?.collection("images")?.document()?.set(contentDTO)
 
-            setResult(RESULT_OK)
+            setResult(Activity.RESULT_OK)
             finish()
 
         }
