@@ -199,9 +199,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     }
 
 
-    //커뮤니티 : 주석 해제 시 앱이 구동되지 않고 바로 튕기는 문제가 있으니 주의!!
-
-    /*
+    //커뮤니티
    fun registerPushToken(){
        var pushToken = FirebaseMessaging.getInstance().token
        var uid = FirebaseAuth.getInstance().currentUser?.uid
@@ -226,7 +224,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                .child(uid)
                .putFile(imageUri!!)
                .addOnCompleteListener { task ->
-                   val url = task.result.uploadSessionUri.toString()
+                   val url = task.result.storage.downloadUrl.toString()
                    val map = HashMap<String, Any>()
                    map["image"] = url
                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
@@ -234,7 +232,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
        }
 
    }
-   */
+
 
 }
 
