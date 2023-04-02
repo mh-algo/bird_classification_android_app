@@ -1,6 +1,5 @@
 package com.earlybird.catchbird
 
-import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
@@ -16,9 +15,6 @@ import com.earlybird.catchbird.map.MapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 
 
 class MainActivity : AppCompatActivity(), AutoPermissionsListener {
@@ -189,8 +185,4 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     override fun onGranted(requestCode: Int, permissions: Array<String>) {
         Log.d(TAG, "허용된 권한 개수 : ${permissions.size}")
     }
-
-
-
 }
-

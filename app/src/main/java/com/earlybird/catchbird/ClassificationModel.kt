@@ -35,9 +35,9 @@ class ClassificationModel(val context: Context) {
                 arr.sortByDescending { it.second }      // 정확도가 높은 순으로 정렬
 
                 BirdImageList.modelData.clear()
-                for ((idx, percent) in arr)
-                    if (percent >= 0.1)
-                        BirdImageList.modelData.add(ModelResultData(idx, percent))
+                for ((idx, accuracy) in arr)
+                    if (accuracy >= 0.1)
+                        BirdImageList.modelData.add(ModelResultData(idx, accuracy))
             }
         }
         return ""

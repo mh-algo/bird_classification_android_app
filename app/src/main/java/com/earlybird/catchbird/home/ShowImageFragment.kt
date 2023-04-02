@@ -72,6 +72,7 @@ class ShowImageFragment : Fragment() {
                     e.printStackTrace()
                 }
                 val bitmap: Bitmap = BitmapFactory.decodeStream(imageStream)
+                imageStream?.close()
 
                 val model = ClassificationModel(requireContext())
                 val chkBird: String = model.execution(bitmap, "bird")   // 새인지 아닌지 구별

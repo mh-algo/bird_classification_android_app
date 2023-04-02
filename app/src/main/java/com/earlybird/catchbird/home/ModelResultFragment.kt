@@ -4,11 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
 import com.earlybird.catchbird.MainActivity
@@ -54,21 +57,31 @@ class ModelResultFragment : Fragment() {
             e.printStackTrace()
         }
         val bitmap: Bitmap = BitmapFactory.decodeStream(imageStream)
-
+        imageStream?.close()
 
         val model = ClassificationModel(requireContext())
         model.execution(bitmap, "specie")
 
-        val mainActivity = activity as MainActivity
+        (activity as MainActivity).searchBirdImage()     // model output에 해당하는 새 데이터 검색
+        showResultImage(binding)    // recyclerView
+    }
 
-        mainActivity.searchBirdImage()     // model output에 해당하는 새 데이터 검색
+    private fun showResultImage(binding: FragmentModelResultBinding) {
+        binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
 
-        val resultArray = BirdImageList.data
-        for ((idx, data) in resultArray.withIndex()) {
-            val percent = BirdImageList.modelData[idx].percent
-            binding.textView.append("${data.birdKor}, ${data.imageMale}, $percent\n\n")
+        val adapter = ClassificationAdapter()
+
+        binding.recyclerView.adapter = adapter
+
+        adapter.listener = object: OnBirdImageClickListener {
+            override fun onItemClick(
+                holder: ClassificationAdapter.ViewHolder?,
+                view: View?,
+                position: Int
+            ) {
+                Toast.makeText(context, "$position 눌림!", Toast.LENGTH_SHORT).show()
+            }
         }
-
     }
 
     companion object {

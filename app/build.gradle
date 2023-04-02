@@ -66,5 +66,6 @@ dependencies {
     //이미지 로더 라이브러리
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.opencsv:opencsv:5.6'
+    implementation "androidx.cardview:cardview:1.0.0"
 }
 apply plugin: 'com.google.gms.google-services'
