@@ -28,7 +28,6 @@ class EncyclopediaFragment : Fragment() {
     private val binding: FragmentEncyclopediaBinding by lazy {
         FragmentEncyclopediaBinding.inflate(layoutInflater)
     }
-    private var dummy = ArrayList<Bird>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,47 +54,8 @@ class EncyclopediaFragment : Fragment() {
             startActivity(intent)
         }
 
-
-        dummy.apply {
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"가나다라마바사dkdkdkdkddkdkdkdkddk","참새입니다.",false)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새123","참새입니다.",true)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새23325","참새입니다.",false)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새dd","참새입니다.",false)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새as","참새입니다.",true)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
-//            )
-//            add(
-//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-//            )
-
-
-
-        }
         binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
-        binding.recyclerView.adapter = MyAdapter(dummy)
+        binding.recyclerView.adapter = MyAdapter()
 
         // Inflate the layout for this fragment
         return binding.root
@@ -115,12 +75,13 @@ class EncyclopediaFragment : Fragment() {
 
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
+                intent.putExtra("birdKor",data.birdKor)
                 startActivity(intent)
             }
         }
 
     }
-    inner class MyAdapter(private val list:List<Bird>): RecyclerView.Adapter<MyViewHolder>(){
+    inner class MyAdapter(): RecyclerView.Adapter<MyViewHolder>(){
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view=layoutInflater.inflate(R.layout.item_encyclopedia_bird_list, parent, false)
             return MyViewHolder(view)
@@ -129,7 +90,6 @@ class EncyclopediaFragment : Fragment() {
         override fun getItemCount(): Int = BirdImageList.data.size
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            //val bird=list[position]
             holder.bind(position)
         }
     }

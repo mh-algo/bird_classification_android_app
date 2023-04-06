@@ -3,6 +3,7 @@ package com.earlybird.catchbird
 import android.app.Activity
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -178,6 +179,19 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
             }
             cursor.close()
         }
+    }
+    fun loadBirdInfo(bird_name: String): Uri {
+        // 새 이름으로 DB에 있는 모든 새 이미지, 정보 가져오기
+        lateinit var bird_info:Uri
+
+        for  (i in 0 until  BirdImageList.data.size){
+            if (BirdImageList.data[i].birdKor.equals(bird_name) ){
+                bird_info = BirdImageList.data[i].imageMale!!
+
+                break
+            }
+        }
+            return bird_info
     }
 
     override fun onRequestPermissionsResult(

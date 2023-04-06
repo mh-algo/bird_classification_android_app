@@ -32,7 +32,7 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="185dp"
+        android:layout_width="195dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,15 +57,17 @@
 
     <ImageButton
         android:id="@+id/encyclopedia_btn_ranking"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:elevation="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:layout_marginBottom="1dp"
+        android:background="#00FFFFFF"
         android:backgroundTint="@color/white"
+        android:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_trophy" />
+        app:srcCompat="@drawable/ic_trophy"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
