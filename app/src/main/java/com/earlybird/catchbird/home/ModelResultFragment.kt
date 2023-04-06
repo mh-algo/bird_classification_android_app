@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
-import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.FragmentModelResultBinding
 import java.io.FileNotFoundException
 import java.io.InputStream

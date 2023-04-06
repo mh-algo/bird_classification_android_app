@@ -23,6 +23,7 @@ local.properties
 
 # bird data
 /app/src/main/assets/bird_data.csv
+/app/src/main/assets/bird_info.csv
 
 # api key
 /app/src/main/res/values/api_keys.xml

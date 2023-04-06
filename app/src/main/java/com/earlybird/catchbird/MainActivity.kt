@@ -20,7 +20,7 @@ import com.pedro.library.AutoPermissions
 import com.pedro.library.AutoPermissionsListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.messaging.FirebaseMessaging
+//import com.google.firebase.messaging.FirebaseMessaging
 //import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.storage.FirebaseStorage
 
@@ -33,8 +33,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     private val databaseName:String = "birdName"
     private var database: SQLiteDatabase? = null
     private val birdImage = "bird_image"
-
-
+    private val birdInfo = "bird_info"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,15 +60,15 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         when(checkDatabaseTable()) {
             0 -> {
                 Log.d(TAG, "테이블 없음!!!!!!!!!")
-                createTable()
+                createBirdImageTable()
                 insertBirdImageData()
+                createBirdInfoTable()
+                insertBirdInfoData()
             }
             1 -> Log.d(TAG, "테이블 있음!!!!!!!!!")
         }
 
         AutoPermissions.Companion.loadAllPermissions(this, 101)
-
-
     }
 
     private fun createDatabase() {
@@ -95,7 +94,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         return cnt
     }
 
-    private fun createTable() {
+    private fun createBirdImageTable() {
         if (database == null) {
             Log.e(TAG, "데이터베이스 오픈 안함!!")
             return
@@ -142,6 +141,44 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         Log.e(TAG, "$birdImage 테이블 데이터 추가 완료!!")
     }
 
+    private fun createBirdInfoTable() {
+        if (database == null) {
+            Log.e(TAG, "데이터베이스 오픈 안함!!")
+            return
+        }
+        // 새 이름(한글), 도감 정보를 갖는 테이블 생성
+        val sql = "create table if not exists ${birdInfo}" +
+                "(specie text PRIMARY KEY, " +
+                " info text)"
+
+        database?.execSQL(sql)
+        Log.d(TAG, "$birdInfo 테이블 생성함")
+    }
+
+    private fun insertBirdInfoData() {
+        if (database == null) {
+            Log.e(TAG, "데이터베이스 오픈 안함!!")
+            return
+        }
+
+        val csvData = Utils.readAllCsvData(this, "bird_info.csv")
+        for (data in csvData) {
+            val dataArray: Array<String> = arrayOf(
+                data[0],
+                data[1]
+            )
+
+            val sql = "insert into ${birdInfo} " +
+                    "(specie," +
+                    " info)" +
+                    " values " +
+                    "(?, ?)"
+
+            database?.execSQL(sql, dataArray)
+        }
+        Log.e(TAG, "$birdInfo 테이블 데이터 추가 완료!!")
+    }
+
     fun searchBirdImage() {
         val resultArray = BirdImageList.modelData
         BirdImageList.data.clear()
@@ -180,19 +217,6 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
             cursor.close()
         }
     }
-    fun loadBirdInfo(bird_name: String): Uri {
-        // 새 이름으로 DB에 있는 모든 새 이미지, 정보 가져오기
-        lateinit var bird_info:Uri
-
-        for  (i in 0 until  BirdImageList.data.size){
-            if (BirdImageList.data[i].birdKor.equals(bird_name) ){
-                bird_info = BirdImageList.data[i].imageMale!!
-
-                break
-            }
-        }
-            return bird_info
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -210,5 +234,4 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     override fun onGranted(requestCode: Int, permissions: Array<String>) {
         Log.d(TAG, "허용된 권한 개수 : ${permissions.size}")
     }
-
 }
