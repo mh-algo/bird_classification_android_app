@@ -4,6 +4,7 @@ package com.earlybird.catchbird.community
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,24 +25,31 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
 import okhttp3.*
 import java.util.*
+//import kotlin.collections.EmptyList.size
+import kotlin.collections.HashMap
 
 
 class CommunityFragment : Fragment() {
     private val binding: FragmentCommunityBinding by lazy {
         FragmentCommunityBinding.inflate(layoutInflater)
     }
+    val PICK_PROFILE_FROM_ALBUM = 10
 
+    private var dummy = ContentDTO("남산에서", "http://t1.gstatic.com/licensed-image?q=tbn:ANd9GcRLc7H7naq3VSXNCuPm9jd_0Ynw1p1eGbX7gQehq2yqnLC2qM6sObLJic31pDZGAebs","01","GildongHong@earlybird.com",20230401232323,0,)
     var user: FirebaseUser? = null
     var firestore: FirebaseFirestore? = null
     var imagesSnapshot: ListenerRegistration? = null
     var okHttpClient: OkHttpClient? = null
     //var fcmPush: FcmPush? = null
     var mainView: View? = null
+
 
 
 
@@ -54,6 +62,8 @@ class CommunityFragment : Fragment() {
         okHttpClient = OkHttpClient()
         //fcmPush = FcmPush()
 
+        //푸시토큰 서버 등록
+        registerPushToken()
 
         //리사이클러 뷰와 어뎁터랑 연결
         mainView = inflater.inflate(R.layout.fragment_community, container, false)
@@ -109,12 +119,15 @@ class CommunityFragment : Fragment() {
                     }
                 }
             }
+
         }
 
         fun getCotents(followers: MutableMap<String, Boolean>?) {
             imagesSnapshot = firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUidList.clear()
+                contentDTOs.add(dummy)
+                contentUidList.add("01")
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot!!.documents) {
                     var item = snapshot.toObject(ContentDTO::class.java)!!
@@ -203,7 +216,10 @@ class CommunityFragment : Fragment() {
                 startActivity(intent) */
             }
 
+
+
         }
+
 
         fun favoriteAlarm(destinationUid: String) {
 
@@ -249,6 +265,48 @@ class CommunityFragment : Fragment() {
             }
         }
     }
+
+    //커뮤니티
+    fun registerPushToken(){
+        var pushToken = FirebaseMessaging.getInstance().token
+        var uid = FirebaseAuth.getInstance().currentUser?.uid
+        var map = mutableMapOf<String,Any>()
+        if (uid != null)
+        {
+            map["pushtoken"] = pushToken!!
+            FirebaseFirestore.getInstance().collection("pushtokens").document(uid).set(map)
+        }
+
+
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // 앨범에서 Profile Image 사진 선택시 호출 되는 부분분
+        if (requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK) {
+
+            var imageUri = data?.data
+
+            val uid = FirebaseAuth.getInstance().currentUser!!.uid //파일 업로드
+            //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
+            FirebaseStorage
+                .getInstance()
+                .reference
+                .child("userProfileImages")
+                .child(uid)
+                .putFile(imageUri!!)
+                .addOnCompleteListener { task ->
+                    val url = task.result.storage.downloadUrl.toString()
+                    val map = HashMap<String, Any>()
+                    map["image"] = url
+                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
+                }
+        }
+
+    }
+
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }

@@ -10,14 +10,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.earlybird.catchbird.Bird
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBinding
 import com.earlybird.catchbird.databinding.FragmentEncyclopediaBinding
+import kotlinx.android.synthetic.main.item_classification.view.*
 
 
 class EncyclopediaFragment : Fragment() {
@@ -30,8 +34,10 @@ class EncyclopediaFragment : Fragment() {
         savedInstanceState: Bundle?
 
     ): View? {
+
         var sData = resources.getStringArray(R.array.sort)
         var adapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,sData)
+        (activity as MainActivity).loadAllImageData()
         binding.spinner.adapter = adapter
         binding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener{
@@ -51,39 +57,39 @@ class EncyclopediaFragment : Fragment() {
 
 
         dummy.apply {
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"가나다라마바사dkdkdkdkddkdkdkdkddk","참새입니다.",false)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새123","참새입니다.",true)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새23325","참새입니다.",false)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새dd","참새입니다.",false)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새as","참새입니다.",true)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
-            )
-            add(
-                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
-            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"가나다라마바사dkdkdkdkddkdkdkdkddk","참새입니다.",false)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새123","참새입니다.",true)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새23325","참새입니다.",false)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새dd","참새입니다.",false)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새as","참새입니다.",true)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",false)
+//            )
+//            add(
+//                Bird(R.drawable.dummy_bird,"참새","참새입니다.",true)
+//            )
 
 
 
@@ -97,13 +103,15 @@ class EncyclopediaFragment : Fragment() {
     inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
         private lateinit var bird: Bird
         private var name: TextView = itemView.findViewById(R.id.encyclopedia_bird_name)
+        private var image: ImageView = itemView.findViewById(R.id.encyclopedia_bird_image)
 
-        fun bind(bird: Bird){
-            this.bird=bird
-            name.text = this.bird.name
-            if(this.bird.isRegist){
-                name.setTextColor(Color.parseColor("#ff99ff"));
-            }
+        fun bind(position: Int){
+            val data = BirdImageList.data[position]
+            name.text = data.birdKor
+            Glide.with(view!!.context).load(data.imageMale).centerCrop().into(image)
+//            if(this.bird.isRegist){
+//                name.setTextColor(Color.parseColor("#ff99ff"));
+//            }
 
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
@@ -118,11 +126,11 @@ class EncyclopediaFragment : Fragment() {
             return MyViewHolder(view)
         }
 
-        override fun getItemCount(): Int = list.size
+        override fun getItemCount(): Int = BirdImageList.data.size
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            val bird=list[position]
-            holder.bind(bird)
+            //val bird=list[position]
+            holder.bind(position)
         }
     }
 }
