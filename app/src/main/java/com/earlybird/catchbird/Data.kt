@@ -15,8 +15,8 @@ data class SearchBird(
     val name: String,
     val image: Int
 )
-data class Infor(
+data class BirdInfo(
     val image: Int,
-    val infor: String
+    val info: String
 )
 

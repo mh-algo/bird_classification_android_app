@@ -20,6 +20,7 @@
         android:id="@+id/encyclopedia_bird_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@drawable/background_round_rectangular"
         android:backgroundTint="#F0F0F0"
         android:text="TextView"
