@@ -22,8 +22,7 @@
         <TextView
             android:id="@+id/detailviewitem_profile_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="User Name" />
+            android:layout_height="wrap_content"/>
     </LinearLayout>
     <!-- Content ImageView -->
     <ImageView
