@@ -3,7 +3,6 @@ package com.earlybird.catchbird.community
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +13,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.*
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -71,12 +68,17 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE)
     }
 
-    fun onAcitivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        Toast.makeText(this,
+            getString(R.string.signin_complete), Toast.LENGTH_LONG).show()
+
         // 구글에서 승인된 정보 갖고 오기
-        if (requestCode == GOOGLE_LOGIN_CODE ) { //&& resultCode == Activity.Result_OK)
-            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+        if (requestCode == GOOGLE_LOGIN_CODE && resultCode == Activity.RESULT_OK) {
+            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)
             if (result!!.isSuccess) {
                 var account = result.signInAccount
                 firebaseAuthWithGoogle(account!!)
@@ -84,20 +86,24 @@ class LoginActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
             }
         }
+
     }
 
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
         var credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth?.signInWithCredential(credential)
             ?.addOnCompleteListener { task ->
-                binding.progressBar.visibility = View.GONE
+
+                Toast.makeText(this,
+                    getString(R.string.signin_complete), Toast.LENGTH_LONG).show()
                 if (task.isSuccessful) {
+
+                    binding.progressBar.visibility = View.GONE
                     // 다음 페이지 호출 코드 추가
                     moveMainPage(auth?.currentUser)
                 }
             }
     }
-
 
 
     //이메일 회원가입 및 로그인 메소드
