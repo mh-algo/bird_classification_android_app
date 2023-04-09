@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.camera2.*
+import android.hardware.camera2.params.MeteringRectangle
 import android.media.Image
 import android.media.ImageReader
 import android.net.Uri
@@ -24,10 +25,12 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.math.MathUtils.clamp
 import androidx.fragment.app.Fragment
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import java.io.*
+import kotlin.math.sqrt
 
 
 open class CameraFragment : Fragment() {
@@ -70,6 +73,9 @@ open class CameraFragment : Fragment() {
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
     private var cameraChk: Boolean = false
 
+    private var manager: CameraManager? = null
+    private var characteristics: CameraCharacteristics? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityLauncher =
@@ -93,6 +99,16 @@ open class CameraFragment : Fragment() {
         startCamera()
         binding.imageBtn.setOnClickListener {
             getFromAlbum()
+        }
+        binding.textureView.setOnTouchListener { view, event ->
+            Log.d("tsets", "${event.action}\n${MotionEvent.ACTION_DOWN}")
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchToFocus(event)
+                    pinchToZoom(event)
+                }
+            }
+            return@setOnTouchListener true
         }
         return binding.root
     }
@@ -229,7 +245,6 @@ open class CameraFragment : Fragment() {
     // createCameraPreviewSession() 메서드를 호출해서 카메라 미리보기를 만들어준다
     private fun createCameraPreviewSession() {
         try {
-
             // 캡쳐세션을 만들기 전에 프리뷰를 위한 Surface 를 준비한다
             // 레이아웃에 선언된 textureView 로부터 surfaceTexture 를 얻을 수 있다
             val texture = binding.textureView.surfaceTexture
@@ -267,6 +282,9 @@ open class CameraFragment : Fragment() {
                     } catch (e: CameraAccessException) {
                         e.printStackTrace()
                     }
+
+                    manager = requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                    characteristics = manager?.getCameraCharacteristics(cameraDevice!!.id)
                 }
 
             }, null)
@@ -276,14 +294,104 @@ open class CameraFragment : Fragment() {
         }
     }
 
+    var fingerSpacing = 0f
+    var zoomLevel = 1.0
+    private var maximumZoomLevel = 0f
+
+    private fun getFingerSpacing(event: MotionEvent): Float {
+        val x = event.getX(0) - event.getX(1)
+        val y = event.getY(0) - event.getY(1)
+        return sqrt((x * x + y * y).toDouble()).toFloat()
+    }
+
+    protected open fun pinchToZoom(event: MotionEvent) {
+        maximumZoomLevel =
+            characteristics?.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM)?.times(10) ?: 0.0f
+        val rect: Rect? = characteristics?.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE)
+        if (event.pointerCount > 1) {
+            // Multi touch logic
+            val currentFingerSpacing: Float = getFingerSpacing(event)
+            if (fingerSpacing != 0f) {
+                if (currentFingerSpacing > fingerSpacing && maximumZoomLevel > zoomLevel) {
+                    zoomLevel = zoomLevel + .4
+                } else if (currentFingerSpacing < fingerSpacing && zoomLevel > 1) {
+                    zoomLevel = zoomLevel - .4
+                }
+                val minW = (rect!!.width() / maximumZoomLevel).toInt()
+                val minH = (rect.height() / maximumZoomLevel).toInt()
+                val difW = rect.width() - minW
+                val difH = rect.height() - minH
+                var cropW = difW / 100 * zoomLevel.toInt()
+                var cropH = difH / 100 * zoomLevel.toInt()
+                cropW -= cropW and 3
+                cropH -= cropH and 3
+                val zoom = Rect(cropW, cropH, rect.width() - cropW, rect.height() - cropH)
+                captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoom)
+            }
+            fingerSpacing = currentFingerSpacing
+        }
+    }
+
+    protected open fun touchToFocus(event: MotionEvent) {
+        //first stop the existing repeating request
+//        try {
+//            mPreviewSession.stopRepeating()
+//        } catch (e: CameraAccessException) {
+//            e.printStackTrace()
+//        }
+        val rect: Rect? = characteristics?.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE)
+        Log.i(
+            TAG,
+            "SENSOR_INFO_ACTIVE_ARRAY_SIZE,,,,,,,,rect.left--->" + rect!!.left + ",,,rect.top--->" + rect.top + ",,,,rect.right--->" + rect.right + ",,,,rect.bottom---->" + rect.bottom
+        )
+        val size: Size? = characteristics?.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE)
+        Log.i(
+            TAG,
+            "mCameraCharacteristics,,,,size.getWidth()--->" + size!!.width + ",,,size.getHeight()--->"
+                    + size.height
+        )
+        val areaSize = 200
+        val right = rect.right
+        val bottom = rect.bottom
+        val viewWidth = requireView().width
+        val viewHeight = requireView().height
+        val ll: Int
+        val rr: Int
+        val newRect: Rect
+        val centerX = event.x.toInt()
+        val centerY = event.y.toInt()
+        ll = (centerX * right - areaSize) / viewWidth
+        rr = (centerY * bottom - areaSize) / viewHeight
+        val focusLeft: Int = clamp(ll, 0, right)
+        val focusBottom: Int = clamp(rr, 0, bottom)
+        Log.i(
+            TAG, "focusLeft--->" + focusLeft + ",,,focusTop--->" + focusBottom + ",,,focusRight--->"
+                    + (focusLeft + areaSize) + ",,,focusBottom--->" + (focusBottom + areaSize)
+        )
+        newRect = Rect(focusLeft, focusBottom, focusLeft + areaSize, focusBottom + areaSize)
+        val meteringRectangle = MeteringRectangle(newRect, 500)
+        val meteringRectangleArr: Array<MeteringRectangle> =
+            arrayOf<MeteringRectangle>(meteringRectangle)
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AF_TRIGGER,
+            CameraMetadata.CONTROL_AF_TRIGGER_CANCEL
+        )
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, meteringRectangleArr)
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+        captureRequestBuilder.set(
+            CaptureRequest.CONTROL_AF_TRIGGER,
+            CameraMetadata.CONTROL_AF_TRIGGER_START
+        )
+    }
+
 
     // 사진찍을 때 호출하는 메서드
     private fun takePicture() {
         try {
-            val manager = requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val characteristics = manager.getCameraCharacteristics(cameraDevice!!.id)
+//            val manager = requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+//            val characteristics = manager.getCameraCharacteristics(cameraDevice!!.id)
             var jpegSizes: Array<Size>? = null
-            jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.getOutputSizes(ImageFormat.JPEG)
+            jpegSizes = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.getOutputSizes(ImageFormat.JPEG)
 
             val width = jpegSizes[0].width
             val height = jpegSizes[0].height

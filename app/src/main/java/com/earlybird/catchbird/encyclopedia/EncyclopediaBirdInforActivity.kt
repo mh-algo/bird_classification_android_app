@@ -3,17 +3,11 @@ package com.earlybird.catchbird.encyclopedia
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.*
-import com.earlybird.catchbird.data.BirdImageList.Companion.data
 import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_map.*
-import kotlinx.android.synthetic.main.item_classification.*
 
 
 class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface {
@@ -63,7 +57,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         database = openOrCreateDatabase(databaseName, MODE_PRIVATE, null)
     }
 
-    fun searchBirdInfo(specie: String) {
+    private fun searchBirdInfo(specie: String) {
         val sql = "select specie, image_m, image_f, info from $birdImage, $birdInfo " +
                 "where $birdImage.specie_k = $birdInfo.specie and $birdInfo.specie = '$specie'"
         val cursor = database?.rawQuery(sql, null)
