@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
+import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_login.*
 
 
@@ -24,6 +26,8 @@ class LoginActivity : AppCompatActivity() {
 
     //Firebase Auth 관리 클래스
     var auth: FirebaseAuth? = null
+    var uid : String? = null
+    var firestore: FirebaseFirestore? = null
 
     //var callbackManager: CallbackManager? = null
 
@@ -39,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
 
         //Firebase 로그인 통합 관리하는 객체
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         //구글 로그인 옵션
         var gso =
@@ -116,6 +121,8 @@ class LoginActivity : AppCompatActivity() {
                     //아이디 생성이 성공했을 경우
                     Toast.makeText(this,
                         getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
+                    uid = auth?.currentUser?.uid
+                    firestore?.collection("users")?.document()?.set(uid.toString())
 
                     //다음페이지 호출
                     moveMainPage(auth?.currentUser)

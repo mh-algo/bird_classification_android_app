@@ -11,4 +11,5 @@
     <color name="bird_secondary_color">#759E9F</color>
     <color name="transparent">#1A000000</color>
     <color name="ic_color">#FFFAF0</color>
+    <color name="colorLightGray">#f1f1f1</color>
 </resources>

@@ -13,6 +13,7 @@ import com.earlybird.catchbird.databinding.ActivityWriteBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_write.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,9 +71,8 @@ class WriteActivity : AppCompatActivity(){
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_FROM_ALBUM) {
             if(resultCode == Activity.RESULT_OK) {
-                println(data?.data)
                 photoUri = data?.data
-                binding.addphotoImage.setImageURI(data?.data)
+                binding.addphotoImage.setImageURI(photoUri)
             }
             else { finish() }
         }
@@ -84,11 +84,16 @@ class WriteActivity : AppCompatActivity(){
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_.png"
         val storageRef = storage?.reference?.child("images")?.child(imageFileName)
-        storageRef?.putFile(photoUri!!)?.addOnSuccessListener{
-            taskSnapshot -> binding.progressBar.visibility = View.GONE
+
+        /*
+        storageRef?.putFile(photoUri!!)?.addOnSuccessListener{*/
+        storageRef?.putFile(photoUri!!)?.continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
+            return@continueWithTask  storageRef.downloadUrl
+        }?.addOnSuccessListener { uri ->
+            binding.progressBar.visibility = View.GONE
             Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
 
-            val uri = taskSnapshot.storage.downloadUrl //.downloadUrl 대체
+            //val uri = taskSnapshot.storage.downloadUrl //.downloadUrl 대체
             //데이터베이스에 바인딩할 위치 생성 및 테이블에 데이터 집합 생성
 
             val contentDTO = ContentDTO()
@@ -105,7 +110,7 @@ class WriteActivity : AppCompatActivity(){
             contentDTO.timestamp = System.currentTimeMillis()
 
             // 게시물 데이터생성 및 엑티비티 종류
-            firestore?.collection("images")?.document()?.set(contentDTO)
+            firestore?.collection("image")?.document()?.set(contentDTO)
 
             setResult(Activity.RESULT_OK)
             finish()

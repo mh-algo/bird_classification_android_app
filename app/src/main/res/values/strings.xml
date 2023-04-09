@@ -2,21 +2,28 @@
     <string name="app_name">EarlyBird</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <!-- Community -->
+    <!-- Community/Login&Upload -->
     <string name="upload_success">Upload complete!</string>
     <string name="upload_fail">Upload failed!</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="signin_email">회원가입 및 이메일 로그인</string>
     <string name="signin_google">Google으로 로그인</string>
-    <string name="signin_facebook">Facebook으로 로그인</string>
-    <string name="signin_twitter">Twitter으로 로그인</string>
     <string name="signup_complete">회원가입 성공</string>
     <string name="signin_complete">로그인 성공</string>
     <string name="signout">로그아웃</string>
     <string name="signout_success">로그아웃 성공</string>
     <string name="signout_fail">로그아웃 실패</string>
     <string name="signout_fail_null">이메일과 비밀번호를 입력해주세요</string>
+    <!-- Community/Account -->
+    <string name="post">게시물</string>
+    <string name="following">팔로잉</string>
+    <string name="follower">팔로워</string>
+    <string name="follow">팔로우</string>
+    <string name="follow_cancel">팔로우 취소</string>
+    <string name="profile">Profile</string>
+    <string name="rank">순위</string>
+    <string name="count_0">0</string>
 
 
 </resources>

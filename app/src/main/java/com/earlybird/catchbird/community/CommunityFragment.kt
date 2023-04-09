@@ -19,7 +19,6 @@ import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
-import com.earlybird.catchbird.databinding.FragmentCommunityBinding
 //import com.earlybird.catchbird.community.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -37,21 +36,17 @@ import kotlin.collections.HashMap
 
 
 class CommunityFragment : Fragment() {
-    private val binding: FragmentCommunityBinding by lazy {
-        FragmentCommunityBinding.inflate(layoutInflater)
-    }
+
     val PICK_PROFILE_FROM_ALBUM = 10
 
-    private var dummy = ContentDTO("남산에서", "http://t1.gstatic.com/licensed-image?q=tbn:ANd9GcRLc7H7naq3VSXNCuPm9jd_0Ynw1p1eGbX7gQehq2yqnLC2qM6sObLJic31pDZGAebs","01","GildongHong@earlybird.com",20230401232323,0,)
+
     var user: FirebaseUser? = null
+    var uid : String? = null
     var firestore: FirebaseFirestore? = null
     var imagesSnapshot: ListenerRegistration? = null
     var okHttpClient: OkHttpClient? = null
     //var fcmPush: FcmPush? = null
     var mainView: View? = null
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -60,35 +55,42 @@ class CommunityFragment : Fragment() {
         user = FirebaseAuth.getInstance().currentUser
         firestore = FirebaseFirestore.getInstance()
         okHttpClient = OkHttpClient()
+
         //fcmPush = FcmPush()
 
         //푸시토큰 서버 등록
         registerPushToken()
 
-        //리사이클러 뷰와 어뎁터랑 연결
-        mainView = inflater.inflate(R.layout.fragment_community, container, false)
 
-        mainView?.login_button?.setOnClickListener{
-            val intent = Intent(context, LoginActivity::class.java)
+        var view = LayoutInflater.from(activity).inflate(R.layout.fragment_community, container, false)
+
+
+        view?.profile_btn?.setOnClickListener{
+            val intent = Intent(context, UserActivity::class.java)
             startActivity(intent)
         }
 
-        mainView?.write_button?.setOnClickListener{
+        view?.write_button?.setOnClickListener{
             val intent = Intent(context, WriteActivity::class.java)
             startActivity(intent)
         }
 
-        return mainView
+        firestore = FirebaseFirestore.getInstance()
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        val intent = Intent(context, LoginActivity::class.java)
+        startActivity(intent)
+
+
+        view.communityfragment_recyclerview.adapter = CommunityRecyclerViewAdapter()
+        view.communityfragment_recyclerview.layoutManager = LinearLayoutManager(activity)
+        return view
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-        mainView?.communityfragment_recyclerview?.layoutManager = LinearLayoutManager(activity)
-        mainView?.communityfragment_recyclerview?.adapter = CommunityRecyclerViewAdapter()
-        var mainActivity = activity as MainActivity
-        //mainActivity.progress_bar.visibility = View.INVISIBLE
 
     }
 
@@ -104,38 +106,60 @@ class CommunityFragment : Fragment() {
 
     inner class CommunityRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        val contentDTOs: ArrayList<ContentDTO>
-        val contentUidList: ArrayList<String>
+        val contentDTOs: ArrayList<ContentDTO> = arrayListOf()
+        val contentUidList: ArrayList<String> = arrayListOf()
 
         init {
-            contentDTOs = ArrayList()
-            contentUidList = ArrayList()
+
             var uid = FirebaseAuth.getInstance().currentUser?.uid
+
+            /*
             firestore?.collection("users")?.document(uid!!)?.get()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     var userDTO = task.result.toObject(FollowDTO::class.java)
                     if (userDTO?.followings != null) {
-                        getCotents(userDTO?.followings)
+                        getContents(userDTO?.followings)
                     }
+
                 }
             }
 
+             */
+
+            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp")
+                ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    contentDTOs.clear()
+                    contentUidList.clear()
+                    contentUidList.add("01")
+                    if (querySnapshot == null) return@addSnapshotListener
+                    for (snapshot in querySnapshot!!.documents) {
+                        var item = snapshot.toObject(ContentDTO::class.java)!!
+                        contentDTOs.add(item)
+                        contentUidList.add(snapshot.id)
+                        /*if (followers?.keys?.contains(item.uid)!!) {
+                        contentDTOs.add(item)
+                        contentUidList.add(snapshot.id)
+                    }*/
+                    }
+                    notifyDataSetChanged()
+
+                }
         }
 
-        fun getCotents(followers: MutableMap<String, Boolean>?) {
-            imagesSnapshot = firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+        fun getContents(followers: MutableMap<String, Boolean>?) {
+            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUidList.clear()
-                contentDTOs.add(dummy)
-                contentUidList.add("01")
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot!!.documents) {
                     var item = snapshot.toObject(ContentDTO::class.java)!!
-                    println(item.uid)
-                    if (followers?.keys?.contains(item.uid)!!) {
+                    contentDTOs.add(item)
+                    contentUidList.add(snapshot.id)
+                    /*if (followers?.keys?.contains(item.uid)!!) {
                         contentDTOs.add(item)
                         contentUidList.add(snapshot.id)
-                    }
+                    }*/
                 }
                 notifyDataSetChanged()
             }
@@ -149,8 +173,13 @@ class CommunityFragment : Fragment() {
 
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
+        override fun getItemCount(): Int {
+            return contentDTOs.size
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val viewHolder = (holder as CustomViewHolder).itemView
 
             // Profile Image 가져오기
@@ -167,19 +196,13 @@ class CommunityFragment : Fragment() {
                 }
 
 
-            //UserFragment로 이동
+            //UserActivity로 이동
             viewHolder.detailviewitem_profile_image.setOnClickListener {
-                /*
-                val fragment = UserFragment()
-                val bundle = Bundle()
+                val intent = Intent(context, UserActivity::class.java)
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("userId", contentDTOs[position].userId)
+                startActivity(intent)
 
-                bundle.putString("destinationUid", contentDTOs[position].uid)
-                bundle.putString("userId", contentDTOs[position].userId)
-
-                fragment.arguments = bundle
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_content, fragment)
-                    .commit()*/
             }
 
             // 유저 아이디
@@ -217,8 +240,9 @@ class CommunityFragment : Fragment() {
             }
 
 
-
         }
+
+
 
 
         fun favoriteAlarm(destinationUid: String) {
@@ -235,11 +259,6 @@ class CommunityFragment : Fragment() {
             //fcmPush?.sendMessage(destinationUid, "알림 메세지 입니다.", message)
         }
 
-        override fun getItemCount(): Int {
-
-            return contentDTOs.size
-
-        }
 
         //좋아요 이벤트 기능
 
@@ -264,6 +283,8 @@ class CommunityFragment : Fragment() {
                 transaction.set(tsDoc, contentDTO)
             }
         }
+
+
     }
 
     //커뮤니티
