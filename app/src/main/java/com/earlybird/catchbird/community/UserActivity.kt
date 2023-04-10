@@ -7,6 +7,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.earlybird.catchbird.community.LoginActivity
@@ -25,10 +27,14 @@ import com.earlybird.catchbird.R.id.account_tv_post_count
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
+import com.earlybird.catchbird.community.model.ProfileDTO
 //import com.earlybird.catchbird.community.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.auth.User
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_community_user.*
 import kotlinx.android.synthetic.main.activity_community_user.view.*
@@ -62,7 +68,8 @@ class UserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_community_user)
+        setContentView(binding.root)
+
 
         val arguments = Bundle()
         // Firebase
@@ -72,36 +79,37 @@ class UserActivity : AppCompatActivity() {
 
         currentUserUid = auth?.currentUser?.uid
 
-        if (arguments != null) {
 
-            uid = arguments!!.getString("destinationUid")
+            uid = intent.getStringExtra("destinationUid")
 
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
             if (uid != null && uid == currentUserUid) {
+                Toast.makeText(this,
+                    "It's your profile!", Toast.LENGTH_LONG).show()
 
-                userView!!.account_btn_follow_signout.text = getString(R.string.signout)
-                userView?.account_btn_follow_signout?.setOnClickListener {
+                binding?.accountBtnFollowSignout?.text = getString(R.string.signout)
+                binding?.accountBtnFollowSignout?.setOnClickListener {
                     startActivity(Intent(this, LoginActivity::class.java))
                     this?.finish()
                     auth?.signOut()
                 }
             } else {
-                //userView!!.account_btn_follow_signout.text = getString(R.string.follow)
-                //userView!!.account_btn_follow_signout.setOnClickListener{ requestFollow() }
+                binding?.accountBtnFollowSignout?.text = getString(R.string.follow)
+                binding?.accountBtnFollowSignout.setOnClickListener{ requestFollow() }
 
                  }
 
                 userView?.account_btn_follow_signout?.setOnClickListener {
                     requestFollow()
                 }
-            }
+
 
 
 
 
         // Profile Image Click Listener
-        userView?.account_iv_profile?.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this!!, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        binding?.accountIvProfile?.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 //main인지 유저 액티비티인지?
 
                 //앨범 오픈
@@ -110,27 +118,27 @@ class UserActivity : AppCompatActivity() {
                 this!!.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
             }
         }
-        //getFollowing()
-        //getFollower()
-        userView?.account_recyclerview?.layoutManager = GridLayoutManager(this!!, 3)
-        userView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()
 
-    }
+        getFollowing()
+        getFollower()
+        binding?.accountRecyclerview?.layoutManager = GridLayoutManager(this!!, 3)
+        binding?.accountRecyclerview?.adapter = UserFragmentRecyclerViewAdapter()
 
-    override fun onResume() {
-        super.onResume()
-        //getProfileImage()
+
+
     }
 
     fun getProfileImage() {
+        uid = intent.getStringExtra("destinationUid")
         imageprofileListenerRegistration = firestore?.collection("profileImages")?.document(uid!!)
             ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
 
-                if (documentSnapshot?.data != null) {
-                    val url = documentSnapshot?.data!!["image"]
+                if (documentSnapshot?.getString("image") != null) {
+                    val url = documentSnapshot.getString("image")!!
+
                     Glide.with(this)
                         .load(url)
-                        .apply(RequestOptions().circleCrop()).into(userView!!.account_iv_profile)
+                        .apply(RequestOptions().circleCrop()).into(binding!!.accountIvProfile)
                 }
             }
 
@@ -141,7 +149,7 @@ class UserActivity : AppCompatActivity() {
         followingListenerRegistration = firestore?.collection("users")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             val followDTO = documentSnapshot?.toObject(FollowDTO::class.java)
             if (followDTO == null) return@addSnapshotListener
-            userView!!.account_tv_following_count.text = followDTO?.followingCount.toString()
+            binding?.accountTvFollowingCount?.text = followDTO?.followingCount.toString()
         }
     }
 
@@ -151,19 +159,19 @@ class UserActivity : AppCompatActivity() {
         followListenerRegistration = firestore?.collection("users")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             val followDTO = documentSnapshot?.toObject(FollowDTO::class.java)
             if (followDTO == null) return@addSnapshotListener
-            userView?.account_tv_follower_count?.text = followDTO?.followerCount.toString()
+            binding?.accountTvFollowerCount?.text = followDTO?.followerCount.toString()
             if (followDTO?.followers?.containsKey(currentUserUid)!!) {
 
-                userView?.account_btn_follow_signout?.text = getString(R.string.follow_cancel)
-                userView?.account_btn_follow_signout
+                binding?.accountBtnFollowSignout?.text = getString(R.string.follow_cancel)
+                binding?.accountBtnFollowSignout
                     ?.background
                     ?.setColorFilter(ContextCompat.getColor(this!!, R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
             } else {
 
                 if (uid != currentUserUid) {
 
-                    userView?.account_btn_follow_signout?.text = getString(R.string.follow)
-                    userView?.account_btn_follow_signout?.background?.colorFilter = null
+                    binding?.accountBtnFollowSignout?.text = getString(R.string.follow)
+                    binding?.accountBtnFollowSignout?.background?.colorFilter = null
                 }
             }
 
@@ -245,6 +253,11 @@ class UserActivity : AppCompatActivity() {
         //fcmPush?.sendMessage(destinationUid, "알림 메세지 입니다.", message)
     }
 
+    override fun onResume() {
+        super.onResume()
+        getProfileImage()
+    }
+
 
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -253,7 +266,7 @@ class UserActivity : AppCompatActivity() {
         init {
             contentDTOs = ArrayList()
             // 나의 사진만 찾기
-            recyclerListenerRegistration = firestore?.collection("images")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            recyclerListenerRegistration = firestore?.collection("image")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot?.documents!!) {
@@ -296,6 +309,8 @@ class UserActivity : AppCompatActivity() {
         imageprofileListenerRegistration?.remove()
         recyclerListenerRegistration?.remove()
     }
+
+
 
 }
 

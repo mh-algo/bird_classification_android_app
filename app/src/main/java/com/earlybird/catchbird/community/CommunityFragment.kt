@@ -1,38 +1,34 @@
 package com.earlybird.catchbird.community
 
 
+//import com.earlybird.catchbird.community.util.FcmPush
+//import kotlin.collections.EmptyList.size
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import androidx.recyclerview.widget.RecyclerView
-import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
-//import com.earlybird.catchbird.community.util.FcmPush
+import com.earlybird.catchbird.community.model.ProfileDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_main.*
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
-import okhttp3.*
-import java.util.*
-//import kotlin.collections.EmptyList.size
-import kotlin.collections.HashMap
+import okhttp3.OkHttpClient
 
 
 class CommunityFragment : Fragment() {
@@ -66,7 +62,9 @@ class CommunityFragment : Fragment() {
 
 
         view?.profile_btn?.setOnClickListener{
+            uid = FirebaseAuth.getInstance().currentUser?.uid
             val intent = Intent(context, UserActivity::class.java)
+            intent.putExtra("destinationUid", uid)
             startActivity(intent)
         }
 
@@ -81,6 +79,21 @@ class CommunityFragment : Fragment() {
         val intent = Intent(context, LoginActivity::class.java)
         startActivity(intent)
 
+        // Profile 버튼에 쓰일 프로필 이미지 가져오기
+        if (uid != null)
+        {
+            firestore?.collection("profileImages")?.document(uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val url = task.result["image"]
+                        Glide.with(view.context)
+                            .load(url)
+                            .apply(RequestOptions().circleCrop()).into(view.profile_btn)
+                    }
+                }
+        }
+
+
 
         view.communityfragment_recyclerview.adapter = CommunityRecyclerViewAdapter()
         view.communityfragment_recyclerview.layoutManager = LinearLayoutManager(activity)
@@ -94,8 +107,9 @@ class CommunityFragment : Fragment() {
 
     }
 
-    override fun onResume() {
+    override fun onResume(){
         super.onResume()
+        CommunityRecyclerViewAdapter().notifyDataSetChanged()
     }
 
     override fun onStop() {
@@ -103,48 +117,48 @@ class CommunityFragment : Fragment() {
         imagesSnapshot?.remove()
     }
 
-
     inner class CommunityRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        val contentDTOs: ArrayList<ContentDTO> = arrayListOf()
-        val contentUidList: ArrayList<String> = arrayListOf()
+        val contentDTOs: ArrayList<ContentDTO>
+        val contentUidList: ArrayList<String>
 
         init {
-
+            contentDTOs = ArrayList()
+            contentUidList = ArrayList()
             var uid = FirebaseAuth.getInstance().currentUser?.uid
 
-            /*
-            firestore?.collection("users")?.document(uid!!)?.get()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var userDTO = task.result.toObject(FollowDTO::class.java)
-                    if (userDTO?.followings != null) {
-                        getContents(userDTO?.followings)
-                    }
+            if (uid == null) { }
+            else {
+                firestore?.collection("users")?.document(uid!!)?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        var userDTO = task.result.toObject(FollowDTO::class.java)
+                        if (userDTO?.followings != null) {
+                            getContents(userDTO?.followings)
+                        }
 
+                    }
                 }
             }
-
-             */
 
             imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp")
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
-                    contentUidList.add("01")
                     if (querySnapshot == null) return@addSnapshotListener
+
                     for (snapshot in querySnapshot!!.documents) {
                         var item = snapshot.toObject(ContentDTO::class.java)!!
+                        println(item.uid)
                         contentDTOs.add(item)
                         contentUidList.add(snapshot.id)
-                        /*if (followers?.keys?.contains(item.uid)!!) {
-                        contentDTOs.add(item)
-                        contentUidList.add(snapshot.id)
-                    }*/
+                        // getContents 대신 호출
                     }
                     notifyDataSetChanged()
 
                 }
         }
+
+
 
 
         fun getContents(followers: MutableMap<String, Boolean>?) {
@@ -166,12 +180,16 @@ class CommunityFragment : Fragment() {
 
         }
 
+
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_community, parent, false)
             return CustomViewHolder(view)
 
         }
+
+
 
         inner class CustomViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
@@ -198,10 +216,10 @@ class CommunityFragment : Fragment() {
 
             //UserActivity로 이동
             viewHolder.detailviewitem_profile_image.setOnClickListener {
-                val intent = Intent(context, UserActivity::class.java)
-                intent.putExtra("destinationUid", contentDTOs[position].uid)
-                intent.putExtra("userId", contentDTOs[position].userId)
-                startActivity(intent)
+                val user_intent = Intent(context, UserActivity::class.java)
+                user_intent.putExtra("destinationUid", contentDTOs[position].uid)
+                user_intent.putExtra("userId", contentDTOs[position].userId)
+                startActivity(user_intent)
 
             }
 
@@ -263,7 +281,7 @@ class CommunityFragment : Fragment() {
         //좋아요 이벤트 기능
 
         private fun favoriteEvent(position: Int) {
-            var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
+            var tsDoc = firestore?.collection("image")?.document(contentUidList[position])
             firestore?.runTransaction { transaction ->
 
                 val uid = FirebaseAuth.getInstance().currentUser!!.uid
@@ -305,13 +323,27 @@ class CommunityFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // 앨범에서 Profile Image 사진 선택시 호출 되는 부분분
+        // 앨범에서 Profile Image 사진 선택시 호출 되는 부분
         if (requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK) {
 
             var imageUri = data?.data
-
+            //binding.addphotoImage.setImageURI(photoUri)
             val uid = FirebaseAuth.getInstance().currentUser!!.uid //파일 업로드
             //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
+
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage?.reference?.child("userProfileImages")
+
+
+            storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
+                return@continueWithTask  storageRef.downloadUrl
+            }.addOnCompleteListener { uri ->
+                var profileDTO = ProfileDTO(uri.toString())
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(profileDTO)
+            }
+
+            //Toast.makeText("Changed!")
+            /*
             FirebaseStorage
                 .getInstance()
                 .reference
@@ -320,10 +352,10 @@ class CommunityFragment : Fragment() {
                 .putFile(imageUri!!)
                 .addOnCompleteListener { task ->
                     val url = task.result.storage.downloadUrl.toString()
-                    val map = HashMap<String, Any>()
-                    map["image"] = url
-                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
-                }
+                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).update("image",url)
+
+
+                }*/
         }
 
     }
