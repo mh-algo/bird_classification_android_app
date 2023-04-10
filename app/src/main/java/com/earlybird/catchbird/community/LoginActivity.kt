@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.ContentDTO
+import com.earlybird.catchbird.community.model.FollowDTO
+import com.earlybird.catchbird.community.model.ProfileDTO
 import com.earlybird.catchbird.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -17,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_login.*
+import java.util.HashMap
 
 
 class LoginActivity : AppCompatActivity() {
@@ -122,10 +125,19 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this,
                         getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
                     uid = auth?.currentUser?.uid
-                    firestore?.collection("users")?.document()?.set(uid.toString())
+
+                    val followDTO = FollowDTO()
+                    followDTO.followerCount = 0
+                    followDTO.followers = mutableMapOf<String,Boolean>()
+                    followDTO.followingCount = 0
+                    followDTO.followings = mutableMapOf<String,Boolean>()
+                    firestore?.collection("users")?.document(uid.toString())?.set(followDTO)
+                    val profileDTO = ProfileDTO("https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a")
+                    firestore?.collection("profileImages")?.document(uid.toString())?.set(profileDTO)
 
                     //다음페이지 호출
                     moveMainPage(auth?.currentUser)
+
                 } else if (task.exception?.message.isNullOrEmpty()) {
                     //회원가입 에러가 발생했을 경우
                     Toast.makeText(this,
