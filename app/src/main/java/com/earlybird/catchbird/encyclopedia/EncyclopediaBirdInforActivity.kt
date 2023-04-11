@@ -33,6 +33,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
 
         val bird_info = BirdInfoData.image_m    // 새 기본 이미지
         BirdInfoData.image_f  // 새(암컷) 이미지 추가 필요
+
         binding.encyclopediaBtnBirdInforOk.setOnClickListener {
             finish()
         }
@@ -43,8 +44,9 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         }
 
         binding.encyclopediaBirdInforText2.text= BirdInfoData.info      // 새 정보
+        binding.encyclopediaBirdInforImage2.clipToOutline = true
         Glide.with(this).load(bird_info).into(binding.encyclopediaBirdInforImage2)
-        // binding.encyclopediaBirdInforImage2.setImageResource()// 새 사진 눌렀을 때 해당 새 사진, 정보 출력
+
 
     }
 
