@@ -40,7 +40,7 @@ class EncyclopediaFragment : Fragment() {
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                //
+                // 아무것도 선택하지 않으면 전체 화면
             }
 
         }
@@ -67,14 +67,18 @@ class EncyclopediaFragment : Fragment() {
                     }
                     binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
                     binding.recyclerView.adapter = MyAdapter(search)
-
                 }
+
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
                 // 검색창에서 글자가 변경이 일어날 때마다 호출
+                if(newText == ""){
+                    binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
+                    binding.recyclerView.adapter = MyAdapter(data)
+                }
 
                 return true
             }
