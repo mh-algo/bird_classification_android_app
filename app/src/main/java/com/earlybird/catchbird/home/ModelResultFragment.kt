@@ -1,5 +1,6 @@
 package com.earlybird.catchbird.home
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -15,7 +16,9 @@ import com.bumptech.glide.Glide
 import com.earlybird.catchbird.ClassificationModel
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.FragmentModelResultBinding
+import com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity
 import java.io.FileNotFoundException
 import java.io.InputStream
 
@@ -77,7 +80,9 @@ class ModelResultFragment : Fragment() {
                 view: View?,
                 position: Int
             ) {
-                Toast.makeText(context, "$position 눌림!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
+                intent.putExtra("birdKor", BirdImageList.data[position].birdKor)
+                startActivity(intent)
             }
         }
     }
