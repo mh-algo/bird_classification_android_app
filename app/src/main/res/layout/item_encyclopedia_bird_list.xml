@@ -20,6 +20,7 @@
             android:layout_width="107dp"
             android:layout_height="103dp"
             android:background="#00FF0000"
+            android:alpha="0.3"
             tools:srcCompat="@drawable/dummy_bird" />
     </androidx.cardview.widget.CardView>
 
