@@ -16,8 +16,16 @@
 
 
     <TextView
+        android:id="@+id/encyclopedia_bird_info_nameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="24sp" />
+
+    <TextView
         android:id="@+id/encyclopedia_bird_infor_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textStyle="bold" />
 </LinearLayout>

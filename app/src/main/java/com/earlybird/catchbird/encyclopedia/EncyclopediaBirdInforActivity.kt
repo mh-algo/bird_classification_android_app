@@ -42,7 +42,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
             dialog.isCancelable = true
             dialog.show(this.supportFragmentManager,"ConfirmDialog")
         }
-
+        binding.encyclopediaBirdInforNameText.text = BirdInfoData.specie // 새 이름
         binding.encyclopediaBirdInforText2.text= BirdInfoData.info      // 새 정보
         binding.encyclopediaBirdInforImage2.clipToOutline = true
         Glide.with(this).load(bird_info).into(binding.encyclopediaBirdInforImage2)
