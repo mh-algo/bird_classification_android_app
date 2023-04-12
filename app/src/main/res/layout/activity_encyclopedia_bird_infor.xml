@@ -87,6 +87,14 @@
                     app:srcCompat="@drawable/dummy_bird" />
 
                 <TextView
+                    android:id="@+id/encyclopedia_bird_infor_nameText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/encyclopedia_bird_infor_text2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
