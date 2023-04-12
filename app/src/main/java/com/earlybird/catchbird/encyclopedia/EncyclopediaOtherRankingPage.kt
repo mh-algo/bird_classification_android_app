@@ -24,9 +24,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
     private val binding: ActivityEncyclopediaOtherRankingPageBinding by lazy {
         ActivityEncyclopediaOtherRankingPageBinding.inflate(layoutInflater)
     }
-
-    var num = 1
-    val regist = arrayListOf<BirdImageData>()
+    var spinnerList = BirdImageList.data  // 전체사진, 도감 등록된 사진 구별하기 위한 변수
     val data = BirdImageList.data
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +35,14 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
             binding.recyclerView.adapter = MyAdapter(data)
-            num = 1
+            spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
+            val regist = arrayListOf<BirdImageData>()
             // firebase에 있는 도감등록 새 이름과 BirdImageList.data의 새 이름과 비교하여 일치하는 새 들만 regist 배열에 추가
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
             binding.recyclerView.adapter = MyAdapter(regist)
-            num = 2
+            spinnerList = regist
             Log.d("my", "유저 도감등록된 새 리스트 출력함수")
         }
         var sData = resources.getStringArray(R.array.sort)
@@ -73,37 +72,19 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 val search = arrayListOf<BirdImageData>()
-                if(num == 1) {  // 전체사진 일 때
-                    if (query.equals("")) {
-                        binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
-                        binding.recyclerView.adapter = MyAdapter(data)
-                    }
-                    if (query != null) {
-                        for (i in data) {
-                            val isExist = i.birdKor!!.contains(query, ignoreCase = true)
-                            if (isExist) {
-                                search.add(i)
-                            }
-                        }
-                        binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
-                        binding.recyclerView.adapter = MyAdapter(search)
-                    }
+                if (query.equals("")) {
+                    binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
+                    binding.recyclerView.adapter = MyAdapter(spinnerList)
                 }
-                if(num == 2){   // 도감등록된 사진 버튼 눌렀을 때
-                    if (query.equals("")) {
-                        binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
-                        binding.recyclerView.adapter = MyAdapter(regist)
-                    }
-                    if (query != null) {
-                        for (i in regist) {
-                            val isExist = i.birdKor!!.contains(query, ignoreCase = true)
-                            if (isExist) {
-                                search.add(i)
-                            }
+                if (query != null) {
+                    for (i in spinnerList) {
+                        val isExist = i.birdKor!!.contains(query, ignoreCase = true)
+                        if (isExist) {
+                            search.add(i)
                         }
-                        binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
-                        binding.recyclerView.adapter = MyAdapter(search)
                     }
+                    binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
+                    binding.recyclerView.adapter = MyAdapter(search)
                 }
 
                 return true
