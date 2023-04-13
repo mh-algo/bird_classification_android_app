@@ -28,6 +28,8 @@ import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
 import com.earlybird.catchbird.community.model.ProfileDTO
+import com.earlybird.catchbird.encyclopedia.EncyclopediaOtherRankingPage
+import com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity
 //import com.earlybird.catchbird.community.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -86,22 +88,27 @@ class UserActivity : AppCompatActivity() {
             nickname = intent.getStringExtra("nickname")
             binding.unameText.text = nickname
 
-            /*
+
             firestore?.collection("profileImages")?.document(uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                     binding.unameText.text = task.result["nickname"].toString()
                     }
-            }*/
+            }
 
             // 도감 플로팅 버튼
             binding.collectionButton.setOnClickListener {
-            // 해당 uid를 가진 유저의 도감 정보 조회
+                // 해당 uid를 가진 유저의 도감 정보 조회
+                val intent = Intent(this, EncyclopediaRankingActivity::class.java)
+                intent.putExtra("destinationUid", uid)
+                startActivity(intent)
             }
 
             // 순위 정보 클릭 시
             binding.accountRankCount.setOnClickListener {
-                // 해당 유저의 순위 정보를 보여줌(?)
+                val intent = Intent(this, EncyclopediaOtherRankingPage::class.java)
+                intent.putExtra("otheruid", uid)
+                startActivity(intent)
             }
 
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
