@@ -38,29 +38,46 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="8dp">
+
         <ImageView
             android:id="@+id/detailviewitem_favorite_imageview"
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/ic_favorite_border" />
+
+        <TextView
+            android:id="@+id/detailviewitem_favoritecounter_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-black"
+            android:textSize="14sp"
+            tools:text="0" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
         <ImageView
             android:id="@+id/detailviewitem_comment_imageview"
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="285dp"
             android:src="@drawable/ic_chat_black" />
     </LinearLayout>
-    <TextView
-        android:id="@+id/detailviewitem_favoritecounter_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        tools:text="좋아요 0개" />
+
     <TextView
         android:id="@+id/detailviewitem_explain_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="35dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginBottom="35dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"
         tools:text="사진 내용" />
 
 </LinearLayout>
