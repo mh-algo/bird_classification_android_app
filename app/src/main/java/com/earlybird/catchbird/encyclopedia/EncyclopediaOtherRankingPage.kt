@@ -111,8 +111,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
 
             name.text = bird.birdKor
             Glide.with(itemView.context).load(bird.imageMale).centerCrop().into(image)
-            // if문 firebase의 유저 도감등록 정보에 있는 새 이름과 비교하여 등록되어 있는 새는
-            //android:alpha 값 변경
+            // firebase의 해당 유저의 사진동록 정보를 가져와 image를 등록된 사진으로 교체
 
             itemView.setOnClickListener{
                 val intent = Intent(applicationContext, EncyclopediaBirdInforActivity::class.java)
