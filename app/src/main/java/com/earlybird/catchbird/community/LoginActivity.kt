@@ -77,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE)
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressed() { // 뒤로가기 버튼 누르면 메인 액티비티로 이동
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

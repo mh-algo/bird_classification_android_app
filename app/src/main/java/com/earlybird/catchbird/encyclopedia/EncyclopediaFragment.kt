@@ -44,7 +44,8 @@ class EncyclopediaFragment : Fragment() {
     ): View? {
         val intent = Intent(context, LoginActivity::class.java)
         startActivity(intent)
-
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+        // Log.d("유저 아이디", "uid"+uid)
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(data)
@@ -52,7 +53,7 @@ class EncyclopediaFragment : Fragment() {
         }
         fun BirdRegistDataList(){
             val regist = arrayListOf<BirdImageData>()
-            // firebase에 있는 도감등록 새 이름과 BirdImageList.data의 새 이름과 비교하여 일치하는 새 들만 regist 배열에 추가
+            // todo uid로 firebase의 저장된 새 이미지와 이름을 가져와 regist배열에 추가 후 출력
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(regist)
             spinnerList = regist
@@ -152,8 +153,8 @@ class EncyclopediaFragment : Fragment() {
 
             name.text = bird.birdKor
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
-            // firebase의 해당 유저의 사진동록 정보를 가져와 image를 등록된 사진으로 교체
-
+            // todo firebase의 해당 유저(uid)의 등록된 사진을 가져와 image을 교체
+            // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)

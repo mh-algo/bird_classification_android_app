@@ -19,11 +19,15 @@ import com.earlybird.catchbird.data.BirdImageData
 import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaOtherRankingPageBinding
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaRankingBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class EncyclopediaOtherRankingPage : AppCompatActivity() {
     private val binding: ActivityEncyclopediaOtherRankingPageBinding by lazy {
         ActivityEncyclopediaOtherRankingPageBinding.inflate(layoutInflater)
     }
+    var auth: FirebaseAuth? = null
+    var uid: String? = null
+    var currentUserUid: String? = null
     var spinnerList = BirdImageList.data  // 전체사진, 도감 등록된 사진 구별하기 위한 변수
     val data = BirdImageList.data
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +35,14 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
         setContentView(binding.root)
         binding.encyclopediaBtnOk.setOnClickListener {
             finish()
+        }
+        auth = FirebaseAuth.getInstance()
+        currentUserUid = auth?.currentUser?.uid
+        uid = intent.getStringExtra("otherUid")
+
+        // todo 받아온 otherUid와 현재 로그인된 uid를 비교하여 같다면 나의 도감 페이지로 이동
+        if(currentUserUid.equals(uid)) {
+            MainActivity().ChangePage(R.id.navigation_encyclopedia)
         }
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
@@ -111,7 +123,8 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
 
             name.text = bird.birdKor
             Glide.with(itemView.context).load(bird.imageMale).centerCrop().into(image)
-            // firebase의 해당 유저의 사진동록 정보를 가져와 image를 등록된 사진으로 교체
+            // firebase의 해당 유저(uid)의 등록된 사진을 가져와 image을 교체
+            // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
 
             itemView.setOnClickListener{
                 val intent = Intent(applicationContext, EncyclopediaBirdInforActivity::class.java)

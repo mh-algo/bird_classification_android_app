@@ -178,7 +178,10 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
         }
         Log.e(TAG, "$birdInfo 테이블 데이터 추가 완료!!")
     }
-
+    fun ChangePage(pageId: Int){
+        val move = findViewById<BottomNavigationView>(R.id.nav_view)
+        move.selectedItemId=pageId
+    }
     fun searchBirdImage() {
         val resultArray = BirdImageList.modelData
         BirdImageList.data.clear()
