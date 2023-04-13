@@ -75,6 +75,7 @@ open class CameraFragment : Fragment() {
 
     private var manager: CameraManager? = null
     private var characteristics: CameraCharacteristics? = null
+    private var previewSession: CameraCaptureSession? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,12 +102,9 @@ open class CameraFragment : Fragment() {
             getFromAlbum()
         }
         binding.textureView.setOnTouchListener { view, event ->
-            Log.d("tsets", "${event.action}\n${MotionEvent.ACTION_DOWN}")
             when(event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    touchToFocus(event)
-                    pinchToZoom(event)
-                }
+                MotionEvent.ACTION_DOWN -> touchToFocus(event)
+                MotionEvent.ACTION_MOVE -> pinchToZoom(event)
             }
             return@setOnTouchListener true
         }
@@ -276,8 +274,8 @@ open class CameraFragment : Fragment() {
                     // session 이 준비가 완료되면, 미리보기를 화면에 뿌려주기 시작한다
 
                     captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
-
                     try {
+                        previewSession = session
                         session.setRepeatingRequest(captureRequestBuilder.build(), null, null)
                     } catch (e: CameraAccessException) {
                         e.printStackTrace()
@@ -294,9 +292,10 @@ open class CameraFragment : Fragment() {
         }
     }
 
-    var fingerSpacing = 0f
-    var zoomLevel = 1.0
+    private var fingerSpacing = 0f
+    private var zoomLevel = 1.0
     private var maximumZoomLevel = 0f
+    private var zoom: Rect? = null
 
     private fun getFingerSpacing(event: MotionEvent): Float {
         val x = event.getX(0) - event.getX(1)
@@ -313,9 +312,9 @@ open class CameraFragment : Fragment() {
             val currentFingerSpacing: Float = getFingerSpacing(event)
             if (fingerSpacing != 0f) {
                 if (currentFingerSpacing > fingerSpacing && maximumZoomLevel > zoomLevel) {
-                    zoomLevel = zoomLevel + .4
+                    zoomLevel += .5
                 } else if (currentFingerSpacing < fingerSpacing && zoomLevel > 1) {
-                    zoomLevel = zoomLevel - .4
+                    zoomLevel -= .5
                 }
                 val minW = (rect!!.width() / maximumZoomLevel).toInt()
                 val minH = (rect.height() / maximumZoomLevel).toInt()
@@ -325,8 +324,9 @@ open class CameraFragment : Fragment() {
                 var cropH = difH / 100 * zoomLevel.toInt()
                 cropW -= cropW and 3
                 cropH -= cropH and 3
-                val zoom = Rect(cropW, cropH, rect.width() - cropW, rect.height() - cropH)
+                zoom = Rect(cropW, cropH, rect.width() - cropW, rect.height() - cropH)
                 captureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoom)
+                previewSession?.setRepeatingRequest(captureRequestBuilder.build(), null, null)
             }
             fingerSpacing = currentFingerSpacing
         }
@@ -334,11 +334,11 @@ open class CameraFragment : Fragment() {
 
     protected open fun touchToFocus(event: MotionEvent) {
         //first stop the existing repeating request
-//        try {
-//            mPreviewSession.stopRepeating()
-//        } catch (e: CameraAccessException) {
-//            e.printStackTrace()
-//        }
+        try {
+            previewSession?.stopRepeating()
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
+        }
         val rect: Rect? = characteristics?.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE)
         Log.i(
             TAG,
@@ -378,18 +378,14 @@ open class CameraFragment : Fragment() {
         )
         captureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, meteringRectangleArr)
         captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
-        captureRequestBuilder.set(
-            CaptureRequest.CONTROL_AF_TRIGGER,
-            CameraMetadata.CONTROL_AF_TRIGGER_START
-        )
+        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START)
+        previewSession?.setRepeatingRequest(captureRequestBuilder.build(), null, null)
     }
 
 
     // 사진찍을 때 호출하는 메서드
     private fun takePicture() {
         try {
-//            val manager = requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
-//            val characteristics = manager.getCameraCharacteristics(cameraDevice!!.id)
             var jpegSizes: Array<Size>? = null
             jpegSizes = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.getOutputSizes(ImageFormat.JPEG)
 
@@ -405,7 +401,10 @@ open class CameraFragment : Fragment() {
             val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
             captureBuilder.addTarget(imageReader.surface)
 
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
+            when(zoomLevel) {
+                1.0 -> captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
+                else -> captureBuilder.set(CaptureRequest.SCALER_CROP_REGION, zoom)
+            }
 
             // 사진의 rotation 을 설정해준다
             val rotation = requireActivity().windowManager.defaultDisplay.rotation
