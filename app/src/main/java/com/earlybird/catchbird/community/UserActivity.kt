@@ -55,6 +55,7 @@ class UserActivity : AppCompatActivity() {
     //private String destinationUid;
     var uid: String? = null
     var currentUserUid: String? = null
+    var nickname: String? = null
 
     var userView: View? = null
 
@@ -72,7 +73,7 @@ class UserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val arguments = Bundle()
+
         // Firebase
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -82,11 +83,20 @@ class UserActivity : AppCompatActivity() {
 
 
             uid = intent.getStringExtra("destinationUid")
+            nickname = intent.getStringExtra("nickname")
+            binding.unameText.text = nickname
+
+            /*
+            firestore?.collection("profileImages")?.document(uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                    binding.unameText.text = task.result["nickname"].toString()
+                    }
+            }*/
 
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
             if (uid != null && uid == currentUserUid) {
-                Toast.makeText(this,
-                    "It's your profile!", Toast.LENGTH_LONG).show()
+
 
                 binding?.accountBtnFollowSignout?.text = getString(R.string.signout)
                 binding?.accountBtnFollowSignout?.setOnClickListener {

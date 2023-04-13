@@ -119,7 +119,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    //이메일 회원가입 및 로그인 메소드
+    //이메일 로그인 메소드
     fun createAndLoginEmail() {
 
         auth?.createUserWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())

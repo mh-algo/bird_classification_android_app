@@ -64,7 +64,16 @@ class CommunityFragment : Fragment() {
 
         view?.profile_btn?.setOnClickListener{
             uid = FirebaseAuth.getInstance().currentUser?.uid
+            var uname: String? = null
+            firestore?.collection("profileImages")?.document(uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        uname = task.result["nickname"].toString()
+                    }
+                }
+            // 반영 안되고 있음
             val intent = Intent(context, UserActivity::class.java)
+            intent.putExtra("nickname", uname)
             intent.putExtra("destinationUid", uid)
             startActivity(intent)
         }
@@ -220,14 +229,22 @@ class CommunityFragment : Fragment() {
                 val user_intent = Intent(context, UserActivity::class.java)
                 user_intent.putExtra("destinationUid", contentDTOs[position].uid)
                 user_intent.putExtra("userId", contentDTOs[position].userId)
+                user_intent.putExtra("nickname", contentDTOs[position].nickname)
                 startActivity(user_intent)
 
             }
 
             // 유저 아이디
             viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
+            /*
+            firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        viewHolder.detailviewitem_profile_textview.text = task.result["nickname"].toString()
+                    }
+                }*/
 
-            // 가운데 이미지
+            // 글 이미지
             Glide.with(holder.itemView.context)
                 .load(contentDTOs[position].imageUrl)
                 .into(viewHolder.detailviewitem_imageview_content)
