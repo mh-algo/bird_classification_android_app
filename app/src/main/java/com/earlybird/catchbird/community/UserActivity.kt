@@ -28,8 +28,11 @@ import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
 import com.earlybird.catchbird.community.model.ProfileDTO
+import com.earlybird.catchbird.encyclopedia.EncyclopediaOtherRankingPage
+import com.earlybird.catchbird.encyclopedia.EncyclopediaRankingActivity
 //import com.earlybird.catchbird.community.FcmPush
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.auth.User
@@ -54,6 +57,7 @@ class UserActivity : AppCompatActivity() {
     //private String destinationUid;
     var uid: String? = null
     var currentUserUid: String? = null
+    var nickname: String? = null
 
     var userView: View? = null
 
@@ -71,7 +75,7 @@ class UserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val arguments = Bundle()
+
         // Firebase
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -81,11 +85,35 @@ class UserActivity : AppCompatActivity() {
 
 
             uid = intent.getStringExtra("destinationUid")
+            nickname = intent.getStringExtra("nickname")
+            binding.unameText.text = nickname
+
+
+            firestore?.collection("profileImages")?.document(uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                    binding.unameText.text = task.result["nickname"].toString()
+                    }
+            }
+
+            // 도감 플로팅 버튼
+            binding.collectionButton.setOnClickListener {
+                // 해당 uid를 가진 유저의 도감 정보 조회
+                val intent = Intent(this, EncyclopediaRankingActivity::class.java)
+                intent.putExtra("destinationUid", uid)
+                startActivity(intent)
+            }
+
+            // 순위 정보 클릭 시
+            binding.accountRankCount.setOnClickListener {
+                val intent = Intent(this, EncyclopediaOtherRankingPage::class.java)
+                intent.putExtra("otheruid", uid)
+                startActivity(intent)
+            }
 
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
             if (uid != null && uid == currentUserUid) {
-                Toast.makeText(this,
-                    "It's your profile!", Toast.LENGTH_LONG).show()
+
 
                 binding?.accountBtnFollowSignout?.text = getString(R.string.signout)
                 binding?.accountBtnFollowSignout?.setOnClickListener {
@@ -308,6 +336,49 @@ class UserActivity : AppCompatActivity() {
         followingListenerRegistration?.remove()
         imageprofileListenerRegistration?.remove()
         recyclerListenerRegistration?.remove()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // 앨범에서 Profile Image 사진 선택시 호출 되는 부분
+        if (requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK) {
+
+            var imageUri = data?.data
+            binding.accountIvProfile.setImageURI(imageUri)
+            val uid = FirebaseAuth.getInstance().currentUser!!.uid //파일 업로드
+            //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
+
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage?.reference?.child("userProfileImages")
+
+
+
+            storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
+                return@continueWithTask  storageRef.downloadUrl
+            }.addOnCompleteListener { uri ->
+
+                var profileDTO = ProfileDTO("example", imageUri.toString())
+                //firestore?.collection("users")?.document(uid)!!.get("nickname").toString()
+                firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
+            }
+
+            //Toast.makeText("Changed!")
+            /*
+            FirebaseStorage
+                .getInstance()
+                .reference
+                .child("userProfileImages")
+                .child(uid)
+                .putFile(imageUri!!)
+                .addOnCompleteListener { task ->
+                    val url = task.result.storage.downloadUrl.toString()
+                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).update("image",url)
+
+
+                }*/
+        }
+
     }
 
 

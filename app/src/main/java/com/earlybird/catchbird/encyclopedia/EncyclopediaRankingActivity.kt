@@ -11,12 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.Rank
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaRankingBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class EncyclopediaRankingActivity : AppCompatActivity() {
-
+    // todo firebase에 있는 모든 유저의 새 등록 정보를 가져와 갯수 별로 점수 부여 후 점수와 순위를 매김
+    // todo 새 사진이 등록되어 있지 않다면 순위에서 표시하지 않음
     private val binding: ActivityEncyclopediaRankingBinding by lazy {
         ActivityEncyclopediaRankingBinding.inflate(layoutInflater)
     }
+    var auth: FirebaseAuth? = null
+    var uid: String? = null
     private var dummy = ArrayList<Rank>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +28,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         binding.encyclopediaBtnRankingpageOk.setOnClickListener {
            finish()
         }
+        auth = FirebaseAuth.getInstance()
         dummy.apply {
             add(
                 Rank(1, "a", 5000)
@@ -67,6 +72,8 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
 
                 itemView.setOnClickListener{
                     val intent = Intent(this@EncyclopediaRankingActivity, EncyclopediaOtherRankingPage::class.java)
+                    intent.putExtra("otherUid", uid)
+                    // todo 클릭시 해당 유저의 uid를 같이 넘김
                     startActivity(intent)
                 }
             }

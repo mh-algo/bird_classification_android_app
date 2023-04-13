@@ -1,5 +1,6 @@
 package com.earlybird.catchbird.encyclopedia
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,11 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.community.LoginActivity
 import com.earlybird.catchbird.data.BirdImageData
 import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.FragmentEncyclopediaBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_encyclopedia.*
 import kotlinx.android.synthetic.main.item_classification.view.*
+import com.google.firebase.auth.*
+import com.google.firebase.firestore.*
 
 
 class EncyclopediaFragment : Fragment() {
@@ -26,12 +33,19 @@ class EncyclopediaFragment : Fragment() {
     }
     var spinnerList = BirdImageList.data  // 전체사진, 도감 등록된 사진 구별하기 위한 변수
     val data = BirdImageList.data
+    //Firebase Auth 관리 클래스
+    var auth: FirebaseAuth? = null
+    var uid : String? = null
+    var firestore: FirebaseFirestore? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View? {
-
+        val intent = Intent(context, LoginActivity::class.java)
+        startActivity(intent)
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+        // Log.d("유저 아이디", "uid"+uid)
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(data)
@@ -39,7 +53,7 @@ class EncyclopediaFragment : Fragment() {
         }
         fun BirdRegistDataList(){
             val regist = arrayListOf<BirdImageData>()
-            // firebase에 있는 도감등록 새 이름과 BirdImageList.data의 새 이름과 비교하여 일치하는 새 들만 regist 배열에 추가
+            // todo uid로 firebase의 저장된 새 이미지와 이름을 가져와 regist배열에 추가 후 출력
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(regist)
             spinnerList = regist
@@ -113,6 +127,23 @@ class EncyclopediaFragment : Fragment() {
 
 
     }
+    override fun onStart() {
+        super.onStart()
+
+        //자동 로그인 설정
+        moveMainPage(auth?.currentUser)
+    }
+
+    fun moveMainPage(user: FirebaseUser?) {
+        //User is Signed in
+        if (user != null) {
+            Toast.makeText(
+                context, getString(R.string.signin_complete),
+                Toast.LENGTH_LONG
+            ).show()
+            //startActivity(Intent(this, MainActivity::class.java))
+        }
+    }
     inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
 
         private var name: TextView = itemView.findViewById(R.id.encyclopedia_bird_name)
@@ -122,9 +153,8 @@ class EncyclopediaFragment : Fragment() {
 
             name.text = bird.birdKor
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
-            // if문 firebase의 유저 도감등록 정보에 있는 새 이름과 비교하여 등록되어 있는 새는
-            //android:alpha = "1"로 값 변경
-
+            // todo firebase의 해당 유저(uid)의 등록된 사진을 가져와 image을 교체
+            // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)

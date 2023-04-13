@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.databinding.ActivityWriteBinding
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_write.*
+import kotlinx.android.synthetic.main.item_community.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -84,6 +87,14 @@ class WriteActivity : AppCompatActivity(){
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_.png"
         val storageRef = storage?.reference?.child("images")?.child(imageFileName)
+        var uname: String? = null
+
+        firestore?.collection("profileImages")?.document(auth?.currentUser?.uid!!)
+            ?.get()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    uname = task.result["nickname"].toString()
+                }
+            }
 
         /*
         storageRef?.putFile(photoUri!!)?.addOnSuccessListener{*/
@@ -93,15 +104,14 @@ class WriteActivity : AppCompatActivity(){
             binding.progressBar.visibility = View.GONE
             Toast.makeText(this, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
 
-            //val uri = taskSnapshot.storage.downloadUrl //.downloadUrl 대체
-            //데이터베이스에 바인딩할 위치 생성 및 테이블에 데이터 집합 생성
-
             val contentDTO = ContentDTO()
 
             // 이미지 주소
             contentDTO.imageUrl = uri!!.toString()
             // 유저 UID
             contentDTO.uid = auth?.currentUser?.uid
+            // 유저 닉네임
+            contentDTO.nickname = uname
             // 게시물 설명
             contentDTO.explain = binding.addphotoEditExplain.text.toString()
             // 유저 ID

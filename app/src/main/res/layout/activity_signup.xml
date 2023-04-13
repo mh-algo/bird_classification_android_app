@@ -24,6 +24,16 @@
         android:textStyle="bold" />
 
     <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="닉네임"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" />
+
+    <EditText
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,14 +54,14 @@
         android:minHeight="48dp" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/signupBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="5dp"
         android:backgroundTint="#66BB6A"
-        android:text="로그인" />
+        android:text="회원가입" />
 
     <Button
         android:id="@+id/google_sign_in_button"
@@ -61,17 +71,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="5dp"
         android:backgroundTint="#FF4433"
-        android:text="Google으로 로그인"
+        android:text="Google으로 회원가입"
         android:textColor="#FFFFFF" />
-
-    <Button
-        android:id="@+id/signupButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:backgroundTint="#66BB6A"
-        android:text="회원가입" />
 
 </LinearLayout>
