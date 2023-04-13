@@ -264,7 +264,7 @@ class CommunityFragment : Fragment() {
                 viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
             }
             //좋아요 카운터 설정
-            viewHolder.detailviewitem_favoritecounter_textview.text = "좋아요 " + contentDTOs[position].favoriteCount + "개"
+            viewHolder.detailviewitem_favoritecounter_textview.text = contentDTOs[position].favoriteCount.toString()
 
 
             viewHolder.detailviewitem_comment_imageview.setOnClickListener {
