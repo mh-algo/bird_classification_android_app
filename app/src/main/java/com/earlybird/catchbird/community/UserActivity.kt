@@ -94,6 +94,16 @@ class UserActivity : AppCompatActivity() {
                     }
             }*/
 
+            // 도감 플로팅 버튼
+            binding.collectionButton.setOnClickListener {
+            // 해당 uid를 가진 유저의 도감 정보 조회
+            }
+
+            // 순위 정보 클릭 시
+            binding.accountRankCount.setOnClickListener {
+                // 해당 유저의 순위 정보를 보여줌(?)
+            }
+
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
             if (uid != null && uid == currentUserUid) {
 
