@@ -59,14 +59,18 @@ class LoginActivity : AppCompatActivity() {
 
         //구글 로그인 클래스 만들기
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        //callbackManager = CallbackManager.Factory.create()
-        //오류 수정 필요
 
         //구글 로그인 버튼 세팅
         binding.googleSignInButton.setOnClickListener{googleLogin()}
 
         //이메일 로그인 세팅
         binding.loginButton.setOnClickListener { emailLogin() }
+
+        //회원가입 버튼 세팅
+        binding.signupButton.setOnClickListener {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
+        }
 
         setContentView(binding.root)
     }
@@ -86,8 +90,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        Toast.makeText(this,
-            getString(R.string.signin_complete), Toast.LENGTH_LONG).show()
 
         // 구글에서 승인된 정보 갖고 오기
         if (requestCode == GOOGLE_LOGIN_CODE && resultCode == Activity.RESULT_OK) {
@@ -107,8 +109,6 @@ class LoginActivity : AppCompatActivity() {
         auth?.signInWithCredential(credential)
             ?.addOnCompleteListener { task ->
 
-                Toast.makeText(this,
-                    getString(R.string.signin_complete), Toast.LENGTH_LONG).show()
                 if (task.isSuccessful) {
 
                     binding.progressBar.visibility = View.GONE
@@ -125,34 +125,14 @@ class LoginActivity : AppCompatActivity() {
         auth?.createUserWithEmailAndPassword(binding.emailEditText.text.toString(), binding.pwEditText.text.toString())
             ?.addOnCompleteListener { task ->
                 progress_bar.visibility = View.GONE
-                if (task.isSuccessful) {
-                    //아이디 생성이 성공했을 경우
-                    Toast.makeText(this,
-                        getString(R.string.signup_complete), Toast.LENGTH_SHORT).show()
-                    uid = auth?.currentUser?.uid
+                if (task.isSuccessful) {}
+                else if (task.exception?.message.isNullOrEmpty()) {}
 
-                    val followDTO = FollowDTO()
-                    followDTO.followerCount = 0
-                    followDTO.followers = mutableMapOf<String,Boolean>()
-                    followDTO.followingCount = 0
-                    followDTO.followings = mutableMapOf<String,Boolean>()
-                    firestore?.collection("users")?.document(uid.toString())?.set(followDTO)
-                    val profileDTO = ProfileDTO("https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a")
-                    firestore?.collection("profileImages")?.document(uid.toString())?.set(profileDTO)
-
-                    //다음페이지 호출
-                    moveMainPage(auth?.currentUser)
-
-                } else if (task.exception?.message.isNullOrEmpty()) {
-                    //회원가입 에러가 발생했을 경우
-                    Toast.makeText(this,
-                        task.exception!!.message, Toast.LENGTH_SHORT).show()
-                } else {
+                else {
                     //아이디 생성도 안되고 에러도 발생되지 않았을 경우 로그인
                     signinEmail()
                 }
             }
-
     }
 
     fun emailLogin() {
@@ -196,10 +176,6 @@ class LoginActivity : AppCompatActivity() {
     fun moveMainPage(user: FirebaseUser?) {
         //User is Signed in
         if (user != null) {
-            Toast.makeText(
-                this, getString(R.string.signin_complete),
-                Toast.LENGTH_LONG
-            ).show()
             //startActivity(Intent(this, MainActivity::class.java))
             finish()
         }

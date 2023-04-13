@@ -30,6 +30,7 @@ import com.earlybird.catchbird.community.model.FollowDTO
 import com.earlybird.catchbird.community.model.ProfileDTO
 //import com.earlybird.catchbird.community.FcmPush
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.auth.User
@@ -325,10 +326,13 @@ class UserActivity : AppCompatActivity() {
             val storageRef = storage?.reference?.child("userProfileImages")
 
 
+
             storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
                 return@continueWithTask  storageRef.downloadUrl
             }.addOnCompleteListener { uri ->
-                var profileDTO = ProfileDTO(uri.toString())
+
+                var profileDTO = ProfileDTO("example", imageUri.toString())
+                //firestore?.collection("users")?.document(uid)!!.get("nickname").toString()
                 firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
             }
 

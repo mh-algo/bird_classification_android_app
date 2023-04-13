@@ -225,7 +225,7 @@ class CommunityFragment : Fragment() {
             }
 
             // 유저 아이디
-            viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].userId
+            viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
 
             // 가운데 이미지
             Glide.with(holder.itemView.context)

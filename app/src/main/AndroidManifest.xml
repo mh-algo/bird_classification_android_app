@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.earlybird.catchbird" >
+    package="com.earlybird.catchbird">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -16,8 +16,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EarlyBird" >
-
+        android:theme="@style/Theme.EarlyBird">
         <activity
             android:name=".encyclopedia.EncyclopediaBirdInforActivity"
             android:exported="true" />
@@ -34,6 +33,9 @@
             android:name=".community.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".community.SignupActivity"
+            android:exported="false" />
+        <activity
             android:name=".community.WriteActivity"
             android:exported="false" />
         <activity
@@ -41,7 +43,7 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,7 +55,7 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/external" />
