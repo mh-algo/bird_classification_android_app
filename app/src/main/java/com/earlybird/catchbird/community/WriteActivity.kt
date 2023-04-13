@@ -102,6 +102,8 @@ class WriteActivity : AppCompatActivity(){
             contentDTO.imageUrl = uri!!.toString()
             // 유저 UID
             contentDTO.uid = auth?.currentUser?.uid
+            // 유저 닉네임
+            //contentDTO.nickname = firestore?.collection("users")?.document(uid!!).get("nickname")
             // 게시물 설명
             contentDTO.explain = binding.addphotoEditExplain.text.toString()
             // 유저 ID
