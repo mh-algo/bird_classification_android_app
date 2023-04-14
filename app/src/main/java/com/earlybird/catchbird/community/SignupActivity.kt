@@ -1,9 +1,11 @@
 package com.earlybird.catchbird.community
+import android.content.Intent
 import com.earlybird.catchbird.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.community.model.FollowDTO
 import com.earlybird.catchbird.community.model.ProfileDTO
 import com.earlybird.catchbird.databinding.ActivitySignupBinding
@@ -45,6 +47,11 @@ class SignupActivity : AppCompatActivity() {
             progress_bar.visibility = View.VISIBLE
             createEmail()
         }
+    }
+
+    override fun onBackPressed() { // 뒤로가기 버튼 누르면 메인 액티비티로 이동함
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     // 회원가입 메소드

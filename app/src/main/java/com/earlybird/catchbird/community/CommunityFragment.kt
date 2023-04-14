@@ -73,13 +73,6 @@ class CommunityFragment : Fragment() {
                         override fun onClick(dialog: DialogInterface, which: Int) {
                             val intent = Intent(context, LoginActivity::class.java)
                             startActivity(intent)
-
-                            callback = object : OnBackPressedCallback(true) {
-                                override fun handleOnBackPressed() {
-                                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
-                                }
-                            }
-                            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
                             //Log.d("MyTag", "positive")
                         }
                     })
@@ -89,14 +82,14 @@ class CommunityFragment : Fragment() {
                             //Log.d("MyTag", "negative")
                         }
                     })
-                    .setCancelable(false)
-                        //백 버튼 사용 불가
-                        /*
-                    .setNeutralButton("neutral", object : DialogInterface.OnClickListener {
+                    .setNeutralButton("회원가입", object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface, which: Int) {
+                            val intent = Intent(context, SignupActivity::class.java)
+                            startActivity(intent)
                             //Log.d("MyTag", "neutral")
                         }
-                    })*/
+                    })
+                    .setCancelable(false) // 뒤로가기 사용불가
                     .create()
                     .show()
             }
