@@ -89,6 +89,7 @@ class CommunityFragment : Fragment() {
                             //Log.d("MyTag", "negative")
                         }
                     })
+                    .setCancelable(false)
                         /*
                     .setNeutralButton("neutral", object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface, which: Int) {
