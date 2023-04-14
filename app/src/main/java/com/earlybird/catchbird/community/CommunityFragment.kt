@@ -89,7 +89,7 @@ class CommunityFragment : Fragment() {
                             //Log.d("MyTag", "neutral")
                         }
                     })
-                    .setCancelable(false)
+                    .setCancelable(false) // 뒤로가기 사용불가
                     .create()
                     .show()
             }
