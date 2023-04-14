@@ -3,40 +3,43 @@ package com.earlybird.catchbird.community
 
 //import com.earlybird.catchbird.community.util.FcmPush
 //import kotlin.collections.EmptyList.size
-import android.app.Activity
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
-import com.earlybird.catchbird.community.model.ProfileDTO
+import com.earlybird.catchbird.home.CameraFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
 import okhttp3.OkHttpClient
-import java.lang.reflect.InvocationTargetException
 
 
 class CommunityFragment : Fragment() {
 
     val PICK_PROFILE_FROM_ALBUM = 10
-
-
     var user: FirebaseUser? = null
     var uid : String? = null
     var firestore: FirebaseFirestore? = null
@@ -44,6 +47,10 @@ class CommunityFragment : Fragment() {
     var okHttpClient: OkHttpClient? = null
     //var fcmPush: FcmPush? = null
     var mainView: View? = null
+    private lateinit var callback: OnBackPressedCallback
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -52,6 +59,46 @@ class CommunityFragment : Fragment() {
         user = FirebaseAuth.getInstance().currentUser
         firestore = FirebaseFirestore.getInstance()
         okHttpClient = OkHttpClient()
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+
+
+
+        if (user == null) {
+
+            context?.let {
+                AlertDialog.Builder(it)
+                    .setTitle("로그인 필요")
+                    .setMessage("커뮤니티를 이용하시려면 로그인이 필요합니다!")
+                    .setPositiveButton("로그인", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialog: DialogInterface, which: Int) {
+                            val intent = Intent(context, LoginActivity::class.java)
+                            startActivity(intent)
+
+                            callback = object : OnBackPressedCallback(true) {
+                                override fun handleOnBackPressed() {
+                                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
+                                }
+                            }
+                            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+                            //Log.d("MyTag", "positive")
+                        }
+                    })
+                    .setNegativeButton("취소", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialog: DialogInterface, which: Int) {
+                            requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
+                            //Log.d("MyTag", "negative")
+                        }
+                    })
+                        /*
+                    .setNeutralButton("neutral", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialog: DialogInterface, which: Int) {
+                            //Log.d("MyTag", "neutral")
+                        }
+                    })*/
+                    .create()
+                    .show()
+            }
+        }
 
         //fcmPush = FcmPush()
 
@@ -83,11 +130,7 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
-        firestore = FirebaseFirestore.getInstance()
-        uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        val intent = Intent(context, LoginActivity::class.java)
-        startActivity(intent)
 
         // Profile 버튼에 쓰일 프로필 이미지 가져오기
         if (uid != null)
@@ -125,6 +168,21 @@ class CommunityFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         imagesSnapshot?.remove()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, CameraFragment()).commit()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 
     inner class CommunityRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -354,3 +412,5 @@ class CommunityFragment : Fragment() {
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
+
+
