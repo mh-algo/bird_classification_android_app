@@ -90,6 +90,7 @@ class CommunityFragment : Fragment() {
                         }
                     })
                     .setCancelable(false)
+                        //백 버튼 사용 불가
                         /*
                     .setNeutralButton("neutral", object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface, which: Int) {
