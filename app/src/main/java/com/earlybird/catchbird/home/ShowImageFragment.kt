@@ -103,7 +103,7 @@ class ShowImageFragment : Fragment() {
         }
     }
 
-    fun getFromAlbum() {
+    private fun getFromAlbum() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         activityLauncher.launch(intent)
@@ -115,7 +115,7 @@ class ShowImageFragment : Fragment() {
         Glide.with(requireActivity()).asBitmap().load(uri).into(binding.imageView)
     }
 
-    fun showModelResultFragment(imageUri: Uri?, type: String?) {
+    private fun showModelResultFragment(imageUri: Uri?, type: String?) {
         val fragment = ModelResultFragment.newInstance(imageUri.toString(), type)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }

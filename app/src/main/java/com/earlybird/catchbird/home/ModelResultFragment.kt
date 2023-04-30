@@ -82,6 +82,8 @@ class ModelResultFragment : Fragment() {
             ) {
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor", BirdImageList.data[position].birdKor)
+                if(type=="camera")
+                    intent.putExtra("cameraUri", imageUri.toString())
                 startActivity(intent)
             }
         }

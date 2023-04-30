@@ -3,6 +3,7 @@ package com.earlybird.catchbird.encyclopedia
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.*
@@ -47,9 +48,14 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         binding.encyclopediaBirdInforImage2.clipToOutline = true
         Glide.with(this).load(bird_info).into(binding.encyclopediaBirdInforImage2)
 
-
+        // ModelResultFragment에서 넘어온 경우
+        intent.getStringExtra("cameraUri")?.run {
+            binding.imageUpload.visibility = View.VISIBLE
+            binding.imageUpload.setOnClickListener {
+                // 업로드
+            }
+        }
     }
-
 
     override fun onYesButtonClick(num: Int, theme: Int) {
         TODO("Not yet implemented")
