@@ -5,18 +5,18 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.camera2.*
 import android.hardware.camera2.params.MeteringRectangle
+import android.icu.text.SimpleDateFormat
+import android.location.LocationManager
 import android.media.Image
 import android.media.ImageReader
 import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.HandlerThread
+import android.os.*
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
@@ -28,8 +28,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.math.MathUtils.clamp
 import androidx.fragment.app.Fragment
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.data.CaptureTime
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
+import com.google.android.gms.location.*
 import java.io.*
+import java.util.Date
 import kotlin.math.sqrt
 
 
@@ -130,6 +133,7 @@ open class CameraFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+
         try {
             stopBackgroundThread()
         } catch (e: InterruptedException) {
@@ -156,6 +160,8 @@ open class CameraFragment : Fragment() {
         binding.button.setOnClickListener {
             try {
                 takePicture()
+                requestDate()
+                requestLocation()
             } catch (e: CameraAccessException) {
                 e.printStackTrace()
             } catch (e: java.lang.NullPointerException) {
@@ -489,7 +495,7 @@ open class CameraFragment : Fragment() {
         }
     }
 
-    fun getFromAlbum() {
+    private fun getFromAlbum() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         activityLauncher.launch(intent)
@@ -503,7 +509,62 @@ open class CameraFragment : Fragment() {
     }
 
     private fun showImageFragment(uri: Uri?, type: String?) {
-        val fragment = ShowImageFragment.newInstance(uri.toString(), type)
+        val fragment = ShowImageFragment.newInstance(uri.toString(), type, latitude, longitude)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
+    }
+
+    private fun requestDate() {
+        val now = System.currentTimeMillis()
+        val date = Date(now)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val timeFormat = SimpleDateFormat("HH:mm:ss")
+        Log.d(TAG, dateFormat.format(date))
+        Log.d(TAG, timeFormat.format(date))
+
+        CaptureTime.date = dateFormat.format(date)
+        CaptureTime.time = timeFormat.format(date)
+    }
+
+    var latitude: String? = null
+    var longitude: String? = null
+
+    private fun requestLocation() {
+        val locationClient:FusedLocationProviderClient? = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        try {
+            locationClient?.lastLocation
+                ?.addOnSuccessListener { location ->
+                    if (location == null) {
+                        Log.d(TAG, "최근 위치 확인 실패")
+                    } else {
+                        Log.d(TAG, "최근 위치 : ${location.latitude}, ${location.longitude}")
+                        latitude = location.latitude.toString()
+                        longitude = location.longitude.toString()
+                    }
+                }
+                ?.addOnFailureListener {
+                    Log.d(TAG, "최근 위치 확인 시 에러 : ${it.message}")
+                    it.printStackTrace()
+                }
+
+            val locationRequest = LocationRequest.create()
+            locationRequest.run {
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                interval = 20 * 1000
+            }
+
+            val locationCallback = object: LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    locationResult.let {
+                        Log.d(TAG,"내 위치 : ${it.locations[0].latitude}, ${it.locations[0].longitude}")
+                        latitude = it.locations[0].latitude.toString()
+                        longitude = it.locations[0].longitude.toString()
+                    }
+                }
+            }
+            locationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
     }
 }

@@ -29,6 +29,8 @@ class ShowImageFragment : Fragment() {
     lateinit var activityLauncher: ActivityResultLauncher<Intent>
     private var uri: Uri? = null
     private var type: String? = null
+    private var latitude: String? = null
+    private var longitude: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,9 @@ class ShowImageFragment : Fragment() {
         type = bundle?.getString("type")?:""
         val path = bundle?.getString("path")
         uri = Uri.parse(path)
+        latitude = bundle?.getString("latitude")
+        longitude = bundle?.getString("longitude")
+
 
         activityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -91,12 +96,14 @@ class ShowImageFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(path: String?, type: String?): ShowImageFragment {
+        fun newInstance(path: String?, type: String?, latitude: String?, longitude: String?): ShowImageFragment {
             val fragment = ShowImageFragment()
 
             val bundle = Bundle()
             bundle.putString("type", type)
             bundle.putString("path", path)
+            bundle.putString("latitude", latitude)
+            bundle.putString("longitude", longitude)
             fragment.arguments = bundle
 
             return fragment
@@ -116,7 +123,7 @@ class ShowImageFragment : Fragment() {
     }
 
     private fun showModelResultFragment(imageUri: Uri?, type: String?) {
-        val fragment = ModelResultFragment.newInstance(imageUri.toString(), type)
+        val fragment = ModelResultFragment.newInstance(imageUri.toString(), type, latitude, longitude)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }
 }

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -29,12 +28,16 @@ class ModelResultFragment : Fragment() {
 
     private var imageUri: Uri? = null
     private var type: String? = null
+    private var latitude: String? = null
+    private var longitude: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bundle = arguments
         imageUri = bundle?.getString("cameraUri")?.toUri()
         type = bundle?.getString("type")
+        latitude = bundle?.getString("latitude")
+        longitude = bundle?.getString("longitude")
     }
 
     override fun onCreateView(
@@ -82,19 +85,24 @@ class ModelResultFragment : Fragment() {
             ) {
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor", BirdImageList.data[position].birdKor)
-                if(type=="camera")
+                if(type=="camera") {
                     intent.putExtra("cameraUri", imageUri.toString())
+                    intent.putExtra("latitude", latitude)
+                    intent.putExtra("longitude", longitude)
+                }
                 startActivity(intent)
             }
         }
     }
 
     companion object {
-        fun newInstance(imageUri: String?, type: String?): ModelResultFragment {
+        fun newInstance(imageUri: String?, type: String?, latitude: String?, longitude: String?): ModelResultFragment {
             val fragment = ModelResultFragment()
             val bundle = Bundle()
             bundle.putString("cameraUri", imageUri)
             bundle.putString("type", type)
+            bundle.putString("latitude", latitude)
+            bundle.putString("longitude", longitude)
             fragment.arguments = bundle
 
             return fragment
@@ -102,7 +110,7 @@ class ModelResultFragment : Fragment() {
     }
 
     private fun showImageFragment(imageUri: Uri?, type: String?) {
-        val fragment = ShowImageFragment.newInstance(imageUri.toString(), type)
+        val fragment = ShowImageFragment.newInstance(imageUri.toString(), type, latitude, longitude)
         requireActivity().supportFragmentManager.beginTransaction().replace(R.id.fragmentContainerView, fragment).commit()
     }
 }
