@@ -3,11 +3,11 @@ package com.earlybird.catchbird.encyclopedia
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.*
@@ -75,8 +75,6 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
                 uploadImage(this)
             }
         }
-
-
     }
 
     override fun onYesButtonClick(num: Int, theme: Int) {
@@ -105,15 +103,6 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
             val imageName = imageUri.split('/').last()
             val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user!!.uid}/$birdKor/$imageName")
 
-//            val metadata = storageMetadata {
-//                setCustomMetadata("date", CaptureTime.date)
-//                setCustomMetadata("time", CaptureTime.time)
-//                setCustomMetadata("latitude", latitude)
-//                setCustomMetadata("longitude", longitude)
-//            }
-//
-//            val uploadTask: UploadTask = imageRef.putFile(this.toUri(), metadata)
-
             imageRef.putFile(imageUri.toUri()).continueWithTask {
                 return@continueWithTask imageRef.downloadUrl
             }.addOnFailureListener {
@@ -127,6 +116,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
     private fun uploadLoaction(imageName:String, uri: Uri) {
         val db = Firebase.firestore
         val data = hashMapOf(
+            "bird" to birdKor,
             "date" to CaptureTime.date,
             "time" to CaptureTime.time,
             "latitude" to latitude,
@@ -136,7 +126,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
 
         if (user != null) {
             db.collection("birdImageData").document(user!!.uid)
-                .collection(birdKor).document(imageName)
+                .collection("imageInfo").document(imageName)
                 .set(data)
                 .addOnSuccessListener {
                     Toast.makeText(this, "업로드가 완료되었습니다", Toast.LENGTH_SHORT).show()

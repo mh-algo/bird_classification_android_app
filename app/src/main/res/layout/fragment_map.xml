@@ -28,14 +28,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/bird_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
                 android:text="새 이름" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/user"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -59,16 +59,16 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/bird_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="새 설명1" />
+                        android:text="포획 시간" />
 
                     <TextView
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="새 설명 2" />
+                        android:text="새 설명" />
 
                     <TextView
                         android:id="@+id/textView6"

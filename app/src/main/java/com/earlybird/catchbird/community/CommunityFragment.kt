@@ -308,7 +308,7 @@ class CommunityFragment : Fragment() {
             viewHolder.detailviewitem_favorite_imageview.setOnClickListener { favoriteEvent(position) }
 
             //좋아요 버튼 설정
-            if (contentDTOs[position].favorites.containsKey(FirebaseAuth.getInstance().currentUser!!.uid)) {
+            if (contentDTOs[position].favorites.containsKey(FirebaseAuth.getInstance().currentUser?.uid)) {
 
                 viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)
 
