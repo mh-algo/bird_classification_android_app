@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.databinding.FragmentMapBinding
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
@@ -34,6 +35,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val markersInfo = arrayListOf<HashMap<String, String>>()
     private val activeMarkers = arrayListOf<Marker>()
+    private val userName = hashMapOf<String, String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,14 +63,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         markersInfo.clear()
         val db = Firebase.firestore
+        db.collection("profileImages")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    userName[document.id] = document.data["nickname"].toString()
+                }
+            }
         db.collectionGroup("imageInfo")
             .get()
             .addOnSuccessListener {documents ->
                 for (document in documents) {
                     Log.d(TAG, "${document.id} -> ${document.data}")
-                    markersInfo.add(document.data as HashMap<String, String>)
-                    val latitude = document.data["latitude"].toString()
-                    val longitude = document.data["longitude"].toString()
+                    val markersInfoData = document.data as HashMap<String, String>
+                    markersInfo.add(markersInfoData)
+                    val latitude = markersInfoData["latitude"].toString()
+                    val longitude = markersInfoData["longitude"].toString()
                     val location = LatLng(latitude.toDouble(), longitude.toDouble())
 
                     val currentPosition = getCurrentPosition(naverMap)
@@ -76,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val marker = Marker()
                     marker.position = location
                     marker.map = naverMap
-                    marker.onClickListener = onClickListener(document.data as HashMap<String, String>)
+                    marker.onClickListener = onClickListener(markersInfoData)
                     activeMarkers.add(marker)
                 }
             }
@@ -134,8 +144,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // 새 정보창 열기
     private fun onClickListener(markerInfo: HashMap<String,String>):Overlay.OnClickListener {
         val listener = Overlay.OnClickListener { overlay ->
+            val uid = markerInfo["uid"]
             binding.infoLayout.visibility = View.VISIBLE
             binding.birdName.text = markerInfo["bird"]
+            binding.userName.text = userName[uid]
             binding.birdDate.text = markerInfo["date"] + " " + markerInfo["time"]
             val imageUri = markerInfo["imageUri"]?.toUri()
             Glide.with(requireActivity()).load(imageUri).into(binding.imageView)

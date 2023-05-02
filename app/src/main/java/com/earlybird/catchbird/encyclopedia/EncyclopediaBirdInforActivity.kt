@@ -116,6 +116,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
     private fun uploadLoaction(imageName:String, uri: Uri) {
         val db = Firebase.firestore
         val data = hashMapOf(
+            "uid" to user?.uid,
             "bird" to birdKor,
             "date" to CaptureTime.date,
             "time" to CaptureTime.time,
