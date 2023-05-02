@@ -2,6 +2,7 @@ package com.earlybird.catchbird.encyclopedia
 
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -15,11 +16,11 @@ import com.earlybird.catchbird.community.SignupActivity
 import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.data.CaptureTime
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.ktx.storageMetadata
 
 
 class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface {
@@ -34,6 +35,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
 
     private var latitude: String? = null
     private var longitude: String? = null
+
+    private var user : FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,48 +66,13 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         Glide.with(this).load(bird_info).into(binding.encyclopediaBirdInforImage2)
 
         // ModelResultFragment에서 넘어온 경우
-
         intent.getStringExtra("cameraUri")?.run {
             binding.imageUpload.visibility = View.VISIBLE
             latitude = intent.getStringExtra("latitude")
             longitude = intent.getStringExtra("longitude")
 
             binding.imageUpload.setOnClickListener {
-                val user = Firebase.auth.currentUser
-                if (user==null) {
-                    AlertDialog.Builder(this@EncyclopediaBirdInforActivity)
-                        .setTitle("로그인 필요")
-                        .setMessage("커뮤니티를 이용하시려면 로그인이 필요합니다!")
-                        .setPositiveButton("로그인") { dialog, which ->
-                            val intent = Intent(this@EncyclopediaBirdInforActivity, LoginActivity::class.java)
-                            startActivity(intent)
-                        }
-                        .setNegativeButton("취소") { dialog, which -> }
-                        .setNeutralButton("회원가입") { dialog, which ->
-                            val intent = Intent(this@EncyclopediaBirdInforActivity, SignupActivity::class.java)
-                            startActivity(intent)
-                        }
-                        .setCancelable(false) // 뒤로가기 사용불가
-                        .create()
-                        .show()
-                } else {
-                    val imageName = this.split('/').last()
-                    val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user.uid}/$birdKor/$imageName")
-
-                    val metadata = storageMetadata {
-                        setCustomMetadata("date", CaptureTime.date)
-                        setCustomMetadata("time", CaptureTime.time)
-                        setCustomMetadata("latitude", latitude)
-                        setCustomMetadata("longitude", longitude)
-                    }
-
-                    val uploadTask: UploadTask = imageRef.putFile(this.toUri(), metadata)
-                    uploadTask.addOnFailureListener {
-
-                    }.addOnSuccessListener {
-                        Toast.makeText(this@EncyclopediaBirdInforActivity, "업로드가 완료되었습니다!!", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                uploadImage(this)
             }
         }
 
@@ -113,6 +81,70 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
 
     override fun onYesButtonClick(num: Int, theme: Int) {
         TODO("Not yet implemented")
+    }
+
+    private fun uploadImage(imageUri:String) {
+        user = Firebase.auth.currentUser
+        if (user==null) {
+            AlertDialog.Builder(this)
+                .setTitle("로그인 필요")
+                .setMessage("커뮤니티를 이용하시려면 로그인이 필요합니다!")
+                .setPositiveButton("로그인") { dialog, which ->
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                }
+                .setNegativeButton("취소") { dialog, which -> }
+                .setNeutralButton("회원가입") { dialog, which ->
+                    val intent = Intent(this, SignupActivity::class.java)
+                    startActivity(intent)
+                }
+                .setCancelable(false) // 뒤로가기 사용불가
+                .create()
+                .show()
+        } else {
+            val imageName = imageUri.split('/').last()
+            val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user!!.uid}/$birdKor/$imageName")
+
+//            val metadata = storageMetadata {
+//                setCustomMetadata("date", CaptureTime.date)
+//                setCustomMetadata("time", CaptureTime.time)
+//                setCustomMetadata("latitude", latitude)
+//                setCustomMetadata("longitude", longitude)
+//            }
+//
+//            val uploadTask: UploadTask = imageRef.putFile(this.toUri(), metadata)
+
+            imageRef.putFile(imageUri.toUri()).continueWithTask {
+                return@continueWithTask imageRef.downloadUrl
+            }.addOnFailureListener {
+                Toast.makeText(this, "업로드 실패\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
+            }.addOnSuccessListener {uri->
+                uploadLoaction(imageName, uri)   // 위치 정보 업로드
+            }
+        }
+    }
+
+    private fun uploadLoaction(imageName:String, uri: Uri) {
+        val db = Firebase.firestore
+        val data = hashMapOf(
+            "date" to CaptureTime.date,
+            "time" to CaptureTime.time,
+            "latitude" to latitude,
+            "longitude" to longitude,
+            "imageUri" to uri
+        )
+
+        if (user != null) {
+            db.collection("birdImageData").document(user!!.uid)
+                .collection(birdKor).document(imageName)
+                .set(data)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "업로드가 완료되었습니다", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "업로드 실패\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun createDatabase() {
