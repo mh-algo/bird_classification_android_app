@@ -357,10 +357,13 @@ class UserActivity : AppCompatActivity() {
             storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
                 return@continueWithTask  storageRef.downloadUrl
             }.addOnCompleteListener { uri ->
+                //firestore?.collection("profileImages")?.document(uid)!!.get()
 
-                var profileDTO = ProfileDTO("example", imageUri.toString(),uid)
-
-                firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
+                firestore?.collection("profileImages")?.document(uid)!!.update("image", imageUri.toString())
+                Toast.makeText(this,
+                    "프로필 사진이 변경되었습니다!", Toast.LENGTH_SHORT).show()
+                //var profileDTO = ProfileDTO("example", ,uid)
+                //firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
             }
 
             //Toast.makeText("Changed!")
