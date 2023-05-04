@@ -75,7 +75,7 @@ class SignupActivity : AppCompatActivity() {
                     firestore?.collection("users")?.document(uid.toString())?.set(followDTO)
 
                     //TODO("닉네임, 이메일 중복 체크 구현하기")
-                    val profileDTO = ProfileDTO(binding.nameEditText.text.toString(), "https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a")
+                    val profileDTO = ProfileDTO(binding.nameEditText.text.toString(), "https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a", uid.toString())
                     firestore?.collection("profileImages")?.document(uid.toString())?.set(profileDTO)
                     
                     finish()
