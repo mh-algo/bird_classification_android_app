@@ -24,7 +24,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_encyclopedia.*
 import kotlinx.android.synthetic.main.item_classification.view.*
 import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.*
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class EncyclopediaFragment : Fragment() {
@@ -37,6 +40,9 @@ class EncyclopediaFragment : Fragment() {
     var auth: FirebaseAuth? = null
     var uid : String? = null
     var firestore: FirebaseFirestore? = null
+    var currentUserUid : String? = null
+    var registData = mutableSetOf<String>()
+    val registImageData = arrayListOf<BirdImageData>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,19 +50,31 @@ class EncyclopediaFragment : Fragment() {
     ): View? {
         val intent = Intent(context, LoginActivity::class.java)
         startActivity(intent)
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         uid = FirebaseAuth.getInstance().currentUser?.uid
-        // Log.d("유저 아이디", "uid"+uid)
+        currentUserUid = auth?.currentUser?.uid
+
+        val db = Firebase.firestore
+
+        db.collection("birdImageData").document(currentUserUid.toString()).collection("imageInfo")
+            .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
+            .addOnSuccessListener { documents ->
+                for (document in documents){
+                    registData.add(document.data["bird"].toString())
+                }
+            }
+
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(data)
             spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
-            val regist = arrayListOf<BirdImageData>()
-            // todo uid로 firebase의 저장된 새 이미지와 이름을 가져와 regist배열에 추가 후 출력
+
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
-            binding.recyclerView.adapter = MyAdapter(regist)
-            spinnerList = regist
+            binding.recyclerView.adapter = MyAdapter(registImageData)
+            spinnerList = registImageData
             Log.d("my", "유저 도감등록된 새 리스트 출력함수")
 
         }
@@ -153,8 +171,12 @@ class EncyclopediaFragment : Fragment() {
 
             name.text = bird.birdKor
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
-            // todo firebase의 해당 유저(uid)의 등록된 사진을 가져와 image을 교체
-            // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
+
+           if(registData.contains(bird.birdKor)){
+               image.alpha = 1f
+               registImageData.add(bird)
+           }
+
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)
