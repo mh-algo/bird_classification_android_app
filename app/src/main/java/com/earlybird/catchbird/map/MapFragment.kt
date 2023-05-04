@@ -1,17 +1,31 @@
 package com.earlybird.catchbird.map
 
 import android.content.ContentValues.TAG
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
+import com.earlybird.catchbird.community.LoginActivity
+import com.earlybird.catchbird.community.SignupActivity
+import com.earlybird.catchbird.data.BirdImageList
+import com.earlybird.catchbird.data.BirdInfoData
+import com.earlybird.catchbird.data.CaptureTime
+import com.earlybird.catchbird.databinding.DialogRequestBinding
 import com.earlybird.catchbird.databinding.FragmentMapBinding
+import com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
@@ -22,6 +36,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import kotlinx.android.synthetic.main.dialog_request.view.*
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -36,6 +51,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val markersInfo = arrayListOf<HashMap<String, String>>()
     private val activeMarkers = arrayListOf<Marker>()
     private val userName = hashMapOf<String, String>()
+    lateinit var db: FirebaseFirestore
+    private var birdName = ""
+    private var imageName = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +68,55 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         mapFragment.getMapAsync(this)
 
+        binding.infoLayout.setOnClickListener {
+            val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
+            intent.putExtra("birdKor", birdName)
+            startActivity(intent)
+        }
+
+        db = Firebase.firestore
+        binding.requestBtn.setOnClickListener {
+            val user = Firebase.auth.currentUser
+            if (user==null) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("로그인 필요")
+                    .setMessage("정보 수정을 요청하시려면 로그인이 필요합니다!")
+                    .setPositiveButton("로그인") { dialog, which ->
+                        val intent = Intent(context, LoginActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소") { dialog, which -> }
+                    .setNeutralButton("회원가입") { dialog, which ->
+                        val intent = Intent(context, SignupActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setCancelable(false) // 뒤로가기 사용불가
+                    .create()
+                    .show()
+            } else {
+                val dialogLayout = inflater.inflate(R.layout.dialog_request, null)
+                AlertDialog.Builder(requireContext())
+                    .setView(dialogLayout)
+                    .setPositiveButton("전송") { dialog, which ->
+                        val data = hashMapOf(
+                            "imageInfo" to imageName,
+                            "request" to dialogLayout.editTextTextMultiLine.text.toString()
+                        )
+                        Log.d(TAG, data.toString())
+                        db.collection("userRequest").document(user.uid)
+                            .collection("request").document(imageName)
+                            .set(data)
+                            .addOnSuccessListener {
+                                Toast.makeText(requireContext(), "전송 완료되었습니다", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                    }
+                    .setNegativeButton("닫기") { dialog, which -> }
+                    .create()
+                    .show()
+            }
+        }
+
         return binding.root
     }
 
@@ -62,7 +129,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         uiSettings.isLocationButtonEnabled = true
 
         markersInfo.clear()
-        val db = Firebase.firestore
         db.collection("profileImages")
             .get()
             .addOnSuccessListener { result ->
@@ -78,6 +144,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val markersInfoData = document.data as HashMap<String, String>
                     val latitude = markersInfoData["latitude"]
                     val longitude = markersInfoData["longitude"]
+                    markersInfoData["imageName"] = document.id
                     if (latitude != null && longitude != null){
                         markersInfo.add(markersInfoData)
                         val location = LatLng(latitude.toDouble(), longitude.toDouble())
@@ -98,7 +165,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         naverMap.addOnCameraChangeListener { i, b ->
             freeActiveMarkers()
-            // 정의된 마커위치들중 가시거리 내에있는것들만 마커 생성
+            // 정의된 마커 위치들 중 일정 거리 내에 있는 곳만 마커 생성
             val currentPosition = getCurrentPosition(naverMap)
             for (markersInfoData in markersInfo) {
                 val latitude = markersInfoData["latitude"].toString()
@@ -145,12 +212,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // 새 정보창 열기
     private fun onClickListener(markerInfo: HashMap<String,String>):Overlay.OnClickListener {
+        birdName = markerInfo["bird"]?:""
+        imageName = markerInfo["imageName"]?:""
+        (activity as MainActivity).searchBirdInfo(birdName)
         val listener = Overlay.OnClickListener { overlay ->
             val uid = markerInfo["uid"]
             binding.infoLayout.visibility = View.VISIBLE
-            binding.birdName.text = markerInfo["bird"]
+            binding.birdName.text = birdName
             binding.userName.text = userName[uid]
             binding.birdDate.text = markerInfo["date"] + " " + markerInfo["time"]
+            binding.birdInfo.text = BirdInfoData.info
             val imageUri = markerInfo["imageUri"]?.toUri()
             Glide.with(requireActivity()).load(imageUri).into(binding.imageView)
             true

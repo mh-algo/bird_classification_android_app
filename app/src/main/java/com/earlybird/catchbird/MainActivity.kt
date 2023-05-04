@@ -11,6 +11,7 @@ import androidx.core.net.toUri
 import com.earlybird.catchbird.community.CommunityFragment
 import com.earlybird.catchbird.data.BirdImageData
 import com.earlybird.catchbird.data.BirdImageList
+import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.databinding.ActivityMainBinding
 import com.earlybird.catchbird.encyclopedia.EncyclopediaFragment
 import com.earlybird.catchbird.home.CameraFragment
@@ -217,6 +218,21 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
 
                 BirdImageList.data.add(BirdImageData(specie_k, specie_e, image_m.toUri(), image_f.toUri()))
             }
+            cursor.close()
+        }
+    }
+
+    fun searchBirdInfo(specie: String) {
+        // DB에 있는 새 이름으로 검색
+        val sql = "select specie, image_m, image_f, info from $birdImage, $birdInfo " +
+                "where $birdImage.specie_k = $birdInfo.specie and $birdInfo.specie = '$specie'"
+        val cursor = database?.rawQuery(sql, null)
+        if (cursor != null) {
+            cursor.moveToNext()
+            BirdInfoData.specie = cursor.getString(0)
+            BirdInfoData.image_m = cursor.getString(1).toUri()
+            BirdInfoData.image_f = cursor.getString(2).toUri()
+            BirdInfoData.info = cursor.getString(3)
             cursor.close()
         }
     }

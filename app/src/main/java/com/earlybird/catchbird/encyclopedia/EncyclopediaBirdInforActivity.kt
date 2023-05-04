@@ -88,7 +88,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         if (user==null) {
             AlertDialog.Builder(this)
                 .setTitle("로그인 필요")
-                .setMessage("커뮤니티를 이용하시려면 로그인이 필요합니다!")
+                .setMessage("새를 등록하시려면 로그인이 필요합니다!")
                 .setPositiveButton("로그인") { dialog, which ->
                     val intent = Intent(this, LoginActivity::class.java)
                     startActivity(intent)
