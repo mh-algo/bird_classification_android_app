@@ -358,8 +358,8 @@ class UserActivity : AppCompatActivity() {
                 return@continueWithTask  storageRef.downloadUrl
             }.addOnCompleteListener { uri ->
 
-                var profileDTO = ProfileDTO("example", imageUri.toString())
-                //firestore?.collection("users")?.document(uid)!!.get("nickname").toString()
+                var profileDTO = ProfileDTO("example", imageUri.toString(),uid)
+
                 firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
             }
 
