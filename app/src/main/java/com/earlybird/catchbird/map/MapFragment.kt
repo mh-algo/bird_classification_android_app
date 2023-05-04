@@ -1,14 +1,12 @@
 package com.earlybird.catchbird.map
 
 import android.content.ContentValues.TAG
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
@@ -18,11 +16,9 @@ import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.LoginActivity
 import com.earlybird.catchbird.community.SignupActivity
-import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.data.BirdInfoData
-import com.earlybird.catchbird.data.CaptureTime
-import com.earlybird.catchbird.databinding.DialogRequestBinding
 import com.earlybird.catchbird.databinding.FragmentMapBinding
+import com.earlybird.catchbird.encyclopedia.EncyclopediaActivity
 import com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -212,10 +208,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     // 새 정보창 열기
     private fun onClickListener(markerInfo: HashMap<String,String>):Overlay.OnClickListener {
-        birdName = markerInfo["bird"]?:""
-        imageName = markerInfo["imageName"]?:""
-        (activity as MainActivity).searchBirdInfo(birdName)
-        val listener = Overlay.OnClickListener { overlay ->
+        return Overlay.OnClickListener { overlay ->
+            birdName = markerInfo["bird"]?:""
+            imageName = markerInfo["imageName"]?:""
+            try {
+                (activity as MainActivity).searchBirdInfo(birdName)
+            } catch (e:ClassCastException) {
+                (activity as EncyclopediaBirdInforActivity).searchBirdInfo(birdName)
+            }
+
             val uid = markerInfo["uid"]
             binding.infoLayout.visibility = View.VISIBLE
             binding.birdName.text = birdName
@@ -226,7 +227,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             Glide.with(requireActivity()).load(imageUri).into(binding.imageView)
             true
         }
-        return listener
     }
 
     companion object {

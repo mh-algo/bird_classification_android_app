@@ -147,7 +147,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         database = openOrCreateDatabase(databaseName, MODE_PRIVATE, null)
     }
 
-    private fun searchBirdInfo(specie: String) {
+    fun searchBirdInfo(specie: String) {
         val sql = "select specie, image_m, image_f, info from $birdImage, $birdInfo " +
                 "where $birdImage.specie_k = $birdInfo.specie and $birdInfo.specie = '$specie'"
         val cursor = database?.rawQuery(sql, null)
