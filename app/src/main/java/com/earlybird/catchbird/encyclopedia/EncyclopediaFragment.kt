@@ -155,10 +155,7 @@ class EncyclopediaFragment : Fragment() {
     fun moveMainPage(user: FirebaseUser?) {
         //User is Signed in
         if (user != null) {
-            Toast.makeText(
-                context, getString(R.string.signin_complete),
-                Toast.LENGTH_LONG
-            ).show()
+            
             //startActivity(Intent(this, MainActivity::class.java))
         }
     }
