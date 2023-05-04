@@ -15,6 +15,7 @@ import com.earlybird.catchbird.community.LoginActivity
 import com.earlybird.catchbird.community.SignupActivity
 import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.data.CaptureTime
+import com.earlybird.catchbird.data.UploadChk
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -36,7 +37,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
     private var latitude: String? = null
     private var longitude: String? = null
 
-    private var user : FirebaseUser? = null
+    private var user: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +83,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
     }
 
     private fun uploadImage(imageUri:String) {
+        val flag = UploadChk.chk
         user = Firebase.auth.currentUser
         if (user==null) {
             AlertDialog.Builder(this)
@@ -99,7 +101,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
                 .setCancelable(false) // 뒤로가기 사용불가
                 .create()
                 .show()
-        } else {
+        } else if(!flag){
+            UploadChk.chk = true
             val imageName = imageUri.split('/').last()
             val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user!!.uid}/$birdKor/$imageName")
 
@@ -110,6 +113,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
             }.addOnSuccessListener {uri->
                 uploadLoaction(imageName, uri)   // 위치 정보 업로드
             }
+        } else {
+            Toast.makeText(this, "등록은 한 번만 가능합니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

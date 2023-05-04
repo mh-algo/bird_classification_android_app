@@ -76,18 +76,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 for (document in documents) {
                     Log.d(TAG, "${document.id} -> ${document.data}")
                     val markersInfoData = document.data as HashMap<String, String>
-                    markersInfo.add(markersInfoData)
-                    val latitude = markersInfoData["latitude"].toString()
-                    val longitude = markersInfoData["longitude"].toString()
-                    val location = LatLng(latitude.toDouble(), longitude.toDouble())
+                    val latitude = markersInfoData["latitude"]
+                    val longitude = markersInfoData["longitude"]
+                    if (latitude != null && longitude != null){
+                        markersInfo.add(markersInfoData)
+                        val location = LatLng(latitude.toDouble(), longitude.toDouble())
 
-                    val currentPosition = getCurrentPosition(naverMap)
-                    if (!withinSightMarker(currentPosition, location,naverMap.cameraPosition.zoom)) continue
-                    val marker = Marker()
-                    marker.position = location
-                    marker.map = naverMap
-                    marker.onClickListener = onClickListener(markersInfoData)
-                    activeMarkers.add(marker)
+                        val currentPosition = getCurrentPosition(naverMap)
+                        if (!withinSightMarker(currentPosition, location,naverMap.cameraPosition.zoom)) continue
+                        val marker = Marker()
+                        marker.position = location
+                        marker.map = naverMap
+                        marker.onClickListener = onClickListener(markersInfoData)
+                        activeMarkers.add(marker)
+                    }
                 }
             }
             .addOnFailureListener {

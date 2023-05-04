@@ -29,6 +29,7 @@ import androidx.core.math.MathUtils.clamp
 import androidx.fragment.app.Fragment
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.data.CaptureTime
+import com.earlybird.catchbird.data.UploadChk
 import com.earlybird.catchbird.databinding.FragmentCameraBinding
 import com.google.android.gms.location.*
 import java.io.*
@@ -100,6 +101,7 @@ open class CameraFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        UploadChk.chk = false
         startCamera()
         binding.imageBtn.setOnClickListener {
             getFromAlbum()
