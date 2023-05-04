@@ -99,14 +99,14 @@ class UserActivity : AppCompatActivity() {
             // 도감 플로팅 버튼
             binding.collectionButton.setOnClickListener {
                 // 해당 uid를 가진 유저의 도감 정보 조회
-                val intent = Intent(this, EncyclopediaRankingActivity::class.java)
+                val intent = Intent(this, EncyclopediaOtherRankingPage::class.java)
                 intent.putExtra("destinationUid", uid)
                 startActivity(intent)
             }
 
             // 순위 정보 클릭 시
             binding.accountRankCount.setOnClickListener {
-                val intent = Intent(this, EncyclopediaOtherRankingPage::class.java)
+                val intent = Intent(this, EncyclopediaRankingActivity::class.java)
                 intent.putExtra("otheruid", uid)
                 startActivity(intent)
             }
@@ -366,7 +366,6 @@ class UserActivity : AppCompatActivity() {
                 //firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
             }
 
-            //Toast.makeText("Changed!")
             /*
             FirebaseStorage
                 .getInstance()

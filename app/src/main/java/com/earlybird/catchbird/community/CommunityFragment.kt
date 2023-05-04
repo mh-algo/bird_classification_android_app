@@ -287,6 +287,7 @@ class CommunityFragment : Fragment() {
 
             }
 
+
             // 유저 아이디
             viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
             /*
@@ -319,13 +320,13 @@ class CommunityFragment : Fragment() {
             //좋아요 카운터 설정
             viewHolder.detailviewitem_favoritecounter_textview.text = contentDTOs[position].favoriteCount.toString()
 
-
+            // 코멘트 창으로 이동
             viewHolder.detailviewitem_comment_imageview.setOnClickListener {
-                /*
-                val intent = Intent(activity, CommentActivity::class.java)
+                val intent = Intent(activity, CommentsActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
                 intent.putExtra("destinationUid", contentDTOs[position].uid)
-                startActivity(intent) */
+                intent.putExtra("nickname", contentDTOs[position].nickname)
+                startActivity(intent)
             }
 
 
@@ -400,9 +401,6 @@ class CommunityFragment : Fragment() {
 
 
     }
-
-
-
 
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
