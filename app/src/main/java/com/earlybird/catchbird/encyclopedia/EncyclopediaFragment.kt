@@ -2,6 +2,7 @@ package com.earlybird.catchbird.encyclopedia
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -41,13 +42,15 @@ class EncyclopediaFragment : Fragment() {
     var uid : String? = null
     var firestore: FirebaseFirestore? = null
     var currentUserUid : String? = null
-    var registData = mutableSetOf<String>()
+    var registDataKor = mutableSetOf<String>()
+    var registDataAll = arrayListOf<BirdImageData>()
     val registImageData = arrayListOf<BirdImageData>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View? {
+
         val intent = Intent(context, LoginActivity::class.java)
         startActivity(intent)
         auth = FirebaseAuth.getInstance()
@@ -61,8 +64,13 @@ class EncyclopediaFragment : Fragment() {
             .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
             .addOnSuccessListener { documents ->
                 for (document in documents){
-                    registData.add(document.data["bird"].toString())
+                    registDataKor.add(document.data["bird"].toString())
+                    var image = document.data["imageUri"]
+                    registDataAll.add(BirdImageData(document.data["bird"].toString(),document.data["bird"].toString(),image.toString(),image.toString()))
                 }
+                binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
+                binding.recyclerView.adapter = MyAdapter(data)
+
             }
 
         fun BirdDataList(){
@@ -71,11 +79,9 @@ class EncyclopediaFragment : Fragment() {
             spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
-
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(registImageData)
             spinnerList = registImageData
-            Log.d("my", "유저 도감등록된 새 리스트 출력함수")
 
         }
 
@@ -87,9 +93,14 @@ class EncyclopediaFragment : Fragment() {
             AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 // 전체사진, 도감등록사진 중 선택했을 때 어떤 코드 실행될지
-                when(p2){
-                    0 -> BirdDataList() // 전체사진
-                    1 -> BirdRegistDataList() // firebase와 연동해서 유저 도감등록된 새 리스트만 출력
+                when(p2) {
+                    0 -> {
+                        registImageData.clear()
+                        BirdDataList()
+                    } // 전체사진
+                    1 -> {
+                        BirdRegistDataList() // firebase와 연동해서 유저 도감등록된 새 리스트만 출력
+                    }
                 }
             }
 
@@ -98,12 +109,13 @@ class EncyclopediaFragment : Fragment() {
             }
 
         }
+
+
         binding.encyclopediaBtnRanking.setOnClickListener {
             val intent = Intent(context, EncyclopediaRankingActivity::class.java)
             startActivity(intent)
         }
-        binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
-        binding.recyclerView.adapter = MyAdapter(data)
+
 
         // Inflate the layout for this fragment
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -168,11 +180,18 @@ class EncyclopediaFragment : Fragment() {
 
             name.text = bird.birdKor
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
-
-           if(registData.contains(bird.birdKor)){
+           if(registDataKor.contains(bird.birdKor)){
                image.alpha = 1f
-               registImageData.add(bird)
-           } else {
+               for(i in 0 .. registImageData.size){
+                   if(i == registImageData.size){
+                       registImageData.add(bird)
+                       break
+                   }
+                   if(registImageData[i].birdKor == bird.birdKor)
+                       break
+               }
+           }
+           else {
                image.alpha = 0.3f
            }
 
