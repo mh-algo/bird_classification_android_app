@@ -172,6 +172,8 @@ class EncyclopediaFragment : Fragment() {
            if(registData.contains(bird.birdKor)){
                image.alpha = 1f
                registImageData.add(bird)
+           } else {
+               image.alpha = 0.3f
            }
 
             itemView.setOnClickListener{
