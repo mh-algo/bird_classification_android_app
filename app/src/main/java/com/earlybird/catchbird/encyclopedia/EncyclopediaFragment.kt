@@ -191,7 +191,7 @@ class EncyclopediaFragment : Fragment() {
                        break
                }
            }
-            else{
+           else {
                image.alpha = 0.3f
            }
 
