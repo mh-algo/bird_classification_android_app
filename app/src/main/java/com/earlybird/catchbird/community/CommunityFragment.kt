@@ -98,7 +98,7 @@ class CommunityFragment : Fragment() {
         //fcmPush = FcmPush()
 
         //푸시토큰 서버 등록
-        registerPushToken()
+        //registerPushToken()
 
 
         var view = LayoutInflater.from(activity).inflate(R.layout.fragment_community, container, false)
@@ -378,6 +378,7 @@ class CommunityFragment : Fragment() {
     }
 
     //커뮤니티
+    /*
     fun registerPushToken(){
         var pushToken = FirebaseMessaging.getInstance().token
         var uid = FirebaseAuth.getInstance().currentUser?.uid
@@ -398,9 +399,7 @@ class CommunityFragment : Fragment() {
 
             }
         }
-
-
-    }
+    } */
 
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
