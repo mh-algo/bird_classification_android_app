@@ -118,6 +118,8 @@ class CommentsActivity : AppCompatActivity() {
                 .document(comments[position].uid!!)
                 .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                     if (documentSnapshot?.data != null) {
+                        val uname = documentSnapshot?.data!!["nickname"].toString()
+                        view.commentitem_textview_profile.text = uname
 
                         val url = documentSnapshot?.data!!["image"]
                         Glide.with(holder.itemView.context)
@@ -126,7 +128,7 @@ class CommentsActivity : AppCompatActivity() {
                     }
                 }
 
-            view.commentitem_textview_profile.text = comments[position].nickname
+
             view.commentitem_textview_comment.text = comments[position].comment
         }
 
