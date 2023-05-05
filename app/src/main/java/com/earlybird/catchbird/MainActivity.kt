@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 val specie_k = cursor.getString(0)  // 새 이름(한글)
                 val image_m = cursor.getString(1)   // 새 사진(수컷)
 
-                BirdImageList.data.add(BirdImageData(specie_k, null, image_m.toUri(), null))
+                BirdImageList.data.add(BirdImageData(specie_k, null, image_m, null))
                 cursor.close()
             }
         }
@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
                 val image_m = cursor.getString(2)
                 val image_f = cursor.getString(3)
 
-                BirdImageList.data.add(BirdImageData(specie_k, specie_e, image_m.toUri(), image_f.toUri()))
+                BirdImageList.data.add(BirdImageData(specie_k, specie_e, image_m, image_f))
             }
             cursor.close()
         }
