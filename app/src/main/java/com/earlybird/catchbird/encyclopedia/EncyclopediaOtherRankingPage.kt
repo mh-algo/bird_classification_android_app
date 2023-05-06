@@ -43,6 +43,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
     private val databaseName:String = "birdName"
     private var database: SQLiteDatabase? = null
     private val birdImage = "bird_image"
+    private var type = "otherUserEncyclopedia"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -192,6 +193,8 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             itemView.setOnClickListener{
                 val intent = Intent(applicationContext, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)
+                intent.putExtra("type", type)
+                intent.putExtra("otherUid", otherUid)
                 startActivity(intent)
             }
         }

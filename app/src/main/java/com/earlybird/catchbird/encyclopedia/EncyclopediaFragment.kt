@@ -46,6 +46,9 @@ class EncyclopediaFragment : Fragment() {
     private var registDataKor = mutableSetOf<String>()
     private var registDataAll = arrayListOf<BirdImageData>()
     private var registImageData = arrayListOf<BirdImageData>()
+
+    private val type = "encyclopediaBirdLocation"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -202,6 +205,7 @@ class EncyclopediaFragment : Fragment() {
             itemView.setOnClickListener{
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)
+                intent.putExtra("type", type)
                 startActivity(intent)
             }
         }

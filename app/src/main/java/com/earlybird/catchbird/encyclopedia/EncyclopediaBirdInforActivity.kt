@@ -24,7 +24,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 
 
-class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface {
+class EncyclopediaBirdInforActivity : AppCompatActivity() {
     private val binding: ActivityEncyclopediaBirdInforBinding by lazy {
         ActivityEncyclopediaBirdInforBinding.inflate(layoutInflater)
     }
@@ -39,6 +39,9 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
 
     private var user: FirebaseUser? = null
 
+    private var type: String? = null
+    private var otherUid: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -48,6 +51,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         }
 
         birdKor = intent.getStringExtra("birdKor").toString()
+        type = intent.getStringExtra("type").toString()
+        otherUid = intent.getStringExtra("otherUid").toString()
         searchBirdInfo(birdKor)
 
         val bird_info = BirdInfoData.image_m    // 새 기본 이미지
@@ -62,7 +67,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
             startActivity(intent)
         }
         binding.encyclopediaBirdLocation.setOnClickListener {
-            val dialog = CustomDialog(this)
+            val dialog = CustomDialog(birdKor, type, otherUid)
             dialog.isCancelable = true
             dialog.show(this.supportFragmentManager,"ConfirmDialog")
         }
@@ -81,10 +86,6 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
                 uploadImage(this)
             }
         }
-    }
-
-    override fun onYesButtonClick(num: Int, theme: Int) {
-        TODO("Not yet implemented")
     }
 
     private fun uploadImage(imageUri:String) {

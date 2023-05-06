@@ -18,17 +18,14 @@ import com.earlybird.catchbird.community.LoginActivity
 import com.earlybird.catchbird.community.SignupActivity
 import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.databinding.FragmentMapBinding
-import com.earlybird.catchbird.encyclopedia.EncyclopediaActivity
 import com.earlybird.catchbird.encyclopedia.EncyclopediaBirdInforActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.*
 import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
@@ -50,6 +47,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     lateinit var db: FirebaseFirestore
     private var birdName = ""
     private var imageName = ""
+
+    private var type: String? = null
+    private var encyclopediaBird: String? = null
+    private var otherUid: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val bundle = arguments
+        type = bundle?.getString("type")
+        encyclopediaBird = bundle?.getString("encyclopediaBird")
+        otherUid = bundle?.getString("otherUid")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -119,7 +128,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
-        naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
         val uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = true
@@ -132,32 +140,111 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     userName[document.id] = document.data["nickname"].toString()
                 }
             }
-        db.collectionGroup("imageInfo")
-            .get()
-            .addOnSuccessListener {documents ->
-                for (document in documents) {
-                    Log.d(TAG, "${document.id} -> ${document.data}")
-                    val markersInfoData = document.data as HashMap<String, String>
-                    val latitude = markersInfoData["latitude"]
-                    val longitude = markersInfoData["longitude"]
-                    markersInfoData["imageName"] = document.id
-                    if (latitude != null && longitude != null){
-                        markersInfo.add(markersInfoData)
-                        val location = LatLng(latitude.toDouble(), longitude.toDouble())
+        when(type) {
+            "encyclopediaBirdLocation" -> {
+                val initialPosition = LatLng(35.88, 127.81)
+                naverMap.cameraPosition = CameraPosition(initialPosition, 6.0)
 
-                        val currentPosition = getCurrentPosition(naverMap)
-                        if (!withinSightMarker(currentPosition, location,naverMap.cameraPosition.zoom)) continue
-                        val marker = Marker()
-                        marker.position = location
-                        marker.map = naverMap
-                        marker.onClickListener = onClickListener(markersInfoData)
-                        activeMarkers.add(marker)
+                db.collectionGroup("imageInfo").whereEqualTo("bird", encyclopediaBird)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} -> ${document.data}")
+                            val markersInfoData = document.data as HashMap<String, String>
+                            val latitude = markersInfoData["latitude"]
+                            val longitude = markersInfoData["longitude"]
+                            markersInfoData["imageName"] = document.id
+                            if (latitude != null && longitude != null) {
+                                markersInfo.add(markersInfoData)
+                                val location = LatLng(latitude.toDouble(), longitude.toDouble())
+
+                                val currentPosition = getCurrentPosition(naverMap)
+                                if (!withinSightMarker(
+                                        currentPosition,
+                                        location,
+                                        naverMap.cameraPosition.zoom
+                                    )
+                                ) continue
+                                val marker = Marker()
+                                marker.position = location
+                                marker.map = naverMap
+                                marker.onClickListener = onClickListener(markersInfoData)
+                                activeMarkers.add(marker)
+                            }
+                        }
                     }
-                }
             }
-            .addOnFailureListener {
-                Log.e(TAG, "Firebase imageInfo loading fail!!!!!!")
+            "otherUserEncyclopedia" -> {
+                val initialPosition = LatLng(35.88, 127.81)
+                naverMap.cameraPosition = CameraPosition(initialPosition, 6.0)
+
+                db.collection("birdImageData").document(otherUid!!)
+                    .collection("imageInfo").whereEqualTo("bird", encyclopediaBird)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} -> ${document.data}")
+                            val markersInfoData = document.data as HashMap<String, String>
+                            val latitude = markersInfoData["latitude"]
+                            val longitude = markersInfoData["longitude"]
+                            markersInfoData["imageName"] = document.id
+                            if (latitude != null && longitude != null) {
+                                markersInfo.add(markersInfoData)
+                                val location = LatLng(latitude.toDouble(), longitude.toDouble())
+
+                                val currentPosition = getCurrentPosition(naverMap)
+                                if (!withinSightMarker(
+                                        currentPosition,
+                                        location,
+                                        naverMap.cameraPosition.zoom
+                                    )
+                                ) continue
+                                val marker = Marker()
+                                marker.position = location
+                                marker.map = naverMap
+                                marker.onClickListener = onClickListener(markersInfoData)
+                                activeMarkers.add(marker)
+                            }
+                        }
+                    }
+
             }
+            else -> {
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+                db.collectionGroup("imageInfo")
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} -> ${document.data}")
+                            val markersInfoData = document.data as HashMap<String, String>
+                            val latitude = markersInfoData["latitude"]
+                            val longitude = markersInfoData["longitude"]
+                            markersInfoData["imageName"] = document.id
+                            if (latitude != null && longitude != null) {
+                                markersInfo.add(markersInfoData)
+                                val location = LatLng(latitude.toDouble(), longitude.toDouble())
+
+                                val currentPosition = getCurrentPosition(naverMap)
+                                if (!withinSightMarker(
+                                        currentPosition,
+                                        location,
+                                        naverMap.cameraPosition.zoom
+                                    )
+                                ) continue
+                                val marker = Marker()
+                                marker.position = location
+                                marker.map = naverMap
+                                marker.onClickListener = onClickListener(markersInfoData)
+                                activeMarkers.add(marker)
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.e(TAG, "Firebase imageInfo loading fail!!!!!!")
+                    }
+            }
+        }
 
         naverMap.addOnCameraChangeListener { i, b ->
             freeActiveMarkers()
@@ -231,5 +318,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+
+        fun newInstance(type: String?, encyclopediaBird:String?, otherUid:String?): com.earlybird.catchbird.map.MapFragment {
+            val fragment = com.earlybird.catchbird.map.MapFragment()
+            val bundle = Bundle()
+            bundle.putString("type", type)
+            bundle.putString("encyclopediaBird", encyclopediaBird)
+            bundle.putString("otherUid", otherUid)
+            fragment.arguments = bundle
+
+            return fragment
+        }
     }
 }
