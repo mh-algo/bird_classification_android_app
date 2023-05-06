@@ -37,14 +37,15 @@ class EncyclopediaFragment : Fragment() {
     }
     var spinnerList = BirdImageList.data  // 전체사진, 도감 등록된 사진 구별하기 위한 변수
     val data = BirdImageList.data
+
     //Firebase Auth 관리 클래스
-    var auth: FirebaseAuth? = null
-    var uid : String? = null
-    var firestore: FirebaseFirestore? = null
-    var currentUserUid : String? = null
-    var registDataKor = mutableSetOf<String>()
-    var registDataAll = arrayListOf<BirdImageData>()
-    val registImageData = arrayListOf<BirdImageData>()
+    private var auth: FirebaseAuth? = null
+    private var uid : String? = null
+    private var firestore: FirebaseFirestore? = null
+    private var currentUserUid : String? = null
+    private var registDataKor = mutableSetOf<String>()
+    private var registDataAll = arrayListOf<BirdImageData>()
+    private var registImageData = arrayListOf<BirdImageData>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,17 +60,20 @@ class EncyclopediaFragment : Fragment() {
         currentUserUid = auth?.currentUser?.uid
 
         val db = Firebase.firestore
-
+        Log.d("test1","${data}")
         db.collection("birdImageData").document(currentUserUid.toString()).collection("imageInfo")
             .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
             .addOnSuccessListener { documents ->
                 for (document in documents){
+                    Log.d("test2","${data}")
                     registDataKor.add(document.data["bird"].toString())
                     var image = document.data["imageUri"]
                     registDataAll.add(BirdImageData(document.data["bird"].toString(),document.data["bird"].toString(),image.toString(),image.toString()))
                 }
+                Log.d("test3","${data}")
                 binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
                 binding.recyclerView.adapter = MyAdapter(data)
+
 
             }
 

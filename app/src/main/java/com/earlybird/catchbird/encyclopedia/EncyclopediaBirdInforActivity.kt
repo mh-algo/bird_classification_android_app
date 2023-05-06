@@ -56,6 +56,11 @@ class EncyclopediaBirdInforActivity : AppCompatActivity(),ConfirmDialogInterface
         binding.encyclopediaBtnBirdInforOk.setOnClickListener {
             finish()
         }
+        binding.imageView2.setOnClickListener{
+            val intent = Intent(applicationContext, EncyclopediaBirdRegistActivity::class.java)
+            // 이미지뷰 클릭시 넘겨야할 정보 입력
+            startActivity(intent)
+        }
         binding.encyclopediaBirdLocation.setOnClickListener {
             val dialog = CustomDialog(this)
             dialog.isCancelable = true
