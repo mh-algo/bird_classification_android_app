@@ -49,10 +49,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
         currentUserUid = auth?.currentUser?.uid
         otherUid = intent.getStringExtra("otherUid")
 
-        // todo 받아온 otherUid와 현재 로그인된 uid를 비교하여 같다면 나의 도감 페이지로 이동
-        if(currentUserUid.equals(otherUid)) {
-            MainActivity().ChangePage(R.id.navigation_encyclopedia)
-        }
+
         val db = Firebase.firestore
 
         db.collection("birdImageData").document(otherUid.toString()).collection("imageInfo")
@@ -70,7 +67,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
         db.collection("profileImages").document(otherUid.toString())
             .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 if(documentSnapshot?.data != null){
-                    binding.encyclopediaTitle.text = documentSnapshot?.data!!["nickname"].toString()
+                    binding.encyclopediaTitle.text = documentSnapshot?.data!!["nickname"].toString()+"님의 도감"
                 }
             }
         fun BirdDataList(){
