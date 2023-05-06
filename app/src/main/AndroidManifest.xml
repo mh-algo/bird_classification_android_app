@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EarlyBird">
         <activity
+            android:name=".encyclopedia.EncyclopediaBirdRegistActivity"
+            android:exported="true" />
+        <activity
             android:name=".encyclopedia.EncyclopediaBirdInforActivity"
             android:exported="true" />
         <activity

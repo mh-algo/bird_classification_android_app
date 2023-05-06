@@ -20,16 +20,24 @@ import com.earlybird.catchbird.data.BirdImageList
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaOtherRankingPageBinding
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaRankingBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class EncyclopediaOtherRankingPage : AppCompatActivity() {
     private val binding: ActivityEncyclopediaOtherRankingPageBinding by lazy {
         ActivityEncyclopediaOtherRankingPageBinding.inflate(layoutInflater)
     }
     var auth: FirebaseAuth? = null
-    var uid: String? = null
+    var otherUid: String? = null
+    var firestore: FirebaseFirestore? = null
     var currentUserUid: String? = null
     var spinnerList = BirdImageList.data  // 전체사진, 도감 등록된 사진 구별하기 위한 변수
     val data = BirdImageList.data
+    var registDataKor = mutableSetOf<String>()
+    var registDataAll = arrayListOf<BirdImageData>()
+    val registImageData = arrayListOf<BirdImageData>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -37,25 +45,43 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             finish()
         }
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         currentUserUid = auth?.currentUser?.uid
-        uid = intent.getStringExtra("otherUid")
+        otherUid = intent.getStringExtra("otherUid")
 
         // todo 받아온 otherUid와 현재 로그인된 uid를 비교하여 같다면 나의 도감 페이지로 이동
-        if(currentUserUid.equals(uid)) {
+        if(currentUserUid.equals(otherUid)) {
             MainActivity().ChangePage(R.id.navigation_encyclopedia)
         }
+        val db = Firebase.firestore
+
+        db.collection("birdImageData").document(otherUid.toString()).collection("imageInfo")
+            .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
+            .addOnSuccessListener { documents ->
+                for (document in documents){
+                    registDataKor.add(document.data["bird"].toString())
+                    var image = document.data["imageUri"]
+                    registDataAll.add(BirdImageData(document.data["bird"].toString(),document.data["bird"].toString(),image.toString(),image.toString()))
+                }
+                binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+                binding.recyclerView.adapter = MyAdapter(data)
+
+            }
+        db.collection("profileImages").document(otherUid.toString())
+            .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if(documentSnapshot?.data != null){
+                    binding.encyclopediaTitle.text = documentSnapshot?.data!!["nickname"].toString()
+                }
+            }
         fun BirdDataList(){
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
             binding.recyclerView.adapter = MyAdapter(data)
             spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
-            val regist = arrayListOf<BirdImageData>()
-            // firebase에 있는 도감등록 새 이름과 BirdImageList.data의 새 이름과 비교하여 일치하는 새 들만 regist 배열에 추가
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
-            binding.recyclerView.adapter = MyAdapter(regist)
-            spinnerList = regist
-            Log.d("my", "유저 도감등록된 새 리스트 출력함수")
+            binding.recyclerView.adapter = MyAdapter(registImageData)
+            spinnerList = registImageData
         }
         var sData = resources.getStringArray(R.array.sort)
         var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,sData)
@@ -66,7 +92,10 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 // 전체사진, 도감등록사진 중 선택했을 때 어떤 코드 실행될지
                 when(p2){
-                    0 -> BirdDataList() // 전체사진
+                    0 -> {
+                        registImageData.clear()
+                        BirdDataList()
+                    } // 전체사진
                     1 -> BirdRegistDataList() // firebase와 연동해서 유저 도감등록된 새 리스트만 출력
                 }
             }
@@ -76,8 +105,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             }
 
         }
-        binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
-        binding.recyclerView.adapter = MyAdapter(data)
+
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
@@ -115,6 +143,19 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             }
         })
     }
+    override fun onStart() {
+        super.onStart()
+
+        //자동 로그인 설정
+        moveMainPage(auth?.currentUser)
+    }
+    fun moveMainPage(user: FirebaseUser?) {
+        //User is Signed in
+        if (user != null) {
+
+            //startActivity(Intent(this, MainActivity::class.java))
+        }
+    }
     inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
         private var name: TextView = itemView.findViewById(R.id.encyclopedia_bird_name)
         private var image: ImageView = itemView.findViewById(R.id.encyclopedia_bird_image)
@@ -125,7 +166,20 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             Glide.with(itemView.context).load(bird.imageMale).centerCrop().into(image)
             // firebase의 해당 유저(uid)의 등록된 사진을 가져와 image을 교체
             // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
-
+            if(registDataKor.contains(bird.birdKor)){
+                image.alpha = 1f
+                for(i in 0 .. registImageData.size){
+                    if(i == registImageData.size){
+                        registImageData.add(bird)
+                        break
+                    }
+                    if(registImageData[i].birdKor == bird.birdKor)
+                        break
+                }
+            }
+            else {
+                image.alpha = 0.3f
+            }
             itemView.setOnClickListener{
                 val intent = Intent(applicationContext, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor",bird.birdKor)
