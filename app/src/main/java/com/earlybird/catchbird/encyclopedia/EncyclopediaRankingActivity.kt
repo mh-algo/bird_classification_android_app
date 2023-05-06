@@ -12,6 +12,7 @@ import com.earlybird.catchbird.R
 import com.earlybird.catchbird.Rank
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaRankingBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class EncyclopediaRankingActivity : AppCompatActivity() {
     // todo firebase에 있는 모든 유저의 새 등록 정보를 가져와 갯수 별로 점수 부여 후 점수와 순위를 매김
@@ -21,6 +22,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
     }
     var auth: FirebaseAuth? = null
     var uid: String? = null
+    var firestore: FirebaseFirestore? = null
     private var dummy = ArrayList<Rank>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
            finish()
         }
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         dummy.apply {
             add(
                 Rank(1, "a", 5000)
