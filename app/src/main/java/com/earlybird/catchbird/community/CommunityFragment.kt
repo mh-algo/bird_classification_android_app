@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
@@ -203,7 +204,7 @@ class CommunityFragment : Fragment() {
                 }
             }
 
-            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp")
+            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
@@ -225,7 +226,7 @@ class CommunityFragment : Fragment() {
 
 
         fun getContents(followers: MutableMap<String, Boolean>?) {
-            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUidList.clear()
                 if (querySnapshot == null) return@addSnapshotListener
