@@ -1,6 +1,7 @@
 package com.earlybird.catchbird.encyclopedia
 
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -38,9 +39,20 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
     var registDataKor = mutableSetOf<String>()
     var registDataAll = arrayListOf<BirdImageData>()
     val registImageData = arrayListOf<BirdImageData>()
+
+    private val databaseName:String = "birdName"
+    private var database: SQLiteDatabase? = null
+    private val birdImage = "bird_image"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        if (database == null){
+            createDatabase()
+        }
+        loadAllImageData()
+
         binding.encyclopediaBtnOk.setOnClickListener {
             finish()
         }
@@ -195,6 +207,30 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.bind(list[position])
+        }
+    }
+
+    private fun createDatabase() {
+        database = openOrCreateDatabase(databaseName, MODE_PRIVATE, null)
+    }
+
+    fun loadAllImageData() {
+        // DB에 있는 모든 새 이미지 검색
+        val sql = "select * from $birdImage"
+        val cursor = database?.rawQuery(sql, null)
+        if (cursor != null) {
+            BirdImageList.data.clear()
+
+            for (i in 0 until cursor.count) {
+                cursor.moveToNext()
+                val specie_k = cursor.getString(0)
+                val specie_e = cursor.getString(1)
+                val image_m = cursor.getString(2)
+                val image_f = cursor.getString(3)
+
+                BirdImageList.data.add(BirdImageData(specie_k, specie_e, image_m, image_f))
+            }
+            cursor.close()
         }
     }
 }
