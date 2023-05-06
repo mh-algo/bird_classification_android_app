@@ -99,38 +99,7 @@ class LoginActivity : AppCompatActivity() {
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)
             if (result!!.isSuccess) {
                 var account = result.signInAccount
-                val googleId = account!!.id.toString()
-                val nickname = account!!.displayName.toString()
-                val followDTO = FollowDTO()
-
-                FirebaseFirestore.getInstance()
-                    .collection("profileImages")
-                    .document(googleId!!)
-                    .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                        if (documentSnapshot?.data != null) {
-                            firebaseAuthWithGoogle(account!!)
-
-                        } else {
-                            followDTO.followerCount = 0
-                            followDTO.followers = mutableMapOf<String,Boolean>()
-                            followDTO.followingCount = 0
-                            followDTO.followings = mutableMapOf<String,Boolean>()
-                            firestore?.collection("users")?.document(googleId)?.set(followDTO)
-
-                            //TODO("닉네임, 이메일 중복 체크 구현하기")
-                            val profileDTO = ProfileDTO(nickname, "https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a", googleId.toString())
-                            firestore?.collection("profileImages")?.document(googleId)?.set(profileDTO)
-                            firebaseAuthWithGoogle(account!!)
-
-                        }
-                    }
-
-
-
-
-
-
-
+                firebaseAuthWithGoogle(account!!)
 
             } else {
                 binding.progressBar.visibility = View.GONE
@@ -145,6 +114,36 @@ class LoginActivity : AppCompatActivity() {
             ?.addOnCompleteListener { task ->
 
                 if (task.isSuccessful) {
+
+                    auth = FirebaseAuth.getInstance()
+                    uid = auth?.currentUser?.uid
+                    val nickname = account!!.displayName.toString()
+                    val followDTO = FollowDTO()
+
+                    FirebaseFirestore.getInstance()
+                        .collection("profileImages")
+                        .document(uid.toString()!!)
+                        .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                            if (documentSnapshot?.data != null) {
+                                //firebaseAuthWithGoogle(account!!)
+
+                            } else {
+                                followDTO.followerCount = 0
+                                followDTO.followers = mutableMapOf<String,Boolean>()
+                                followDTO.followingCount = 0
+                                followDTO.followings = mutableMapOf<String,Boolean>()
+                                firestore?.collection("users")?.document(uid.toString())?.set(followDTO)
+
+                                //TODO("닉네임, 이메일 중복 체크 구현하기")
+                                val profileDTO = ProfileDTO(nickname, "https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a", uid.toString())
+                                firestore?.collection("profileImages")?.document(uid.toString())?.set(profileDTO)
+
+
+                            }
+                        }
+
+
+
 
                     binding.progressBar.visibility = View.GONE
                     // 다음 페이지 호출 코드 추가
