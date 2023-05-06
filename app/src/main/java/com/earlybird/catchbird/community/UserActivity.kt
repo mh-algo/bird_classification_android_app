@@ -100,14 +100,14 @@ class UserActivity : AppCompatActivity() {
             binding.collectionButton.setOnClickListener {
                 // 해당 uid를 가진 유저의 도감 정보 조회
                 val intent = Intent(this, EncyclopediaOtherRankingPage::class.java)
-                intent.putExtra("destinationUid", uid)
+                intent.putExtra("otherUid", uid)
                 startActivity(intent)
             }
 
             // 순위 정보 클릭 시
             binding.accountRankCount.setOnClickListener {
                 val intent = Intent(this, EncyclopediaRankingActivity::class.java)
-                intent.putExtra("otheruid", uid)
+                intent.putExtra("otherUid", uid)
                 startActivity(intent)
             }
 
