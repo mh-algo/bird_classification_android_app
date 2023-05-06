@@ -61,7 +61,10 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         //구글 로그인 버튼 세팅
-        binding.googleSignInButton.setOnClickListener{googleLogin()}
+        binding.googleSignInButton.setOnClickListener{
+
+
+            googleLogin()}
 
         //이메일 로그인 세팅
         binding.loginButton.setOnClickListener { emailLogin() }
@@ -96,7 +99,39 @@ class LoginActivity : AppCompatActivity() {
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)
             if (result!!.isSuccess) {
                 var account = result.signInAccount
-                firebaseAuthWithGoogle(account!!)
+                val googleId = account!!.id.toString()
+                val nickname = account!!.displayName.toString()
+                val followDTO = FollowDTO()
+
+                FirebaseFirestore.getInstance()
+                    .collection("profileImages")
+                    .document(googleId!!)
+                    .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                        if (documentSnapshot?.data != null) {
+                            firebaseAuthWithGoogle(account!!)
+
+                        } else {
+                            followDTO.followerCount = 0
+                            followDTO.followers = mutableMapOf<String,Boolean>()
+                            followDTO.followingCount = 0
+                            followDTO.followings = mutableMapOf<String,Boolean>()
+                            firestore?.collection("users")?.document(googleId)?.set(followDTO)
+
+                            //TODO("닉네임, 이메일 중복 체크 구현하기")
+                            val profileDTO = ProfileDTO(nickname, "https://firebasestorage.googleapis.com/v0/b/catchbird-c2e4b.appspot.com/o/default_profile.jpg?alt=media&token=e38a1694-5681-400f-99ac-17255f67e28a", googleId.toString())
+                            firestore?.collection("profileImages")?.document(googleId)?.set(profileDTO)
+                            firebaseAuthWithGoogle(account!!)
+
+                        }
+                    }
+
+
+
+
+
+
+
+
             } else {
                 binding.progressBar.visibility = View.GONE
             }

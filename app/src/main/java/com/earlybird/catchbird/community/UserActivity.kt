@@ -140,10 +140,13 @@ class UserActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 //main인지 유저 액티비티인지?
 
-                //앨범 오픈
-                var photoPickerIntent = Intent(Intent.ACTION_PICK)
-                photoPickerIntent.type = "image/*"
-                this!!.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
+                //본인의 프로필일 때만 앨범 오픈
+                if (uid == currentUserUid) {
+                    var photoPickerIntent = Intent(Intent.ACTION_PICK)
+                    photoPickerIntent.type = "image/*"
+                    this!!.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
+                    }
+
             }
         }
 
