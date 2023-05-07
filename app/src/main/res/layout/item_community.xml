@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:scaleType="fitXY" />
-        <!-- android:src="@color/com_facebook_blue" /> -->
+    <!-- android:src="@color/com_facebook_blue" /> -->
     <!-- favorite & comment -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -94,7 +94,7 @@
             android:layout_height="35dp"
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="285dp"
-            android:src="@drawable/ic_chat_black" />
+            android:src="@drawable/ic_baseline_comment_24" />
     </LinearLayout>
 
     <TextView

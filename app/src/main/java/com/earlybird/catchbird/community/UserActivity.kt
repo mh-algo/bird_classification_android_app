@@ -322,6 +322,17 @@ class UserActivity : AppCompatActivity() {
                 .load(contentDTOs[position].imageUrl)
                 .apply(RequestOptions().centerCrop())
                 .into(imageview)
+
+            holder.imageView.setOnClickListener {
+                val intent = Intent(this@UserActivity, CommentsActivity::class.java)
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("nickname", contentDTOs[position].nickname)
+                intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
+                intent.putExtra("explain", contentDTOs[position].explain)
+                intent.putExtra("contentDTO", contentDTOs[position])
+                intent.putExtra("contentUid", uid)
+                startActivity(intent)
+            }
         }
 
         override fun getItemCount(): Int {
