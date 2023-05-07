@@ -1,6 +1,7 @@
 package com.earlybird.catchbird.community
 
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -87,6 +88,12 @@ class CommentsActivity : AppCompatActivity() {
                         .apply(RequestOptions().circleCrop()).into(detailviewitem_profile_image)
                 }
             }
+        detailviewitem_profile_image.setOnClickListener {
+            val user_intent = Intent(this, UserActivity::class.java)
+            user_intent.putExtra("destinationUid", destinationUid)
+            user_intent.putExtra("nickname", nickname)
+            startActivity(user_intent)
+        }
 
         Glide.with(this)
             .load(imageUrl)
