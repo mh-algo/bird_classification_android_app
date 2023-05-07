@@ -20,7 +20,7 @@ data class BirdInfo(
     val info: String
 )
 data class Regist(
-    val image: Int,
+    val image: String,
     val date: String,
     val time: String
 )

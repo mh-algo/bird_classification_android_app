@@ -17,8 +17,10 @@ import com.earlybird.catchbird.data.BirdInfoData
 import com.earlybird.catchbird.data.CaptureTime
 import com.earlybird.catchbird.data.UploadChk
 import com.earlybird.catchbird.databinding.ActivityEncyclopediaBirdInforBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -28,6 +30,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
     private val binding: ActivityEncyclopediaBirdInforBinding by lazy {
         ActivityEncyclopediaBirdInforBinding.inflate(layoutInflater)
     }
+    var auth: FirebaseAuth? = null
+    var firestore: FirebaseFirestore? = null
     private val databaseName:String = "birdName"
     private var database: SQLiteDatabase? = null
     private val birdImage = "bird_image"
@@ -41,7 +45,7 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
 
     private var type: String? = null
     private var otherUid: String? = null
-
+    var currentUserUid: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -49,10 +53,12 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         if (database == null){
             createDatabase()
         }
-
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         birdKor = intent.getStringExtra("birdKor").toString()
         type = intent.getStringExtra("type").toString()
         otherUid = intent.getStringExtra("otherUid").toString()
+        currentUserUid = auth?.currentUser?.uid
         searchBirdInfo(birdKor)
 
         val bird_info = BirdInfoData.image_m    // 새 기본 이미지
@@ -63,7 +69,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         }
         binding.imageView2.setOnClickListener{
             val intent = Intent(applicationContext, EncyclopediaBirdRegistActivity::class.java)
-            // 이미지뷰 클릭시 넘겨야할 정보 입력
+            intent.putExtra("otherUid", otherUid)
+            intent.putExtra("birdKor", birdKor)
             startActivity(intent)
         }
         binding.encyclopediaBirdLocation.setOnClickListener {

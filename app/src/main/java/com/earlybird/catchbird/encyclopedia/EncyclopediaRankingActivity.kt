@@ -32,6 +32,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         }
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+
         dummy.apply {
             add(
                 Rank(1, "a", 5000)
