@@ -18,13 +18,40 @@
             android:id="@+id/detailviewitem_profile_image"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_margin="7.5dp"
+            android:layout_margin="9dp"
             app:srcCompat="@drawable/ic_account"
             tools:src="@mipmap/ic_launcher" />
+
         <TextView
             android:id="@+id/detailviewitem_profile_textview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <androidx.legacy.widget.Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/detailviewitem_date"
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="오래 전" />
+
+        <ImageView
+            android:id="@+id/detailviewitem_following"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_baseline_diversity_1_24" />
+
     </LinearLayout>
     <!-- Content ImageView -->
     <ImageView
@@ -37,7 +64,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="8dp">
+        android:layout_marginLeft="9dp">
 
         <ImageView
             android:id="@+id/detailviewitem_favorite_imageview"
@@ -56,7 +83,7 @@
             android:textSize="14sp"
             tools:text="0" />
 
-        <Space
+        <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
