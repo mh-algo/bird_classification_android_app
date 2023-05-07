@@ -293,15 +293,18 @@ class UserActivity : AppCompatActivity() {
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         val contentDTOs: ArrayList<ContentDTO>
+        val contentUidList: ArrayList<String>
 
         init {
             contentDTOs = ArrayList()
+            contentUidList = ArrayList()
             // 나의 사진만 찾기
             recyclerListenerRegistration = firestore?.collection("image")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot?.documents!!) {
                     contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
+                    contentUidList.add(snapshot.id)
                 }
                 account_tv_post_count.text = contentDTOs.size.toString()
                 notifyDataSetChanged()
@@ -330,7 +333,7 @@ class UserActivity : AppCompatActivity() {
                 intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
                 intent.putExtra("explain", contentDTOs[position].explain)
                 intent.putExtra("contentDTO", contentDTOs[position])
-                intent.putExtra("contentUid", uid)
+                intent.putExtra("contentUid", contentUidList[position])
                 startActivity(intent)
             }
         }

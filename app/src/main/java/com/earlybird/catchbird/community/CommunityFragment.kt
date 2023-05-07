@@ -315,6 +315,17 @@ class CommunityFragment : Fragment() {
                 .load(contentDTOs[position].imageUrl)
                 .into(viewHolder.detailviewitem_imageview_content)
 
+            viewHolder.detailviewitem_imageview_content.setOnClickListener{
+                val intent = Intent(activity, CommentsActivity::class.java)
+                intent.putExtra("contentUid", contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                intent.putExtra("nickname", contentDTOs[position].nickname)
+                intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
+                intent.putExtra("explain", contentDTOs[position].explain)
+                intent.putExtra("contentDTO", contentDTOs[position])
+                startActivity(intent)
+            }
+
             // 설명 텍스트
             viewHolder.detailviewitem_explain_textview.text = contentDTOs[position].explain
             // 좋아요 이벤트
