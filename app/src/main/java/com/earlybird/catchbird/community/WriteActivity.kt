@@ -119,6 +119,7 @@ class WriteActivity : AppCompatActivity(){
             //게시물 업로드 시간
             contentDTO.timestamp = System.currentTimeMillis()
 
+
             // 게시물 데이터생성 및 엑티비티 종류
             firestore?.collection("image")?.document()?.set(contentDTO)
 

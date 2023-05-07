@@ -6,6 +6,7 @@ package com.earlybird.catchbird.community
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -36,6 +37,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
 import okhttp3.OkHttpClient
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class CommunityFragment : Fragment() {
@@ -197,9 +200,8 @@ class CommunityFragment : Fragment() {
                     if (task.isSuccessful) {
                         var userDTO = task.result.toObject(FollowDTO::class.java)
                         if (userDTO?.followings != null) {
-                            getContents(userDTO?.followings)
+                            //getContents(userDTO?.followings)
                         }
-
                     }
                 }
             }
@@ -215,6 +217,7 @@ class CommunityFragment : Fragment() {
                         println(item.uid)
                         contentDTOs.add(item)
                         contentUidList.add(snapshot.id)
+
                         // getContents 대신 호출
                     }
                     notifyDataSetChanged()
@@ -227,21 +230,18 @@ class CommunityFragment : Fragment() {
 
         fun getContents(followers: MutableMap<String, Boolean>?) {
             imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                contentDTOs.clear()
-                contentUidList.clear()
+                //contentDTOs.clear()
+                //contentUidList.clear()
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot!!.documents) {
                     var item = snapshot.toObject(ContentDTO::class.java)!!
-                    contentDTOs.add(item)
-                    contentUidList.add(snapshot.id)
-                    /*if (followers?.keys?.contains(item.uid)!!) {
-                        contentDTOs.add(item)
-                        contentUidList.add(snapshot.id)
-                    }*/
+                    if (followers?.keys?.contains(item.uid)!!) {
+                        //contentDTOs.add(item)
+                        //contentUidList.add(snapshot.id)
+                    }
                 }
                 notifyDataSetChanged()
             }
-
         }
 
 
@@ -268,14 +268,26 @@ class CommunityFragment : Fragment() {
             firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-
                         val url = task.result["image"]
                         Glide.with(holder.itemView.context)
                             .load(url)
                             .apply(RequestOptions().circleCrop()).into(viewHolder.detailviewitem_profile_image)
-
                     }
                 }
+
+            // 게시날짜 표시
+            val relativeTime = getRelativeTime(contentDTOs[position].timestamp!!) // "just now", "1 minute ago", "5 days ago" 등의 상대적 시간 반환
+            viewHolder.detailviewitem_date.text = relativeTime
+
+            // 팔로잉 아이콘 표시
+            firestore?.collection("users")?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)?.get()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    var userDTO = task.result.toObject(FollowDTO::class.java)
+                    if (userDTO?.followings != null && userDTO.followings.containsKey(contentDTOs[position].uid)) {
+                        viewHolder.detailviewitem_following.visibility = View.VISIBLE
+                    }
+                }
+            }
 
 
             //UserActivity로 이동
@@ -312,7 +324,7 @@ class CommunityFragment : Fragment() {
             //좋아요 버튼 설정
             if (contentDTOs[position].favorites.containsKey(FirebaseAuth.getInstance().currentUser?.uid)) {
 
-                viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)
+                viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_baseline_favorite_24)
 
             } else {
 
@@ -333,6 +345,41 @@ class CommunityFragment : Fragment() {
 
         }
 
+
+        fun timestampToDate(timestamp: Long): Date {
+            return Date(timestamp)
+        }
+
+        fun formatTimestamp(timestamp: Long): String {
+            val date = Date(timestamp)
+            val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+            return dateFormat.format(date)
+        }
+
+        fun getRelativeTime(timestamp: Long): String {
+            val currentDate = Date()
+            val diffInMilliseconds = currentDate.time - timestamp
+
+            val secondsInMilli = 1000L
+            val minutesInMilli = secondsInMilli * 60
+            val hoursInMilli = minutesInMilli * 60
+            val daysInMilli = hoursInMilli * 24
+            val monthsInMilli = daysInMilli * 30
+
+            val elapsedMonths = diffInMilliseconds / monthsInMilli
+            val elapsedDays = diffInMilliseconds / daysInMilli
+            val elapsedHours = diffInMilliseconds / hoursInMilli
+            val elapsedMinutes = diffInMilliseconds / minutesInMilli
+            val elapsedSeconds = diffInMilliseconds / secondsInMilli
+
+            return when {
+                elapsedMonths > 0 -> "$elapsedMonths"+"달 전"
+                elapsedDays > 0 -> "$elapsedDays"+"일 전"
+                elapsedHours > 0 -> "$elapsedHours"+"시간 전"
+                elapsedMinutes > 0 -> "$elapsedMinutes"+"분 전"
+                else -> "방금"
+            }
+        }
 
 
 
