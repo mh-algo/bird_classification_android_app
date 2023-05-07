@@ -117,7 +117,6 @@ class CommunityFragment : Fragment() {
                         uname = task.result["nickname"].toString()
                     }
                 }
-            // 반영 안되고 있음
             val intent = Intent(context, UserActivity::class.java)
             intent.putExtra("nickname", uname)
             intent.putExtra("destinationUid", uid)
@@ -339,6 +338,9 @@ class CommunityFragment : Fragment() {
                 intent.putExtra("contentUid", contentUidList[position])
                 intent.putExtra("destinationUid", contentDTOs[position].uid)
                 intent.putExtra("nickname", contentDTOs[position].nickname)
+                intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
+                intent.putExtra("explain", contentDTOs[position].explain)
+                intent.putExtra("contentDTO", contentDTOs[position])
                 startActivity(intent)
             }
 
