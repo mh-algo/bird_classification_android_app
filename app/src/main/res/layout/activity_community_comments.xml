@@ -151,10 +151,11 @@
             android:id="@+id/detailviewitem_explain_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginBottom="35dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="30dp"
             android:fontFamily="sans-serif-medium"
-            android:textSize="14sp"
+            android:gravity="center"
+            android:textSize="15sp"
             tools:text="사진 내용" />
 
     </LinearLayout>

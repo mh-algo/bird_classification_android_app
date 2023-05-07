@@ -116,6 +116,7 @@ class CommentsActivity : AppCompatActivity() {
         } else {
             detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
         }
+        textView4.text = contentDTO!!.favoriteCount.toString()
 
         comment_recyclerview.adapter = CommentRecyclerViewAdapter()
         comment_recyclerview.layoutManager = LinearLayoutManager(this)
@@ -128,7 +129,7 @@ class CommentsActivity : AppCompatActivity() {
 
     private fun favoriteEvent() {
         var firestore = FirebaseFirestore.getInstance()
-        var tsDoc = firestore?.collection("image")?.document(destinationUid!!)
+        var tsDoc = firestore?.collection("image")?.document(contentUid!!)
         firestore.runTransaction { transaction ->
 
             val uid = FirebaseAuth.getInstance().currentUser!!.uid
@@ -138,14 +139,21 @@ class CommentsActivity : AppCompatActivity() {
                 // Unstar the post and remove self from stars
                 contentDTO_comp?.favoriteCount = contentDTO_comp?.favoriteCount!! - 1
                 contentDTO_comp?.favorites.remove(uid)
+                detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
 
             } else {
                 contentDTO_comp.favoriteCount = contentDTO_comp?.favoriteCount!! + 1
                 contentDTO_comp.favorites[uid] = true
+                detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_baseline_favorite_24)
                 //favoriteAlarm(contentDTOs[position].uid!!)
             }
             transaction.set(tsDoc, contentDTO_comp)
+            textView4.text = contentDTO_comp.favoriteCount.toString()
+
         }
+
+
+
     }
 
     // 상대 날짜 계산
