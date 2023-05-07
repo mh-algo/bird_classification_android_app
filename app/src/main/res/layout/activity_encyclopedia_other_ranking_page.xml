@@ -47,7 +47,6 @@
         android:id="@+id/encyclopedia_btn_ok"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="30dp"
         android:background="@drawable/background_round_rectangular"
         android:elevation="20dp"
         android:minWidth="0dp"

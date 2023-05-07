@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".encyclopedia.EncyclopediaBirdRegistActivity">
+
     <TextView
         android:id="@+id/encyclopedia_title"
         android:layout_width="match_parent"
@@ -46,6 +47,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerviewRegist"
         android:layout_width="match_parent"
