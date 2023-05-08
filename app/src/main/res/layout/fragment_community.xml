@@ -83,8 +83,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp"
                 android:layout_weight="1"
-                android:text="팔로잉"
-                android:textAlignment="center" />
+                android:autoText="false"
+                android:text="글 전체"
+                android:textAlignment="center"
+                android:textIsSelectable="false"
+                android:textStyle="bold"
+                app:chipBackgroundColor="#e7f5da"
+                app:chipSurfaceColor="#e7f5da"
+                app:rippleColor="#66BB6A" />
 
         </LinearLayout>
 
