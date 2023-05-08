@@ -35,7 +35,6 @@ class EncyclopediaBirdRegistActivity : AppCompatActivity() {
     }
     var auth: FirebaseAuth? = null
     var otherUid: String? = null
-    var uid: String? = null
     var birdKor: String? = null
     var firestore: FirebaseFirestore? = null
     private var currentUserUid : String? = null

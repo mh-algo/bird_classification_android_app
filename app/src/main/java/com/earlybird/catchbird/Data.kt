@@ -8,6 +8,7 @@ data class Bird(
 )
 data class Rank(
     val rank: Int,
+    val profileImage: Int,
     val userId: String,
     val score: Int
 )
