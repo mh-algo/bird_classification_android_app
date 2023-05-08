@@ -128,6 +128,10 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
+        view?.chip_following?.setOnClickListener{
+            // 구현
+        }
+
 
 
         // Profile 버튼에 쓰일 프로필 이미지 가져오기
@@ -248,6 +252,8 @@ class CommunityFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_community, parent, false)
+
+
             return CustomViewHolder(view)
 
         }

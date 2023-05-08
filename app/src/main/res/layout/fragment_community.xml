@@ -61,6 +61,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/userSearchView"
+                android:layout_width="305dp"
+                android:layout_height="wrap_content"
+                android:queryHint="게시글 및 사용자 검색"
+                app:defaultQueryHint="게시글 및 사용자 검색"
+                app:iconifiedByDefault="false" />
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_following"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:text="팔로잉"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/communityfragment_recyclerview"
             android:layout_width="match_parent"
