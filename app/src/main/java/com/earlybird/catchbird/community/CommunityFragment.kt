@@ -12,6 +12,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.appcompat.app.AlertDialog
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.android.synthetic.main.fragment_community.*
 import kotlinx.android.synthetic.main.fragment_community.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
 import okhttp3.OkHttpClient
@@ -128,8 +130,14 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
-        view?.chip_following?.setOnClickListener{
-            // 구현
+        view?.chip_following?.setOnCheckedChangeListener { chip, isChecked ->
+            if (!isChecked){
+                chip_following.text = "글 전체" //replace the text
+            }
+            else{
+                chip_following.text = "팔로잉"
+            }
+
         }
 
 
@@ -192,6 +200,8 @@ class CommunityFragment : Fragment() {
         val contentDTOs: ArrayList<ContentDTO>
         val contentUidList: ArrayList<String>
 
+
+
         init {
             contentDTOs = ArrayList()
             contentUidList = ArrayList()
@@ -226,7 +236,12 @@ class CommunityFragment : Fragment() {
                     notifyDataSetChanged()
 
                 }
+
+
+
         }
+
+
 
 
 
@@ -293,6 +308,77 @@ class CommunityFragment : Fragment() {
                     }
                 }
             }
+
+            // 게시글 표시 설정
+            view?.chip_following?.setOnCheckedChangeListener { chip, isChecked ->
+                if (!isChecked){
+                    chip_following.text = "글 전체" //replace the text
+                    imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
+                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                            contentDTOs.clear()
+                            contentUidList.clear()
+                            if (querySnapshot == null) return@addSnapshotListener
+
+                            for (snapshot in querySnapshot!!.documents) {
+                                var item = snapshot.toObject(ContentDTO::class.java)!!
+                                println(item.uid)
+                                contentDTOs.add(item)
+                                contentUidList.add(snapshot.id)
+
+                                // getContents 대신 호출
+                            }
+                            notifyDataSetChanged()
+
+                        }
+
+
+
+
+                }
+                else{
+                    chip_following.text = "팔로잉"
+                    val contentDTOs_following: ArrayList<ContentDTO>
+                    val contentUidList_following: ArrayList<String>
+                    contentDTOs_following = contentDTOs
+                    contentUidList_following = contentUidList
+                    imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
+                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                            contentDTOs.clear()
+                            contentUidList.clear()
+                            if (querySnapshot == null) return@addSnapshotListener
+
+                            for (snapshot in querySnapshot!!.documents) {
+                                var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                firestore?.collection("users")?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)?.get()?.addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        var userDTO = task.result.toObject(FollowDTO::class.java)
+                                        if (userDTO?.followings!!.containsKey(contentDTOs_following[position].uid!!)) {
+                                            println(item.uid)
+                                            contentDTOs.add(item)
+                                            contentUidList.add(snapshot.id)
+                                            notifyDataSetChanged()
+                                        }
+                                        else {
+
+
+                                        }
+                                    }
+                                }
+
+
+
+
+                                // getContents 대신 호출
+                            }
+                            notifyDataSetChanged()
+
+                        }
+
+                }
+
+            }
+
 
 
             //UserActivity로 이동
