@@ -144,11 +144,8 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         )
 
         if (user != null) {
-            val tsLong = System.currentTimeMillis()/1000;
-            val ts = tsLong.toString();
-
             db.collection("birdImageData").document(user!!.uid)
-                .collection("imageInfo").document("pic$ts.jpg")
+                .collection("imageInfo").document(imageName)
                 .set(data)
                 .addOnSuccessListener {
                     Toast.makeText(this, "업로드가 완료되었습니다", Toast.LENGTH_SHORT).show()
