@@ -42,25 +42,31 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
 
         dummy.apply {
             add(
-                Rank(1,R.drawable.dummy_bird,"aaaaaaaaa", 5000)
+                Rank(1,R.drawable.profileimage5,"내 점수 따라와봐", 8940)
             )
             add(
-                Rank(2, R.drawable.dummy_bird,"bbbbbbbb", 4000)
+                Rank(2, R.drawable.profileimage2,"참새러버", 7570)
             )
             add(
-                Rank(3,R.drawable.dummy_bird,"ccccdc", 3400)
+                Rank(3,R.drawable.profileimage3,"까악", 5400)
             )
             add(
-                Rank(4, R.drawable.dummy_bird,"dddddd", 3000)
+                Rank(4, R.drawable.profileimage4,"조류도감", 5000)
             )
             add(
-                Rank(5, R.drawable.dummy_bird,"eeeeeee", 2700)
+                Rank(5, R.drawable.profileimage7,"네영", 4460)
             )
             add(
-                Rank(6, R.drawable.dummy_bird,"fffffff", 2000)
+                Rank(6, R.drawable.profileimage8,"루민영", 4220)
             )
             add(
-                Rank(7,R.drawable.dummy_bird,"gggggg", 1000)
+                Rank(7,R.drawable.profileimage1,"하이", 3640)
+            )
+            add(
+                Rank(8,R.drawable.profileimage6,"비둘비둘", 3610)
+            )
+            add(
+                Rank(9,R.drawable.profileimage9,"짹짹", 2710)
             )
 
         }
@@ -79,6 +85,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
                 this.rank=rank
                 userRank.text = this.rank.rank.toString()
                 //Glide.with(itemView.context).load(R.drawable.dummy_bird).centerCrop().into(userProfileImage)
+                userProfileImage.setImageResource(this.rank.profileImage)
                 userId.text = this.rank.userId
                 userScore.text = this.rank.score.toString()
                 userProfileImage.clipToOutline = true
