@@ -1,111 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E1F5FE"
+    android:background="#f3fcf0"
     android:orientation="vertical"
     android:padding="10dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="horizontal">
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.526"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_width="2dp"
+            android:layout_height="3dp"
+            android:layout_marginBottom="70dp"
             android:visibility="gone"
-            android:layout_weight="1" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/cancel_button"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:alpha="1"
-            android:backgroundTint="#00FFFFFF"
-            app:srcCompat="@drawable/ic_baseline_close_24" />
-
-        <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:alpha="1"
+            android:backgroundTint="#00FFFFFF"
+            android:minHeight="48dp"
+            android:src="@drawable/ic_baseline_close_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView3"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.518" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:layout_gravity="center|center_horizontal"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="글쓰기"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.legacy.widget.Space
+        <ImageButton
+            android:id="@+id/addphoto_btn_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:backgroundTint="#00FFFFFF"
+            android:minHeight="48dp"
+            android:src="@drawable/ic_baseline_send_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/textView3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.518" />
 
-        <Button
-            android:id="@+id/addphoto_btn_upload"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
-            android:layout_weight="1"
-            android:backgroundTint="#66BB6A"
-            android:text="완료" />
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
         android:id="@+id/addphoto_edit_explain"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="내용"
+        android:hint="내용을 입력해주세요."
         android:inputType="textMultiLine"
-        android:lines="10" />
+        android:lines="10"
+        app:layout_constraintBottom_toTopOf="@+id/addphoto_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.315"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+        app:layout_constraintVertical_bias="0.014" />
 
     <ImageView
         android:id="@+id/addphoto_image"
-        android:layout_width="match_parent"
-        android:layout_height="270dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.842"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addphoto_edit_explain"
         app:srcCompat="@drawable/click" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/addMap_button"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:layout_gravity="bottom|left"
-            android:backgroundTint="#00FFFFFF"
-            app:srcCompat="@drawable/ic_baseline_add_location_alt_24" />
-
-        <androidx.legacy.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/addImage_button"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:layout_gravity="bottom|right|end"
-            android:backgroundTint="#2FFFFFFF"
-            app:srcCompat="@drawable/ic_baseline_add_a_photo_24" />
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

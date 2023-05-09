@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E1F5FE"
+    android:background="#f3fcf0"
     android:orientation="vertical">
 
     <!-- Toolbar -->
@@ -113,7 +113,8 @@
                 android:id="@+id/detailviewitem_profile_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textColor="#000000"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <androidx.legacy.widget.Space
@@ -155,7 +156,8 @@
             android:layout_marginBottom="30dp"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:textSize="15sp"
+            android:textColor="#000000"
+            android:textSize="16sp"
             tools:text="사진 내용" />
 
     </LinearLayout>
@@ -165,6 +167,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
 
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

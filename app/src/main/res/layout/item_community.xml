@@ -2,123 +2,124 @@
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    card_view:cardBackgroundColor="#f3f9ed"
-    card_view:cardCornerRadius="30dp"
+    android:layout_margin="10dp"
+    card_view:cardBackgroundColor="#f3fcf0"
+    card_view:cardCornerRadius="20dp"
     card_view:cardElevation="3dp"
     card_view:contentPadding="4dp">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <!--Title Layout -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/detailviewitem_profile_image"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_margin="9dp"
-            app:srcCompat="@drawable/ic_account"
-            tools:src="@mipmap/ic_launcher" />
-
-        <TextView
-            android:id="@+id/detailviewitem_profile_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <androidx.legacy.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/detailviewitem_date"
-            android:layout_width="5dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="오래 전" />
-
-        <ImageView
-            android:id="@+id/detailviewitem_following"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_baseline_diversity_1_24" />
-
-    </LinearLayout>
-    <!-- Content ImageView -->
-    <ImageView
-        android:id="@+id/detailviewitem_imageview_content"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="fitXY" />
-    <!-- android:src="@color/com_facebook_blue" /> -->
-    <!-- favorite & comment -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="9dp">
-
-        <ImageView
-            android:id="@+id/detailviewitem_favorite_imageview"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/ic_favorite_border" />
-
-        <TextView
-            android:id="@+id/detailviewitem_favoritecounter_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginLeft="8dp"
-            android:fontFamily="sans-serif-black"
-            android:textSize="14sp"
-            tools:text="0" />
-
-        <androidx.legacy.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/detailviewitem_comment_imageview"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="right|center_vertical"
-            android:layout_marginRight="285dp"
-            android:src="@drawable/ic_baseline_comment_24" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/detailviewitem_explain_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="35dp"
-        android:fontFamily="sans-serif-medium"
-        android:textSize="14sp"
-        tools:text="사진 내용" />
+        android:orientation="vertical">
 
-</LinearLayout>
+        <!--Title Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/detailviewitem_profile_image"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="9dp"
+                card_view:srcCompat="@drawable/ic_account"
+                tools:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/detailviewitem_profile_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <androidx.legacy.widget.Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/detailviewitem_date"
+                android:layout_width="5dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="오래 전" />
+
+            <ImageView
+                android:id="@+id/detailviewitem_following"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="0"
+                android:visibility="gone"
+                card_view:srcCompat="@drawable/ic_baseline_diversity_1_24" />
+
+        </LinearLayout>
+        <!-- Content ImageView -->
+        <ImageView
+            android:id="@+id/detailviewitem_imageview_content"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitXY" />
+        <!-- android:src="@color/com_facebook_blue" /> -->
+        <!-- favorite & comment -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="9dp">
+
+            <ImageView
+                android:id="@+id/detailviewitem_favorite_imageview"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
+                card_view:srcCompat="@drawable/ic_favorite_border" />
+
+            <TextView
+                android:id="@+id/detailviewitem_favoritecounter_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginLeft="8dp"
+                android:fontFamily="sans-serif-black"
+                android:textSize="14sp"
+                tools:text="0" />
+
+            <ImageView
+                android:id="@+id/detailviewitem_comment_imageview"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/ic_baseline_comment_24" />
+
+            <androidx.legacy.widget.Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/detailviewitem_explain_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            tools:text="사진 내용" />
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
