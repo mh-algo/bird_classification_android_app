@@ -85,7 +85,9 @@ class ModelResultFragment : Fragment() {
             ) {
                 val intent = Intent(context, EncyclopediaBirdInforActivity::class.java)
                 intent.putExtra("birdKor", BirdImageList.data[position].birdKor)
-                if(type=="camera") {
+                // camera 촬영이나 image 선택에서 도감 등록 허용
+                // image 선택에서 도감 등록 비허용시 코드 삭제 필요!!!
+                if(type=="camera" || type=="image") {
                     intent.putExtra("cameraUri", imageUri.toString())
                     intent.putExtra("latitude", latitude)
                     intent.putExtra("longitude", longitude)
