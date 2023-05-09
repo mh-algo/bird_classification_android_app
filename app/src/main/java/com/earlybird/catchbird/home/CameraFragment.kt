@@ -105,6 +105,8 @@ open class CameraFragment : Fragment() {
         startCamera()
         binding.imageBtn.setOnClickListener {
             getFromAlbum()
+            requestLocation()   // 앨범 선택시 도감 등록할 경우 위치 정보 저장
+            requestDate()   // 앨범 선택시 도감 등록할 경우 시간 정보 저장
         }
         binding.textureView.setOnTouchListener { view, event ->
             when(event.action) {
