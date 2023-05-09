@@ -56,7 +56,7 @@ class EncyclopediaBirdRegistActivity : AppCompatActivity() {
         val db = Firebase.firestore
         if(otherUid == "null"){
             db.collection("birdImageData").document(currentUserUid.toString()).collection("imageInfo")
-                .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
+                .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         if (birdKor.equals(document.data["bird"].toString())) {
@@ -68,7 +68,6 @@ class EncyclopediaBirdRegistActivity : AppCompatActivity() {
                                     document.data["time"].toString()
                                 )
                             )
-
                         }
                     }
                     if(registImageData.size==0){
@@ -85,7 +84,7 @@ class EncyclopediaBirdRegistActivity : AppCompatActivity() {
 
         }else {
             db.collection("birdImageData").document(otherUid.toString()).collection("imageInfo")
-                .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
+                .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         if (birdKor.equals(document.data["bird"].toString())) {

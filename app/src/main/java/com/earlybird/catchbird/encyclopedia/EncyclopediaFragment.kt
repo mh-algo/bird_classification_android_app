@@ -63,21 +63,23 @@ class EncyclopediaFragment : Fragment() {
         currentUserUid = auth?.currentUser?.uid
 
         val db = Firebase.firestore
-        Log.d("test1","${data}")
         db.collection("birdImageData").document(currentUserUid.toString()).collection("imageInfo")
             .get()//todo list도 만들어서 새 설명창에 버튼누르면 찍은 사진 출력되게 하기
             .addOnSuccessListener { documents ->
                 for (document in documents){
-                    Log.d("test2","${data}")
                     registDataKor.add(document.data["bird"].toString())
                     var image = document.data["imageUri"]
                     registDataAll.add(BirdImageData(document.data["bird"].toString(),document.data["bird"].toString(),image.toString(),image.toString()))
+
                 }
-                Log.d("test3","${data}")
+                for(datas in data){
+                    for(registDataKors in registDataKor){
+                        if(registDataKors == datas.birdKor)
+                            registImageData.add(datas)
+                    }
+                }
                 binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
                 binding.recyclerView.adapter = MyAdapter(data)
-
-
             }
 
         fun BirdDataList(){
@@ -189,14 +191,7 @@ class EncyclopediaFragment : Fragment() {
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
            if(registDataKor.contains(bird.birdKor)){
                image.alpha = 1f
-               for(i in 0 .. registImageData.size){
-                   if(i == registImageData.size){
-                       registImageData.add(bird)
-                       break
-                   }
-                   if(registImageData[i].birdKor == bird.birdKor)
-                       break
-               }
+
            }
            else {
                image.alpha = 0.3f
