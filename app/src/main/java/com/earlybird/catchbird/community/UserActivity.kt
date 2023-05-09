@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
@@ -113,17 +114,26 @@ class UserActivity : AppCompatActivity() {
 
             // 본인 계정인 경우 -> 로그아웃, Toolbar 기본으로 설정
             if (uid != null && uid == currentUserUid) {
-
-
-                binding?.accountBtnFollowSignout?.text = getString(R.string.signout)
+                binding?.accountBtnFollowSignout?.setBackgroundResource(R.drawable.ic_baseline_logout_24)
+                binding?.btnText?.visibility = View.GONE
+                binding?.btnText3?.visibility = View.VISIBLE
+                binding?.btnText?.setBackgroundColor(0x000000)
+                binding?.btnText3?.setOnClickListener {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    this?.finish()
+                    auth?.signOut()
+                }
                 binding?.accountBtnFollowSignout?.setOnClickListener {
                     startActivity(Intent(this, LoginActivity::class.java))
                     this?.finish()
                     auth?.signOut()
                 }
+
             } else {
-                binding?.accountBtnFollowSignout?.text = getString(R.string.follow)
+                binding?.accountBtnFollowSignout?.setBackgroundResource(R.drawable.ic_baseline_person_add_24)
                 binding?.accountBtnFollowSignout.setOnClickListener{ requestFollow() }
+                binding?.btnText?.setOnClickListener { requestFollow() }
+                binding?.btnText2?.setOnClickListener { requestFollow() }
 
                  }
 
@@ -192,17 +202,17 @@ class UserActivity : AppCompatActivity() {
             if (followDTO == null) return@addSnapshotListener
             binding?.accountTvFollowerCount?.text = followDTO?.followerCount.toString()
             if (followDTO?.followers?.containsKey(currentUserUid)!!) {
-
-                binding?.accountBtnFollowSignout?.text = getString(R.string.follow_cancel)
-                binding?.accountBtnFollowSignout
-                    ?.background
-                    ?.setColorFilter(ContextCompat.getColor(this!!, R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
+                binding?.accountBtnFollowSignout?.setBackgroundResource(R.drawable.ic_baseline_person_add_disabled_24)
+                binding?.btnText?.visibility = View.GONE
+                binding?.btnText2?.visibility = View.VISIBLE
+                binding?.btnText?.text = "팔로우 해제"
             } else {
 
                 if (uid != currentUserUid) {
-
-                    binding?.accountBtnFollowSignout?.text = getString(R.string.follow)
-                    binding?.accountBtnFollowSignout?.background?.colorFilter = null
+                    binding?.btnText?.text = "팔로우"
+                    binding?.btnText2?.visibility = View.GONE
+                    binding?.btnText?.visibility = View.VISIBLE
+                    binding?.accountBtnFollowSignout?.setBackgroundResource(R.drawable.ic_baseline_person_add_24)
                 }
             }
 
@@ -299,7 +309,7 @@ class UserActivity : AppCompatActivity() {
             contentDTOs = ArrayList()
             contentUidList = ArrayList()
             // 나의 사진만 찾기
-            recyclerListenerRegistration = firestore?.collection("image")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            recyclerListenerRegistration = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot?.documents!!) {

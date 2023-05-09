@@ -1,6 +1,7 @@
 package com.earlybird.catchbird.community
 
 
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,18 +10,23 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.R.id.*
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
+import com.earlybird.catchbird.home.CameraFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_community_comments.*
 import kotlinx.android.synthetic.main.item_comments.view.*
 import kotlinx.android.synthetic.main.item_community.view.*
@@ -37,6 +43,7 @@ class CommentsActivity : AppCompatActivity() {
     var imageUrl: String? = null
     var explain: String? = null
     var contentDTO: ContentDTO? = null
+    var delActivated = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +56,43 @@ class CommentsActivity : AppCompatActivity() {
         imageUrl = intent.getStringExtra("imageUrl")
         explain = intent.getStringExtra("explain")
         contentDTO = intent.getSerializableExtra("contentDTO") as ContentDTO
+
+        if (destinationUid == user!!.uid) {
+            detailviewitem_following.visibility = View.VISIBLE
+            detailviewitem_following.setImageResource(R.drawable.ic_baseline_delete_forever_24)
+            delActivated = 1
+        }
+
+
+        detailviewitem_following.setOnClickListener {
+            if (delActivated == 1) {
+                val storage = FirebaseStorage.getInstance()
+                val timeStamp = contentDTO!!.timestamp.toString()
+                val imageFileName = "JPEG_" + timeStamp + "_.png"
+                val storageRef = storage?.reference?.child("images")?.child(imageFileName)
+                val path = FirebaseAuth.getInstance().currentUser?.uid!!.toString() + contentDTO!!.timestamp.toString()
+                storageRef.delete().addOnSuccessListener {
+                }.addOnFailureListener{
+                    Toast.makeText(this,"게시글 삭제에 실패하였습니다.", Toast.LENGTH_SHORT)
+                }
+                FirebaseFirestore.getInstance()
+                    .collection("image").document(path)
+                    .delete()
+                    .addOnSuccessListener {
+                        delActivated = 0
+                        finish()
+                        Toast.makeText(applicationContext,"게시글을 삭제하였습니다!", Toast.LENGTH_SHORT)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this,"게시글 삭제에 실패하였습니다.", Toast.LENGTH_SHORT)
+                    }
+
+            }
+
+
+            }
+
+
 
         cancel_button2.setOnClickListener {
             finish()
@@ -74,6 +118,7 @@ class CommentsActivity : AppCompatActivity() {
             comment_edit_message.setText("")
 
         }
+
 
         // 글 프로필과 내용 이미지
         // Profile Image
@@ -255,6 +300,13 @@ class CommentsActivity : AppCompatActivity() {
                             .apply(RequestOptions().circleCrop()).into(view.commentitem_imageview_profile)
                     }
                 }
+
+            view.commentitem_imageview_profile.setOnClickListener {
+                val user_intent = Intent(this@CommentsActivity, UserActivity::class.java)
+                user_intent.putExtra("destinationUid", comments[position].uid)
+                user_intent.putExtra("nickname", comments[position].nickname)
+                startActivity(user_intent)
+            }
 
 
             view.commentitem_textview_comment.text = comments[position].comment
