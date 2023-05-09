@@ -1,23 +1,33 @@
 package com.earlybird.catchbird.community
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
+import com.google.android.gms.location.FusedLocationProviderClient
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.databinding.ActivityWriteBinding
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_write.*
 import kotlinx.android.synthetic.main.item_community.view.*
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,14 +39,20 @@ class WriteActivity : AppCompatActivity(){
     val PICK_IMAGE_FROM_ALBUM = 0
 
     var photoUri: Uri? = null
+    var switchon = 0
 
     var storage: FirebaseStorage? = null
     var firestore: FirebaseFirestore? = null
     private var auth: FirebaseAuth? = null
 
+    private lateinit var locationManager: LocationManager
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
 
         //Firebase 스토리지
         storage = FirebaseStorage.getInstance()
@@ -46,29 +62,20 @@ class WriteActivity : AppCompatActivity(){
         auth = FirebaseAuth.getInstance()
 
 
-
         binding.addphotoImage.setOnClickListener {
             val photoPickerIntent = Intent(Intent.ACTION_PICK)
             photoPickerIntent.type = "image/*"
             startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
         }
 
-        binding.addImageButton.setOnClickListener {
-            val photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
-        }
 
-        binding.cancelButton.setOnClickListener {
-            finish()
-        }
+        binding.cancelButton.setOnClickListener { finish() }
 
-        binding.addphotoBtnUpload.setOnClickListener {
-            contentUpload()
-        }
-
+        binding.addphotoBtnUpload.setOnClickListener { contentUpload() }
 
     }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -80,6 +87,8 @@ class WriteActivity : AppCompatActivity(){
             else { finish() }
         }
     }
+
+
 
     fun contentUpload(){
         binding.progressBar.visibility = View.VISIBLE

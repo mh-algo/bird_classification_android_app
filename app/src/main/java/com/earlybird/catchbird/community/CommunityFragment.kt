@@ -12,6 +12,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -28,6 +30,7 @@ import com.earlybird.catchbird.R
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
+import com.earlybird.catchbird.data.BirdImageData
 import com.earlybird.catchbird.home.CameraFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -130,15 +133,12 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
-        view?.chip_following?.setOnCheckedChangeListener { chip, isChecked ->
-            if (!isChecked){
-                chip_following.text = "글 전체" //replace the text
-            }
-            else{
-                chip_following.text = "팔로잉"
-            }
 
-        }
+
+
+
+
+
 
 
 
@@ -167,6 +167,9 @@ class CommunityFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
 
     }
 
@@ -207,19 +210,22 @@ class CommunityFragment : Fragment() {
             contentUidList = ArrayList()
             var uid = FirebaseAuth.getInstance().currentUser?.uid
 
-            if (uid == null) { }
-            else {
-                firestore?.collection("users")?.document(uid!!)?.get()?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        var userDTO = task.result.toObject(FollowDTO::class.java)
-                        if (userDTO?.followings != null) {
-                            //getContents(userDTO?.followings)
+            if (uid == null) {
+            } else {
+                firestore?.collection("users")?.document(uid!!)?.get()
+                    ?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            var userDTO = task.result.toObject(FollowDTO::class.java)
+                            if (userDTO?.followings != null) {
+                                //getContents(userDTO?.followings)
+                            }
                         }
                     }
-                }
             }
 
-            imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
+
+            imagesSnapshot = firestore?.collection("image")
+                ?.orderBy("timestamp", Query.Direction.DESCENDING)
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
@@ -230,12 +236,11 @@ class CommunityFragment : Fragment() {
                         println(item.uid)
                         contentDTOs.add(item)
                         contentUidList.add(snapshot.id)
-
-                        // getContents 대신 호출
                     }
                     notifyDataSetChanged()
 
                 }
+
 
 
 
@@ -263,7 +268,6 @@ class CommunityFragment : Fragment() {
         }
 
 
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_community, parent, false)
@@ -284,6 +288,188 @@ class CommunityFragment : Fragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val viewHolder = (holder as CustomViewHolder).itemView
 
+
+
+            // 칩 구현 - 전체 or 팔로잉
+            view?.chip_following?.setOnCheckedChangeListener { chip, isChecked ->
+                if (!isChecked) {
+
+                    viewHolder.detailviewitem_following.visibility = View.GONE
+                    contentDTOs.clear()
+                    contentUidList.clear()
+                    chip_following.text = "글 전체"
+                    imagesSnapshot = firestore?.collection("image")
+                        ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                            if (querySnapshot == null) return@addSnapshotListener
+
+                            for (snapshot in querySnapshot!!.documents) {
+                                var item = snapshot.toObject(ContentDTO::class.java)!!
+                                println(item.uid)
+                                contentDTOs.add(item)
+                                contentUidList.add(snapshot.id)
+                            }
+                            notifyDataSetChanged()
+
+                        }
+                    notifyDataSetChanged()
+                } else {
+                    contentDTOs.clear()
+                    contentUidList.clear()
+                    chip_following.text = "팔로잉"
+                    imagesSnapshot = firestore?.collection("image")
+                        ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                            if (querySnapshot == null) return@addSnapshotListener
+
+                            for (snapshot in querySnapshot!!.documents) {
+                                var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                firestore?.collection("users")
+                                    ?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)
+                                    ?.get()?.addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            var userDTO =
+                                                task.result.toObject(FollowDTO::class.java)
+                                            if (userDTO?.followings!!.containsKey(item.uid)) {
+                                                println(item.uid)
+                                                contentDTOs.add(item)
+                                                contentUidList.add(snapshot.id)
+                                                notifyDataSetChanged()
+                                            }
+                                        }
+                                    }
+                            }
+                            notifyDataSetChanged()
+                        }
+                }
+            }
+
+            // 검색
+            view?.userSearchView?.setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (query.equals("")) {
+                        contentDTOs.clear()
+                        contentUidList.clear()
+                        imagesSnapshot = firestore?.collection("image")
+                            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                            ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                                if (querySnapshot == null) return@addSnapshotListener
+
+                                for (snapshot in querySnapshot!!.documents) {
+                                    var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                    println(item.uid)
+                                    contentDTOs.add(item)
+                                    contentUidList.add(snapshot.id)
+                                }
+                                notifyDataSetChanged()
+                            }
+                    }
+                    if (query != null) {
+                        contentDTOs.clear()
+                        contentUidList.clear()
+                        imagesSnapshot = firestore?.collection("image")
+                            ?.whereEqualTo("explain", query)
+                            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                            ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                                if (querySnapshot == null) return@addSnapshotListener
+
+                                for (snapshot in querySnapshot!!.documents) {
+                                    var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                    println(item.uid)
+                                    contentDTOs.add(item)
+                                    contentUidList.add(snapshot.id)
+                                }
+                                notifyDataSetChanged()
+                            }
+                        imagesSnapshot = firestore?.collection("image")
+                            ?.whereEqualTo("nickname", query)
+                            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                            ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                                if (querySnapshot == null) return@addSnapshotListener
+
+                                for (snapshot in querySnapshot!!.documents) {
+                                    var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                    println(item.uid)
+                                    contentDTOs.add(item)
+                                    contentUidList.add(snapshot.id)
+                                }
+                                notifyDataSetChanged()
+                            }
+
+                    }
+
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+
+                    // 검색창에서 글자가 변경이 일어날 때마다 호출
+                    // onQueryTextSubmit의  query에는 빈값이나 null을 받아들이지 않는다.
+                    // 그래서 텍스트 입력 변경시 공백인 경우 다시 onQueryTextSubmit 를 호출하면서 인자로 빈공백을 넣어준다.
+                    if (newText.equals("")) {
+                        contentDTOs.clear()
+                        contentUidList.clear()
+                        this.onQueryTextSubmit("");
+                    }
+                    else if (newText != null || newText != "") {
+                        contentDTOs.clear()
+                        contentUidList.clear()
+                        imagesSnapshot = firestore?.collection("image")
+                            ?.whereEqualTo("explain",newText)
+                            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                            ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                                if (querySnapshot == null) return@addSnapshotListener
+
+                                for (snapshot in querySnapshot!!.documents) {
+                                    var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                    println(item.uid)
+                                    contentDTOs.add(item)
+                                    contentUidList.add(snapshot.id)
+                                }
+                                notifyDataSetChanged()
+                            }
+
+                        imagesSnapshot = firestore?.collection("image")
+                            ?.whereEqualTo("nickname", newText)
+                            ?.orderBy("timestamp", Query.Direction.DESCENDING)
+                            ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                                if (querySnapshot == null) return@addSnapshotListener
+
+                                for (snapshot in querySnapshot!!.documents) {
+                                    var item = snapshot.toObject(ContentDTO::class.java)!!
+
+                                    println(item.uid)
+                                    contentDTOs.add(item)
+                                    contentUidList.add(snapshot.id)
+                                }
+                                notifyDataSetChanged()
+                            }
+                    }
+
+                    return false
+                }
+            })
+
+
+
+
+
+
+
+
             // Profile Image 가져오기
             firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
                 ?.get()?.addOnCompleteListener { task ->
@@ -300,84 +486,19 @@ class CommunityFragment : Fragment() {
             viewHolder.detailviewitem_date.text = relativeTime
 
             // 팔로잉 아이콘 표시
-            firestore?.collection("users")?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)?.get()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    var userDTO = task.result.toObject(FollowDTO::class.java)
-                    if (userDTO?.followings != null && userDTO.followings.containsKey(contentDTOs[position].uid)) {
-                        viewHolder.detailviewitem_following.visibility = View.VISIBLE
+            if (uid != null) {
+                firestore?.collection("users")?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        var userDTO = task.result.toObject(FollowDTO::class.java)
+                        if (userDTO?.followings != null && userDTO.followings.containsKey(contentDTOs[position].uid)) {
+                            viewHolder.detailviewitem_following.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
 
-            // 게시글 표시 설정
-            view?.chip_following?.setOnCheckedChangeListener { chip, isChecked ->
-                if (!isChecked){
-                    chip_following.text = "글 전체" //replace the text
-                    imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
-                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                            contentDTOs.clear()
-                            contentUidList.clear()
-                            if (querySnapshot == null) return@addSnapshotListener
-
-                            for (snapshot in querySnapshot!!.documents) {
-                                var item = snapshot.toObject(ContentDTO::class.java)!!
-                                println(item.uid)
-                                contentDTOs.add(item)
-                                contentUidList.add(snapshot.id)
-
-                                // getContents 대신 호출
-                            }
-                            notifyDataSetChanged()
-
-                        }
 
 
-
-
-                }
-                else{
-                    chip_following.text = "팔로잉"
-                    val contentDTOs_following: ArrayList<ContentDTO>
-                    val contentUidList_following: ArrayList<String>
-                    contentDTOs_following = contentDTOs
-                    contentUidList_following = contentUidList
-                    imagesSnapshot = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)
-                        ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                            contentDTOs.clear()
-                            contentUidList.clear()
-                            if (querySnapshot == null) return@addSnapshotListener
-
-                            for (snapshot in querySnapshot!!.documents) {
-                                var item = snapshot.toObject(ContentDTO::class.java)!!
-
-                                firestore?.collection("users")?.document(FirebaseAuth.getInstance().currentUser!!.uid!!)?.get()?.addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        var userDTO = task.result.toObject(FollowDTO::class.java)
-                                        if (userDTO?.followings!!.containsKey(contentDTOs_following[position].uid!!)) {
-                                            println(item.uid)
-                                            contentDTOs.add(item)
-                                            contentUidList.add(snapshot.id)
-                                            notifyDataSetChanged()
-                                        }
-                                        else {
-
-
-                                        }
-                                    }
-                                }
-
-
-
-
-                                // getContents 대신 호출
-                            }
-                            notifyDataSetChanged()
-
-                        }
-
-                }
-
-            }
 
 
 
@@ -556,6 +677,10 @@ class CommunityFragment : Fragment() {
 
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+
 }
+
+
 
 
