@@ -93,8 +93,10 @@ class WriteActivity : AppCompatActivity(){
     fun contentUpload(){
         binding.progressBar.visibility = View.VISIBLE
 
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_.png"
+        val timeStamp = System.currentTimeMillis()
+            // SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = FirebaseAuth.getInstance().currentUser?.uid!!.toString() + timeStamp.toString() + "_.png"
+            // "JPEG_"
         val storageRef = storage?.reference?.child("images")?.child(imageFileName)
         var uname: String? = null
 
@@ -105,8 +107,7 @@ class WriteActivity : AppCompatActivity(){
                 }
             }
 
-        /*
-        storageRef?.putFile(photoUri!!)?.addOnSuccessListener{*/
+
         storageRef?.putFile(photoUri!!)?.continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask  storageRef.downloadUrl
         }?.addOnSuccessListener { uri ->
@@ -126,11 +127,11 @@ class WriteActivity : AppCompatActivity(){
             // 유저 ID
             contentDTO.userId = auth?.currentUser?.email
             //게시물 업로드 시간
-            contentDTO.timestamp = System.currentTimeMillis()
+            contentDTO.timestamp = timeStamp
 
 
             // 게시물 데이터생성 및 엑티비티 종류
-            firestore?.collection("image")?.document()?.set(contentDTO)
+            firestore?.collection("image")?.document(contentDTO.uid!!.toString()+contentDTO.timestamp.toString())?.set(contentDTO)
 
             setResult(Activity.RESULT_OK)
             finish()
