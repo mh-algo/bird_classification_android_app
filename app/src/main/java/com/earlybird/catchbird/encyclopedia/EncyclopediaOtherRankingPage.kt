@@ -73,10 +73,16 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
                     var image = document.data["imageUri"]
                     registDataAll.add(BirdImageData(document.data["bird"].toString(),document.data["bird"].toString(),image.toString(),image.toString()))
                 }
+                for(datas in data){
+                    for(registDataKors in registDataKor){
+                        if(registDataKors == datas.birdKor)
+                            registImageData.add(datas)
+                    }
+                }
                 binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
                 binding.recyclerView.adapter = MyAdapter(data)
-
             }
+
         db.collection("profileImages").document(otherUid.toString())
             .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 if(documentSnapshot?.data != null){
@@ -84,14 +90,23 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
                 }
             }
         fun BirdDataList(){
+            binding.textView5.visibility = View.INVISIBLE
+            binding.recyclerView.visibility = View.VISIBLE
             binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
             binding.recyclerView.adapter = MyAdapter(data)
             spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
-            binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
-            binding.recyclerView.adapter = MyAdapter(registImageData)
-            spinnerList = registImageData
+            if(registImageData.size == 0){
+                binding.textView5.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.INVISIBLE
+            }else{
+                binding.textView5.visibility = View.INVISIBLE
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+                binding.recyclerView.adapter = MyAdapter(registImageData)
+                spinnerList = registImageData
+            }
         }
         var sData = resources.getStringArray(R.array.sort)
         var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,sData)
@@ -103,7 +118,6 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
                 // 전체사진, 도감등록사진 중 선택했을 때 어떤 코드 실행될지
                 when(p2){
                     0 -> {
-                        registImageData.clear()
                         BirdDataList()
                     } // 전체사진
                     1 -> BirdRegistDataList() // firebase와 연동해서 유저 도감등록된 새 리스트만 출력
@@ -178,14 +192,7 @@ class EncyclopediaOtherRankingPage : AppCompatActivity() {
             // (새 이름과 이미지를 가져오고 안드로이드 내 db와 이름을 비교하여 일치하는 사진을 firebase에 있는 사진으로 교체)
             if(registDataKor.contains(bird.birdKor)){
                 image.alpha = 1f
-                for(i in 0 .. registImageData.size){
-                    if(i == registImageData.size){
-                        registImageData.add(bird)
-                        break
-                    }
-                    if(registImageData[i].birdKor == bird.birdKor)
-                        break
-                }
+
             }
             else {
                 image.alpha = 0.3f

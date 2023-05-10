@@ -83,14 +83,24 @@ class EncyclopediaFragment : Fragment() {
             }
 
         fun BirdDataList(){
+            binding.textView5.visibility = View.INVISIBLE
+            binding.recyclerView.visibility = View.VISIBLE
             binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
             binding.recyclerView.adapter = MyAdapter(data)
             spinnerList = BirdImageList.data
         }
         fun BirdRegistDataList(){
-            binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
-            binding.recyclerView.adapter = MyAdapter(registImageData)
-            spinnerList = registImageData
+            if(registImageData.size == 0){
+                binding.textView5.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.INVISIBLE
+            }else{
+                binding.textView5.visibility = View.INVISIBLE
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
+                binding.recyclerView.adapter = MyAdapter(registImageData)
+                spinnerList = registImageData
+            }
+
 
         }
 
@@ -104,7 +114,6 @@ class EncyclopediaFragment : Fragment() {
                 // 전체사진, 도감등록사진 중 선택했을 때 어떤 코드 실행될지
                 when(p2) {
                     0 -> {
-                        registImageData.clear()
                         BirdDataList()
                     } // 전체사진
                     1 -> {
@@ -191,7 +200,6 @@ class EncyclopediaFragment : Fragment() {
             Glide.with(view!!.context).load(bird.imageMale).centerCrop().into(image)
            if(registDataKor.contains(bird.birdKor)){
                image.alpha = 1f
-
            }
            else {
                image.alpha = 0.3f
