@@ -4,6 +4,7 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -46,6 +47,10 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
     private var type: String? = null
     private var otherUid: String? = null
     var currentUserUid: String? = null
+    var birdImageCount:HashMap<String,Int> = hashMapOf()
+    var rankingScore: Int = 0
+    var rankUpload:HashMap<String,String> = hashMapOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -154,6 +159,39 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
                     Toast.makeText(this, "업로드 실패\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
                 }
         }
+
+
+        db.collection("birdImageData").document(currentUserUid.toString())
+            .collection("imageInfo").get().addOnSuccessListener {
+            for(snapshot in it.documents){
+                Log.d("tag","스냅샷${snapshot}")
+                var bird = snapshot?.data!!["bird"].toString()
+                if(birdImageCount[bird] == null){
+                    birdImageCount[bird] = 1
+                } else{
+                    birdImageCount[bird] = 1 + birdImageCount[bird]!!.toInt()
+                }
+            }
+                Log.d("tag","스냅샷${birdImageCount}")
+            for((bird,count) in birdImageCount){
+                for(i in 0 until count){
+                    var del = 1000 - i*10
+                    if(del > 0){
+                        rankingScore += del
+                    }else{
+                        rankingScore += 10
+                    }
+                }
+                Log.d("tag","스냅샷${rankingScore}")
+            }
+            rankUpload = hashMapOf(
+                "score" to rankingScore.toString(),
+                "uid" to currentUserUid.toString()
+            )
+                db.collection("rank").document(currentUserUid.toString()).set(rankUpload)
+        }
+
+
     }
 
     private fun createDatabase() {
