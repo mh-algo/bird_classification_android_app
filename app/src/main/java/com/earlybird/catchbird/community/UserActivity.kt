@@ -4,11 +4,14 @@ import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import com.earlybird.catchbird.databinding.ActivityCommunityUserBinding
 import android.Manifest
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -73,9 +76,6 @@ class UserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-
-
 
         // Firebase
         auth = FirebaseAuth.getInstance()
@@ -89,7 +89,7 @@ class UserActivity : AppCompatActivity() {
             nickname = intent.getStringExtra("nickname")
             binding.unameText.text = nickname
 
-
+            binding.accountRankCount.text = "7위"
             firestore?.collection("profileImages")?.document(uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -162,8 +162,12 @@ class UserActivity : AppCompatActivity() {
 
         getFollowing()
         getFollower()
+
+        setContentView(binding.root)
         binding?.accountRecyclerview?.layoutManager = GridLayoutManager(this!!, 3)
         binding?.accountRecyclerview?.adapter = UserFragmentRecyclerViewAdapter()
+
+
 
 
 
@@ -310,12 +314,12 @@ class UserActivity : AppCompatActivity() {
             contentUidList = ArrayList()
             // 나의 사진만 찾기
             recyclerListenerRegistration = firestore?.collection("image")?.orderBy("timestamp", Query.Direction.DESCENDING)?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                contentDTOs.clear()
                 if (querySnapshot == null) return@addSnapshotListener
                 for (snapshot in querySnapshot?.documents!!) {
                     contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
                     contentUidList.add(snapshot.id)
                 }
+                Log.e(TAG, contentDTOs.toString())
                 account_tv_post_count.text = contentDTOs.size.toString()
                 notifyDataSetChanged()
             }
@@ -338,8 +342,9 @@ class UserActivity : AppCompatActivity() {
 
             holder.imageView.setOnClickListener {
                 val intent = Intent(this@UserActivity, CommentsActivity::class.java)
-                intent.putExtra("destinationUid", contentDTOs[position].uid)
-                intent.putExtra("nickname", contentDTOs[position].nickname)
+                Log.d(TAG, contentDTOs.toString())
+                intent.putExtra("destinationUid", uid)
+                intent.putExtra("nickname", nickname)
                 intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
                 intent.putExtra("explain", contentDTOs[position].explain)
                 intent.putExtra("contentDTO", contentDTOs[position])
@@ -386,7 +391,7 @@ class UserActivity : AppCompatActivity() {
             }.addOnCompleteListener { uri ->
                 //firestore?.collection("profileImages")?.document(uid)!!.get()
 
-                firestore?.collection("profileImages")?.document(uid)!!.update("image", imageUri.toString())
+                firestore?.collection("profileImages")?.document(uid)!!.update("image", uri.toString())
                 Toast.makeText(this,
                     "프로필 사진이 변경되었습니다!", Toast.LENGTH_SHORT).show()
                 //var profileDTO = ProfileDTO("example", ,uid)
