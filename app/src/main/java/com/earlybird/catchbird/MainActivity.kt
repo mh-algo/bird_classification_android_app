@@ -35,10 +35,16 @@ class MainActivity : AppCompatActivity(), AutoPermissionsListener {
     private var database: SQLiteDatabase? = null
     private val birdImage = "bird_image"
     private val birdInfo = "bird_info"
+    var firestore: FirebaseFirestore? = null
+    var auth: FirebaseAuth? = null
+    private var currentUserUid : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+        currentUserUid = auth?.currentUser?.uid
 
         //바텀 네비게이션뷰 안의 아이템 설정
        findViewById<BottomNavigationView>(R.id.nav_view).run { setOnNavigationItemSelectedListener {
