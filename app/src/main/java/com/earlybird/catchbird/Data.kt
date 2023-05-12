@@ -1,5 +1,7 @@
 package com.earlybird.catchbird
 
+import android.provider.ContactsContract.CommonDataKinds.Nickname
+
 data class Bird(
     val image: Int,
     val name: String,
@@ -8,9 +10,10 @@ data class Bird(
 )
 data class Rank(
     val rank: Int,
-    val profileImage: Int,
-    val userId: String,
-    val score: Int
+    val profileImage: String,
+    val userNickname: String,
+    val score: Int,
+    val uid: String
 )
 data class SearchBird(
     val name: String,
