@@ -52,13 +52,10 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
             .orderBy("score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
-                Log.d("test","documents${documents.size()}")
                 for(document in documents){
                     rankUid.add(document.data["uid"].toString())
-                    Log.d("test","uid${document.data["uid"].toString()}")
                 }
                 getUserInfo()
-                Log.d("test", "랭킹이미지, 닉네임${rankProfileImage} ,${rankNickName}")
                 setRank()
             }
 
@@ -70,9 +67,7 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         for (rankUids in rankUid) {
             db.collection("profileImages").document(rankUids)
                 .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                    Log.d("test getUserInfo()", "rankUids${rankUids}")
                     if (documentSnapshot?.data != null) {
-                        Log.d("test getUserInfo()", "documentSnapshot?.data${documentSnapshot?.data}")
                         rankProfileImage.add(documentSnapshot?.data!!["image"].toString())
                         rankNickName.add(documentSnapshot?.data!!["nickname"].toString())
                     }
@@ -87,18 +82,11 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
             .orderBy("score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener{documents ->
-                Log.d("test setRank()","documents${documents.size()}")
-
                 for(document in documents){
                     var score = document.data["score"].toString().toInt()
                     rank.add(Rank(i+1,rankProfileImage[i],rankNickName[i], score,rankUid.get(i)))
-                    Log.d("test setRank()","document for문 - rank${rank}")
                     i += 1
-                    Log.d("test setRank()","${i}, ${rankProfileImage.size}. ${rankNickName.size}, ${rankUid.size}")
                 }
-                Log.d("test setRank()"," i= ${i} , ${rank.size-1}")
-                Log.d("test setRank()","i${i}")
-                Log.d("test setRank()","if문${rank}")
                 binding.recyclerView.layoutManager = LinearLayoutManager(this)
                 binding.recyclerView.adapter = MyAdapter(rank)
             }
@@ -119,7 +107,6 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
                 userNickname.text = this.rank.userNickname
                 userScore.text = this.rank.score.toString()
                 userProfileImage.clipToOutline = true
-                Log.d("test bind","리사이클러뷰${rank}")
                 itemView.setOnClickListener{
                     val intent = Intent(this@EncyclopediaRankingActivity, EncyclopediaOtherRankingPage::class.java)
                     intent.putExtra("otherUid", rank.uid)
