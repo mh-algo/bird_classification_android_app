@@ -13,6 +13,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -71,7 +72,12 @@ class WriteActivity : AppCompatActivity(){
 
         binding.cancelButton.setOnClickListener { finish() }
 
-        binding.addphotoBtnUpload.setOnClickListener { contentUpload() }
+        binding.addphotoBtnUpload.setOnClickListener {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            contentUpload()
+
+
+        }
 
     }
 
@@ -132,7 +138,7 @@ class WriteActivity : AppCompatActivity(){
 
             // 게시물 데이터생성 및 엑티비티 종류
             firestore?.collection("image")?.document(contentDTO.uid!!.toString()+contentDTO.timestamp.toString())?.set(contentDTO)
-
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             setResult(Activity.RESULT_OK)
             finish()
 
