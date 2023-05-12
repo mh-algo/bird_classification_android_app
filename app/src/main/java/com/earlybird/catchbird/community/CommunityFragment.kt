@@ -141,7 +141,6 @@ class CommunityFragment : Fragment() {
 
 
 
-
         // Profile 버튼에 쓰일 프로필 이미지 가져오기
         if (uid != null)
         {

@@ -27,6 +27,7 @@ import com.earlybird.catchbird.community.LoginActivity
 import com.earlybird.catchbird.MainActivity
 import com.earlybird.catchbird.R
 import com.earlybird.catchbird.R.id.account_tv_post_count
+import com.earlybird.catchbird.Rank
 import com.earlybird.catchbird.community.model.AlarmDTO
 import com.earlybird.catchbird.community.model.ContentDTO
 import com.earlybird.catchbird.community.model.FollowDTO
@@ -58,11 +59,17 @@ class UserActivity : AppCompatActivity() {
     var auth: FirebaseAuth? = null
     var firestore: FirebaseFirestore? = null
 
+    // Ranking
+    var rank = arrayListOf<Rank>()
+    var rankUid = arrayListOf<String>()
+    var rankProfileImage = arrayListOf<String>()
+    var rankNickName = arrayListOf<String>()
+    var flag = 0
+
     //private String destinationUid;
     var uid: String? = null
     var currentUserUid: String? = null
     var nickname: String? = null
-
     var userView: View? = null
 
     //var fcmPush: FcmPush? = null
@@ -89,13 +96,32 @@ class UserActivity : AppCompatActivity() {
             nickname = intent.getStringExtra("nickname")
             binding.unameText.text = nickname
 
-            binding.accountRankCount.text = "7위"
+
             firestore?.collection("profileImages")?.document(uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                     binding.unameText.text = task.result["nickname"].toString()
                     }
             }
+
+
+            // 순위 정보
+             FirebaseFirestore.getInstance().collection("rank")
+            .orderBy("score", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                Log.d("test","documents${documents.size()}")
+                for(document in documents){
+                    rankUid.add(document.data["uid"].toString())
+                    Log.d("test","uid${document.data["uid"].toString()}")
+                }
+                getUserInfo()
+                Log.d("test", "랭킹이미지, 닉네임${rankProfileImage} ,${rankNickName}")
+                setRank()
+            }
+
+
+
 
             // 도감 플로팅 버튼
             binding.collectionButton.setOnClickListener {
@@ -163,6 +189,8 @@ class UserActivity : AppCompatActivity() {
         getFollowing()
         getFollower()
 
+        if (flag == 0) {binding.accountRankCount.text = "권외"}
+
         setContentView(binding.root)
         binding?.accountRecyclerview?.layoutManager = GridLayoutManager(this!!, 3)
         binding?.accountRecyclerview?.adapter = UserFragmentRecyclerViewAdapter()
@@ -223,6 +251,60 @@ class UserActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun getUserInfo() {
+        for (rankUids in rankUid) {
+            FirebaseFirestore.getInstance().collection("profileImages").document(rankUids)
+                .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                    Log.d("test getUserInfo()", "rankUids${rankUids}")
+                    if (documentSnapshot?.data != null) {
+                        Log.d("test getUserInfo()", "documentSnapshot?.data${documentSnapshot?.data}")
+                        rankProfileImage.add(documentSnapshot?.data!!["image"].toString())
+                        rankNickName.add(documentSnapshot?.data!!["nickname"].toString())
+                    }
+                }
+
+        }
+
+    }
+
+    private fun setRank() {
+        var pos = 0
+        var i = 0
+        FirebaseFirestore.getInstance().collection("rank")
+            .orderBy("score", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    var score = document.data["score"].toString().toInt()
+
+                    if (rank != null && rank.size != 0) {
+                        rank.add(
+                            Rank(
+                                i,
+                                rankProfileImage[i],
+                                rankNickName[i],
+                                score,
+                                rankUid[i]
+                            )
+                        )
+                    }
+
+
+                    if (rankUid[i] == uid) {
+                        pos = i
+                        flag = 1
+                        binding.accountRankCount.text = (pos+1).toString() + "위"
+
+                    }
+                    i += 1
+                }
+            }
+
+
+
+    }
+
 
 
     fun requestFollow() {
