@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.earlybird.catchbird.community.LoginActivity
@@ -46,7 +47,8 @@ import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_community_user.*
 import kotlinx.android.synthetic.main.activity_community_user.view.*
-import java.util.ArrayList
+import java.util.*
+import kotlin.collections.HashMap
 
 class UserActivity : AppCompatActivity() {
     private val binding: ActivityCommunityUserBinding by lazy {
@@ -64,7 +66,10 @@ class UserActivity : AppCompatActivity() {
     var rankUid = arrayListOf<String>()
     var rankProfileImage = arrayListOf<String>()
     var rankNickName = arrayListOf<String>()
+    var scoreList = arrayListOf<Int>()
     var flag = 0
+    var score: HashMap<String, Int> = hashMapOf()
+    var scoreSort: SortedMap<String, Int>? = null
 
     //private String destinationUid;
     var uid: String? = null
@@ -107,18 +112,21 @@ class UserActivity : AppCompatActivity() {
 
             // 순위 정보
              FirebaseFirestore.getInstance().collection("rank")
-            .orderBy("score", Query.Direction.DESCENDING)
+            //.orderBy("score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
-                Log.d("test","documents${documents.size()}")
-                for(document in documents){
-                    rankUid.add(document.data["uid"].toString())
-                    Log.d("test","uid${document.data["uid"].toString()}")
+                for (document in documents) {
+                    score[document.data["uid"].toString()] =
+                        document.data["score"].toString().toInt()
+                }
+                scoreSort = score.toSortedMap(compareByDescending { score[it] })
+                for ((uids, scores) in scoreSort!!) {
+                    rankUid.add(uids)
+                    scoreList.add(scores)
                 }
                 getUserInfo()
-                Log.d("test", "랭킹이미지, 닉네임${rankProfileImage} ,${rankNickName}")
-                setRank()
-            }
+                }
+
 
 
 
@@ -253,56 +261,41 @@ class UserActivity : AppCompatActivity() {
     }
 
     private fun getUserInfo() {
-        for (rankUids in rankUid) {
-            FirebaseFirestore.getInstance().collection("profileImages").document(rankUids)
-                .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                    Log.d("test getUserInfo()", "rankUids${rankUids}")
-                    if (documentSnapshot?.data != null) {
-                        Log.d("test getUserInfo()", "documentSnapshot?.data${documentSnapshot?.data}")
-                        rankProfileImage.add(documentSnapshot?.data!!["image"].toString())
-                        rankNickName.add(documentSnapshot?.data!!["nickname"].toString())
-                    }
-                }
-
-        }
-
-    }
-
-    private fun setRank() {
+        var i =0
         var pos = 0
-        var i = 0
-        FirebaseFirestore.getInstance().collection("rank")
-            .orderBy("score", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    var score = document.data["score"].toString().toInt()
-
-                    if (rank != null && rank.size != 0) {
-                        rank.add(
-                            Rank(
-                                i,
-                                rankProfileImage[i],
-                                rankNickName[i],
-                                score,
-                                rankUid[i]
-                            )
-                        )
-                    }
-
-
-                    if (rankUid[i] == uid) {
-                        pos = i
-                        flag = 1
-                        binding.accountRankCount.text = (pos+1).toString() + "위"
-
-                    }
-                    i += 1
+        var rankProfileImageHash:HashMap<String,HashMap<String,String>> = hashMapOf()
+        FirebaseFirestore.getInstance().collection("profileImages").get()
+            .addOnSuccessListener { documentSnapshot ->
+                for(document in documentSnapshot){
+                    rankProfileImageHash[document.data["uid"].toString()] = hashMapOf(document.data["nickname"].toString() to document.data["image"].toString())
                 }
+                for(rankUids in rankUid){
+                    var hashList = rankProfileImageHash[rankUids]
+                    if (hashList != null) {
+                        for((nickname,profile) in hashList){
+                            rank.add(
+                                Rank(
+                                    i + 1,
+                                    profile,
+                                    nickname,
+                                    scoreList[i],
+                                    rankUid.get(i)
+                                )
+                            )
+
+                            if (rankUid.get(i) == uid) {
+                                pos = i
+                                flag = 1
+                                binding.accountRankCount.text = (pos+1).toString() + "위" }
+
+                            i += 1
+
+                    }
+                }
+
             }
 
-
-
+        }
     }
 
 
