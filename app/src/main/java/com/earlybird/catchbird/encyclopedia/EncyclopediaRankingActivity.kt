@@ -35,8 +35,6 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
     private var currentUserUid: String? = null
     var rank = arrayListOf<Rank>()
     var rankUid = arrayListOf<String>()
-    var rankProfileImage = arrayListOf<String>()
-    var rankNickName = arrayListOf<String>()
     var score: HashMap<String, Int> = hashMapOf()
     var scoreSort:SortedMap<String,Int>? = null
     var scoreList = arrayListOf<Int>()
@@ -52,20 +50,20 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         currentUserUid = auth?.currentUser?.uid
         db = Firebase.firestore
         db.collection("rank")
-            //.orderBy("score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     score[document.data["uid"].toString()] =
                         document.data["score"].toString().toInt()
                 }
+                Log.d("rank","${score}")
                 scoreSort = score.toSortedMap(compareByDescending { score[it] })
                 for ((uids, scores) in scoreSort!!) {
                     rankUid.add(uids)
                     scoreList.add(scores)
                 }
+                Log.d("rank","rankUid${rankUid} scoreList${scoreList}")
                 getUserInfo()
-
 
             }
 
@@ -78,9 +76,11 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         db.collection("profileImages").get()
             .addOnSuccessListener { documentSnapshot ->
                 for(document in documentSnapshot){
-                    rankProfileImageHash[document.data["uid"].toString()] = hashMapOf(document.data["nickname"].toString() to document.data["image"].toString())
+                    rankProfileImageHash[document.id] = hashMapOf(document.data["nickname"].toString() to document.data["image"].toString())
+                    Log.d("rankProfileImageHash","uid: ${document.id},\n nickname: ${document.data["nickname"].toString()},\n image: ${document.data["image"].toString()}")
                 }
                 for(rankUids in rankUid){
+                    Log.d("rank","rankUids${rankUids}")
                     var hashList = rankProfileImageHash[rankUids]
                     if (hashList != null) {
                         for((nickname,profile) in hashList){
@@ -90,11 +90,12 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
                                     profile,
                                     nickname,
                                     scoreList[i],
-                                    rankUid.get(i)
+                                    rankUids
                                 )
                             )
                             i += 1
                         }
+
                     }
                 }
                 binding.recyclerView.layoutManager = LinearLayoutManager(this)
