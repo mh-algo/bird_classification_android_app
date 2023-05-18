@@ -464,13 +464,11 @@ class UserActivity : AppCompatActivity() {
             //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
 
             val storage = FirebaseStorage.getInstance()
-            val storageRef = storage?.reference?.child("userProfileImages")
+            val storageRef = storage.reference.child("userProfileImages/")
 
 
 
-
-
-            storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
+            storageRef.putFile(imageUri!!).continueWithTask(){
                 return@continueWithTask  storageRef.downloadUrl
             }.addOnCompleteListener { uri ->
                 //firestore?.collection("profileImages")?.document(uid)!!.get()
