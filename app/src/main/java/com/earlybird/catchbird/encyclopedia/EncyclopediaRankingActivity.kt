@@ -37,6 +37,8 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
     var rankUid = arrayListOf<String>()
     var rankProfileImage = arrayListOf<String>()
     var rankNickName = arrayListOf<String>()
+    var score:HashMap<String,Int> = hashMapOf()
+
     lateinit var db:FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +51,15 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
         currentUserUid = auth?.currentUser?.uid
         db = Firebase.firestore
         db.collection("rank")
-            .orderBy("score", Query.Direction.DESCENDING)
+            //.orderBy("score", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
                 for(document in documents){
-                    rankUid.add(document.data["uid"].toString())
+                    score[document.data["uid"].toString()]=document.data["score"].toString().toInt()
+                }
+                val scoreSort = score.toSortedMap(compareByDescending { score[it] })
+                for((uids, scores) in scoreSort){
+                    rankUid.add(uids)
                 }
                 getUserInfo()
                 setRank()

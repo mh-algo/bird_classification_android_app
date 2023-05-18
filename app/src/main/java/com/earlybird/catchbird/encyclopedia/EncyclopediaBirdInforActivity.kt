@@ -164,17 +164,14 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         db.collection("birdImageData").document(currentUserUid.toString())
             .collection("imageInfo").get().addOnSuccessListener {
                 for(snapshot in it.documents){
-                    Log.d("tag","스냅샷${snapshot}")
                     var bird = snapshot?.data!!["bird"].toString()
                     if(birdImageCount[bird] == null){
                         birdImageCount[bird] = 1
                     } else{
                         birdImageCount[bird] = 1 + birdImageCount[bird]!!.toInt()
-                        Log.d("test birdImageCount","birdImageCount[bird]${birdImageCount[bird]}")
 
                     }
                 }
-                Log.d("tag","스냅샷${birdImageCount}")
                 for((bird,count) in birdImageCount){
                     for(i in 0 until count){
                         var del = 1000 - i*10
@@ -184,13 +181,11 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
                             rankingScore += 10
                         }
                     }
-                    Log.d("test","스냅샷${rankingScore}")
                 }
                 rankUpload = hashMapOf(
                     "score" to rankingScore.toString(),
                     "uid" to currentUserUid.toString()
                 )
-                Log.d("test rankingScore","rankingScore.toString()${rankingScore.toString()}")
                 db.collection("rank").document(currentUserUid.toString()).set(rankUpload)
             }
 
