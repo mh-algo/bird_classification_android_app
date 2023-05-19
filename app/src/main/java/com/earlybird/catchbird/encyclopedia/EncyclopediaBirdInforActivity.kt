@@ -122,14 +122,16 @@ class EncyclopediaBirdInforActivity : AppCompatActivity() {
         } else if(!flag){
             UploadChk.chk = true
             val imageName = imageUri.split('/').last()
-            val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user!!.uid}/$birdKor/$imageName")
+            val tsLong = System.currentTimeMillis()/1000;
+            val ts = tsLong.toString();
+            val imageRef = FirebaseStorage.getInstance().reference.child("userBirdImages/${user!!.uid}/$birdKor/album$ts")
 
             imageRef.putFile(imageUri.toUri()).continueWithTask {
                 return@continueWithTask imageRef.downloadUrl
             }.addOnFailureListener {
                 Toast.makeText(this, "업로드 실패\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }.addOnSuccessListener {uri->
-                uploadLoaction(imageName, uri)   // 위치 정보 업로드
+                uploadLoaction("album$ts", uri)   // 위치 정보 업로드
             }
         } else {
             Toast.makeText(this, "등록은 한 번만 가능합니다.", Toast.LENGTH_SHORT).show()
