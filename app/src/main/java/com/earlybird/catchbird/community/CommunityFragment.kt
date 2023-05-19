@@ -513,14 +513,14 @@ class CommunityFragment : Fragment() {
 
 
             // 유저 아이디
-            viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
-            /*
+            //viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
+
             firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         viewHolder.detailviewitem_profile_textview.text = task.result["nickname"].toString()
                     }
-                }*/
+                }
 
             // 글 이미지
             Glide.with(holder.itemView.context)
