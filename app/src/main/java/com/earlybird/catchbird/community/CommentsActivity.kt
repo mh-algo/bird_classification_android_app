@@ -105,7 +105,13 @@ class CommentsActivity : AppCompatActivity() {
             comment.comment = comment_edit_message.text.toString()
             comment.uid = FirebaseAuth.getInstance().currentUser!!.uid
             comment.timestamp = System.currentTimeMillis()
-            comment.nickname = nickname
+            FirebaseFirestore.getInstance().collection("profileImages").document(FirebaseAuth.getInstance().currentUser!!.uid)
+                .get().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        comment.nickname = task.result["nickname"].toString()
+                    }
+                }
+            //comment.nickname = nickname
 
             FirebaseFirestore.getInstance()
                 .collection("images")
@@ -144,7 +150,13 @@ class CommentsActivity : AppCompatActivity() {
             .load(imageUrl)
             .into(detailviewitem_imageview_content)
         // 닉네임 및 설명 텍스트
-        detailviewitem_profile_textview.text = nickname
+        FirebaseFirestore.getInstance().collection("profileImages").document(destinationUid!!)
+            ?.get()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    detailviewitem_profile_textview.text = task.result["nickname"].toString()
+                }
+            }
+
         detailviewitem_explain_textview.text = explain
 
         // 팔로잉 아이콘
