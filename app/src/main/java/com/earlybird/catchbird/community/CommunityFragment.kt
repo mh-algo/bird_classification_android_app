@@ -412,9 +412,6 @@ class CommunityFragment : Fragment() {
 
                 override fun onQueryTextChange(newText: String?): Boolean {
 
-                    // 검색창에서 글자가 변경이 일어날 때마다 호출
-                    // onQueryTextSubmit의  query에는 빈값이나 null을 받아들이지 않는다.
-                    // 그래서 텍스트 입력 변경시 공백인 경우 다시 onQueryTextSubmit 를 호출하면서 인자로 빈공백을 넣어준다.
                     if (newText.equals("")) {
                         contentDTOs.clear()
                         contentUidList.clear()
@@ -497,16 +494,20 @@ class CommunityFragment : Fragment() {
             }
 
 
-
-
-
-
             //UserActivity로 이동
             viewHolder.detailviewitem_profile_image.setOnClickListener {
                 val user_intent = Intent(context, UserActivity::class.java)
+                var uname = ""
+
+                firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
+                    ?.get()?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            user_intent.putExtra("nickname", task.result["nickname"].toString())
+                        }
+                    }
                 user_intent.putExtra("destinationUid", contentDTOs[position].uid)
                 user_intent.putExtra("userId", contentDTOs[position].userId)
-                user_intent.putExtra("nickname", contentDTOs[position].nickname)
+
                 startActivity(user_intent)
 
             }
@@ -514,7 +515,6 @@ class CommunityFragment : Fragment() {
 
             // 유저 아이디
             //viewHolder.detailviewitem_profile_textview.text = contentDTOs[position].nickname
-
             firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -531,7 +531,13 @@ class CommunityFragment : Fragment() {
                 val intent = Intent(activity, CommentsActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
                 intent.putExtra("destinationUid", contentDTOs[position].uid)
-                intent.putExtra("nickname", contentDTOs[position].nickname)
+                firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
+                    ?.get()?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            intent.putExtra("nickname", task.result["nickname"].toString())
+                        }
+                    }
+
                 intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
                 intent.putExtra("explain", contentDTOs[position].explain)
                 intent.putExtra("contentDTO", contentDTOs[position])
@@ -560,7 +566,13 @@ class CommunityFragment : Fragment() {
                 val intent = Intent(activity, CommentsActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
                 intent.putExtra("destinationUid", contentDTOs[position].uid)
-                intent.putExtra("nickname", contentDTOs[position].nickname)
+                //intent.putExtra("nickname", contentDTOs[position].nickname)
+                firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
+                    ?.get()?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            intent.putExtra("nickname", task.result["nickname"].toString())
+                        }
+                    }
                 intent.putExtra("imageUrl", contentDTOs[position].imageUrl)
                 intent.putExtra("explain", contentDTOs[position].explain)
                 intent.putExtra("contentDTO", contentDTOs[position])

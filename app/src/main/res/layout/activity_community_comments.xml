@@ -181,6 +181,7 @@
         android:layout_gravity="bottom"
         android:layout_weight="0"
         android:foregroundGravity="bottom"
+        android:background="#f3fcf0"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

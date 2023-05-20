@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -457,9 +458,20 @@ class UserActivity : AppCompatActivity() {
             //사진을 업로드 하는 부분  userProfileImages 폴더에 uid에 파일을 업로드함
 
             val storage = FirebaseStorage.getInstance()
-            val storageRef = storage.reference.child("userProfileImages/")
+            val storageRef = storage.reference.child("userProfileImages/$uid")
 
 
+            storageRef.putFile(imageUri!!).continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
+                return@continueWithTask  storageRef.downloadUrl
+            }.addOnSuccessListener { uri ->
+                // 프로필 데이터생성 및 엑티비티 종료
+                firestore?.collection("profileImages")?.document(uid)!!.update("image", uri!!.toString())
+                Toast.makeText(this, "프로필 사진이 변경되었습니다!", Toast.LENGTH_SHORT).show()
+
+            }
+                .addOnFailureListener {
+                    Toast.makeText(this, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
+                }
 
             storageRef.putFile(imageUri!!).continueWithTask(){
                 return@continueWithTask  storageRef.downloadUrl
@@ -467,25 +479,10 @@ class UserActivity : AppCompatActivity() {
                 //firestore?.collection("profileImages")?.document(uid)!!.get()
 
                 firestore?.collection("profileImages")?.document(uid)!!.update("image", uri.result.toString())
-                Toast.makeText(this,
-                    "프로필 사진이 변경되었습니다!", Toast.LENGTH_SHORT).show()
+
                 //var profileDTO = ProfileDTO("example", ,uid)
                 //firestore?.collection("profileImages")?.document(uid)!!.set(profileDTO)
             }
-
-            /*
-            FirebaseStorage
-                .getInstance()
-                .reference
-                .child("userProfileImages")
-                .child(uid)
-                .putFile(imageUri!!)
-                .addOnCompleteListener { task ->
-                    val url = task.result.storage.downloadUrl.toString()
-                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).update("image",url)
-
-
-                }*/
         }
 
     }
