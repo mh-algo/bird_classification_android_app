@@ -56,13 +56,13 @@ class EncyclopediaRankingActivity : AppCompatActivity() {
                     score[document.data["uid"].toString()] =
                         document.data["score"].toString().toInt()
                 }
-                Log.d("rank","${score}")
-                scoreSort = score.toSortedMap(compareByDescending { score[it] })
+                val List = score.toList()
+                val ListSort = List.sortedByDescending { it.second }
+                val scoreSort = ListSort.toMap()
                 for ((uids, scores) in scoreSort!!) {
                     rankUid.add(uids)
                     scoreList.add(scores)
                 }
-                Log.d("rank","rankUid${rankUid} scoreList${scoreList}")
                 getUserInfo()
 
             }
