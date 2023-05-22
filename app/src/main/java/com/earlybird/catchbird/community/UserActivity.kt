@@ -113,20 +113,24 @@ class UserActivity : AppCompatActivity() {
 
             // 순위 정보
              FirebaseFirestore.getInstance().collection("rank")
-            //.orderBy("score", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    score[document.data["uid"].toString()] =
-                        document.data["score"].toString().toInt()
-                }
-                scoreSort = score.toSortedMap(compareByDescending { score[it] })
-                for ((uids, scores) in scoreSort!!) {
-                    rankUid.add(uids)
-                    scoreList.add(scores)
-                }
-                getUserInfo()
-                }
+                 .get()
+                 .addOnSuccessListener { documents ->
+                     for (document in documents) {
+                         score[document.data["uid"].toString()] =
+                             document.data["score"].toString().toInt()
+                     }
+                     val List = score.toList()
+                     val ListSort = List.sortedByDescending { it.second }
+                     val scoreSort = ListSort.toMap()
+                     for ((uids, scores) in scoreSort!!) {
+                         rankUid.add(uids)
+                         scoreList.add(scores)
+                     }
+                     getUserInfo()
+
+                 }
+
+
 
 
 
@@ -262,15 +266,17 @@ class UserActivity : AppCompatActivity() {
     }
 
     private fun getUserInfo() {
-        var i =0
+        var i = 0
         var pos = 0
         var rankProfileImageHash:HashMap<String,HashMap<String,String>> = hashMapOf()
         FirebaseFirestore.getInstance().collection("profileImages").get()
             .addOnSuccessListener { documentSnapshot ->
                 for(document in documentSnapshot){
-                    rankProfileImageHash[document.data["uid"].toString()] = hashMapOf(document.data["nickname"].toString() to document.data["image"].toString())
+                    rankProfileImageHash[document.id] = hashMapOf(document.data["nickname"].toString() to document.data["image"].toString())
+                    Log.d("rankProfileImageHash","uid: ${document.id},\n nickname: ${document.data["nickname"].toString()},\n image: ${document.data["image"].toString()}")
                 }
                 for(rankUids in rankUid){
+                    Log.d("rank","rankUids${rankUids}")
                     var hashList = rankProfileImageHash[rankUids]
                     if (hashList != null) {
                         for((nickname,profile) in hashList){
@@ -280,24 +286,26 @@ class UserActivity : AppCompatActivity() {
                                     profile,
                                     nickname,
                                     scoreList[i],
-                                    rankUid.get(i)
+                                    rankUids
                                 )
                             )
-
                             if (rankUid.get(i) == uid) {
                                 pos = i
                                 flag = 1
                                 binding.accountRankCount.text = (pos+1).toString() + "위" }
 
                             i += 1
+                        }
 
                     }
                 }
 
             }
 
-        }
     }
+
+
+
 
 
 
